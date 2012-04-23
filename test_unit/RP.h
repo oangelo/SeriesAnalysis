@@ -92,3 +92,4 @@
        CHECK_EQUAL(rp.points_in_diagonals(),14);
        CHECK_CLOSE(rp.DET(),14.0/18.0,0.00001);
      }
+     
