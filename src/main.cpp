@@ -1,22 +1,16 @@
 #include <stdlib.h>
-#include "statistics.h"
-#include "time_series.h"
-#include "chaos.h"
-#include "numerical_integration.h"
-#include "models.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
-//#define FULL_TEST
+
+#include "statistics.h"
+#include "time_series.h"
+#include "chaos.h"
+
 #define TRUE 1
 #define FALSE 0
 
-#include <UnitTest++.h>
-#include "test_unit/tests.h"
-
 using namespace std;
-
-
 
 void rp_files(std::string from_path,std::string to_path){
   std::vector<std::string> file_name(ls(from_path));
@@ -228,7 +222,7 @@ int main() {
 	
 	dados.close();
 */  
-    return UnitTest::RunAllTests();
+    return 0;
     
-    }
+}
 

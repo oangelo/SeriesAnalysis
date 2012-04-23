@@ -1,7 +1,24 @@
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <UnitTest++.h>
+
+
+#include "../src/statistics.h"
+#include "../src/time_series.h"
+#include "../src/chaos.h"
+#include "../src/numerical_integration.h"
+#include "../src/models.h"
+
+#include "RP.h"
+
+
+#define TRUE 1
+#define FALSE 0
 
 using namespace std;
 
-#include "RP.h"
 
 /*Using this in several tests to fill a test histogram*/
 void fill(Histogram &teste, size_t n_bins) {
@@ -955,3 +972,8 @@ SUITE(Time_Series_Fractal_dimensions_test)
 #endif
 }//END TEST SUITE
 #endif
+
+int main() {
+    return UnitTest::RunAllTests();
+}
+
