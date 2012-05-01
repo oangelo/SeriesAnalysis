@@ -1,7 +1,33 @@
 #include "recurrence_plot.h"
 
 //m_poist is the size of one side of the mxm matrix
+RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,unsigned size,double dist_limit): size(size),data(){
 
+    //deciding the steps and allocating memory
+    unsigned step = 1;
+    if(size < time_series.Size() && size >0){
+        step = time_series.Size() / size;
+    }else{
+        this->size = time_series.Size();
+    }
+    Allocate(this->size,this->size);
+
+    if(dist_limit == 0){
+        double mean = 0;
+        unsigned total_points = pow(size,2);
+        if(dist_limit == 0){
+            for(unsigned j = 0; j < time_series.Size(); j = j + step)
+                for(unsigned i = j; i < time_series.Size(); i = i + step){
+                        mean += pow(time_series[i] - time_series[j],2);
+                }
+        }
+        mean = mean / total_points;
+        Generate(mean/20,time_series);
+    }else{
+        Generate(dist_limit,time_series);
+    }
+    
+}
 
 RecurrencePlot::RecurrencePlot(const Attractor &attractor,unsigned size,double dist_limit): size(size),data(){
 
@@ -19,7 +45,7 @@ RecurrencePlot::RecurrencePlot(const Attractor &attractor,unsigned size,double d
         unsigned total_points = pow(size,2);
         if(dist_limit == 0){
             for(unsigned j = 0; j < attractor.Size(); j = j + step)
-                for(unsigned i = 0; i < attractor.Size(); i = i + step){
+                for(unsigned i = j; i < attractor.Size(); i = i + step){
                     double dist = 0;
                     for(unsigned k = 0; k < attractor.get_dimension(); k++)
                         dist += pow(attractor[i][k] - attractor[j][k],2);
@@ -33,7 +59,18 @@ RecurrencePlot::RecurrencePlot(const Attractor &attractor,unsigned size,double d
     }
     
 }
-
+void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
+    double step = time_series.Size()/size;
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++){
+            double dist = fabs(time_series[i]-time_series[j]);  
+            if(dist < limit){
+                data[i][j]=1;
+            }else{
+                data[i][j]=0;
+            }
+        }
+}
 void RecurrencePlot::Generate(double limit, const Attractor & attractor){
     double vec_i[attractor.get_dimension()],vec_j[attractor.get_dimension()];
     double step = attractor.Size()/size;
@@ -56,7 +93,7 @@ RecurrencePlot::RecurrencePlot(unsigned** data,unsigned size):size(size),data(){
     Allocate(size,size);
     for(unsigned int i=0;i<size;i++)
         for(unsigned int j=0;j<size;j++)
-            data[i][j]=data[i][j];
+            this->data[i][j]=data[i][j];
 
 }
 
@@ -100,7 +137,7 @@ const unsigned RecurrencePlot::Size() const{
 }
 
 const NePairs RecurrencePlot::Burn(unsigned i,unsigned j) const{
-    assert(i < size - 1 && j < size - 1 && i > 0 && j > 0);
+    assert(i < size  && j < size );
     //store the position of burned points
     NePairs cluster;
     //store points to be burned, and that needs to check neigboards
@@ -113,35 +150,41 @@ const NePairs RecurrencePlot::Burn(unsigned i,unsigned j) const{
         neigboards.Take();
         //search for neigboards
         //bulk
-        if(x<size-1 && y<size-1 && x >0 && y>0  ){
+        if(x<size-1)
             if(data[x+1][y] == 1 && cluster.push_back(x+1,y) )
                 neigboards.push_back(x+1,y);
+        if(y<size-1)
             if(data[x][y+1] == 1 && cluster.push_back(x,y+1) )
                 neigboards.push_back(x,y+1);
+        if(x<size-1 && y<size-1)
             if(data[x+1][y+1] == 1 && cluster.push_back(x+1,y+1) )
                 neigboards.push_back(x+1,y+1);
 
+        if(x>0)
             if(data[x-1][y] == 1 && cluster.push_back(x-1,y) )
                 neigboards.push_back(x-1,y);
+        if(y>0)
             if(data[x][y-1] == 1 && cluster.push_back(x,y-1) )
                 neigboards.push_back(x,y-1);
+        if(x>0 && y>0)
             if(data[x-1][y-1] == 1 && cluster.push_back(x-1,y-1) )
                 neigboards.push_back(x-1,y-1);
 
+        if(x>0 && y<size-1)
             if(data[x-1][y+1] == 1 && cluster.push_back(x-1,y+1) )
                 neigboards.push_back(x-1,y+1);
+        if(x<size-1 && y>0)
             if(data[x+1][y-1] == 1 && cluster.push_back(x+1,y-1) ) 
                 neigboards.push_back(x+1,y-1);  
-        }
     }
 
     return(cluster);
 }
-void RecurrencePlot::Paint(unsigned i,unsigned j){ 
+void RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){ 
     NePairs cluster=Burn(i,j);
     for (unsigned i = 0; i < cluster.Size(); ++i)
     {
-       data[cluster.get_pair(i)[0]][cluster.get_pair(i)[1]]=2; 
+       data[cluster.get_pair(i)[0]][cluster.get_pair(i)[1]]=color; 
     }
     
 }

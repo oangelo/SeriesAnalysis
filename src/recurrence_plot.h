@@ -7,6 +7,7 @@
 class RecurrencePlot{
     public:
 
+    RecurrencePlot(const TimeSeries &time_series,unsigned size=0,double dist_limit=0);
     RecurrencePlot(const Attractor &attractor,unsigned size=0,double dist_limit=0);
     RecurrencePlot(unsigned** data,unsigned size);
     RecurrencePlot(const RecurrencePlot & rp);
@@ -25,9 +26,10 @@ class RecurrencePlot{
 
 
     const NePairs Burn(unsigned i,unsigned j) const;
-    void Paint(unsigned i,unsigned j);
+    void Paint(unsigned i,unsigned j, unsigned color);
     private:
      
+    void Generate(double limit, const TimeSeries & time_series);
     void Generate(double limit, const Attractor &  attractor);
     void Allocate(unsigned n_lines,unsigned n_columns);
     void Deallocate(unsigned n_lines,unsigned n_columns);
