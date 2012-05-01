@@ -1,60 +1,74 @@
+#ifndef CHAOS_H
+#define CHAOS_H
+
 #include <stdio.h>
 #include <vector>
 #include <utility>
 
 #include "time_series.h"
+#include "utils.h"
+//TODO make a function for memory alocation
+//strip the correlation integrals and box count from the class
+//put the recurrence plot class in a nother file
 
 /*
  * Describe a n-dimensional attractor.
  */
 class Attractor{
 
-	friend void file_counter(std::string file_name,unsigned &lines,unsigned &columns);
-	public:
+    friend void file_counter(std::string file_name,unsigned &lines,unsigned &columns);
 
-	//creates an attractor from a time series
-	Attractor(time_series &ts,unsigned int D_e,unsigned int tau);
-	// organized as data[array_index][array_coord]
-	Attractor(double **data, unsigned int D_e,unsigned int n_vec);
-	Attractor(std::string file_name);
-	Attractor( Attractor& att);
-	~Attractor();
-	std::vector<unsigned int> Box_counting_D(double epsilon);
-	double get(unsigned vec,unsigned dim);
-	void get_vec(unsigned vec,double *p_vec);
-	double correlation_integral(double length_fraction);
-	double get_epsilon();
-	unsigned size(){return(__n_vec);};
-	unsigned get_dim(){return(__D_e);};
-	unsigned get_tau(){return(__tau);};
+    public:
 
-	private:
+    //creates an attractor from a time series
+    Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay);
+    // organized as data[vector number][vector element]
+    Attractor(const double** p_data,const  unsigned int dimension,const unsigned int n_vec);
+    Attractor(const std::string file_name);
+    Attractor(const  Attractor & att);
+    ~Attractor();
+    Attractor& operator=(const Attractor &rhs);
 
-	//check if a point is inside a box between [coord-epsilon/2,coord+epsilon/2]
-	int __points_in_box(double *coord,double epsilon);
-	/*
-	 * min(max) is an output array of size D (attractor dimension).
-	 * Each array element is associated to a coordinate minimum(maximum).
-	 * Useful to boxcounting.
-	 */
-	void __find(double *min,double *max);
-	void __length_side();
-	//do n, dynamic, loops by recursion
-	void __recursive_for(unsigned dimension,
-			unsigned cont,
-			unsigned* cont_loop,
-			unsigned *walker,
-			unsigned* max_loop,
-			double *min);
-	double **__data; // organized as data[array_index][array_coord]
-	unsigned __n_vec,__D_e,__tau;
-	double __epsilon;
-	double __length;
-	unsigned int __constructor_flag;
-	std::vector<unsigned int> n_box;
+    const double get_data(const unsigned vec,const unsigned dim) const;
+    const void get_vec(const unsigned vec,double *p_vec) const;
+    const std::vector<double>  get_vec(const unsigned vec) const;
+    const unsigned get_dimension() const;
+    const unsigned get_delay() const;
+
+    const unsigned Size() const;
+    
+    const std::vector<double>  operator[](const unsigned &vec) const;
+
+    private:
+
+    void Allocate(unsigned n_lines,unsigned n_columns);
+    void Dealocate(unsigned n_lines,unsigned n_columns);
+    unsigned dimension,delay,n_vec;
+    double **data; // organized as data[array_index][array_coord]
 };
-
-
+/*
+    double CorrelationIntegral(double length_fraction);
+    std::vector<unsigned int> BoxCountingDimension(double epsilon);
+    double epsilon;
+    double length;
+    std::vector<unsigned int> n_box;
+    //check if a point is inside a box between [coord-epsilon/2,coord+epsilon/2]
+    int PointsInBox(double *coord,double epsilon);
+    
+    //  min(max) is an output array of size D (attractor dimension).
+    //  Each array element is associated to a coordinate minimum(maximum).
+    //  Useful to boxcounting.
+     
+    void Find(double *min,double *max);
+    void LengthSide();
+    //do n, dynamic, loops by recursion
+    void RecursiveFor(unsigned dimension,
+            unsigned cont,
+            unsigned* cont_loop,
+            unsigned *walker,
+            unsigned* max_loop,
+            double *min);
+ */
 
 
 
@@ -75,12 +89,12 @@ class Attractor{
  * [0,D], where D= i+1. Each array component have the number of false
  * neighbors for that dimension.
  */
-unsigned int false_nearest_nei(time_series& ts,
-		unsigned tau,
-		unsigned int d_max,
-		double Rt,
-		double *fnn_list,
-		bool SECOND_COND);
+unsigned int false_nearest_nei(TimeSeries& ts,
+        unsigned tau,
+        unsigned int d_max,
+        double Rt,
+        double *fnn_list,
+        bool SECOND_COND);
 
 /*
  * Create a set of lagged array from a time series ts.
@@ -90,16 +104,11 @@ unsigned int false_nearest_nei(time_series& ts,
  * tau: time delay, normally obtained by the first minimum mutual information
  * dim: dimension
  */
-double **create_lagged_array(time_series &ts,
-		const unsigned int tau,
-		const unsigned int dim);
+void create_lagged_array(const TimeSeries &ts,
+        const unsigned int tau,
+        const unsigned int dim,
+        double** data);
 
-/*
- * Delete the data dynamic allocated multiarray.
- */
-void del_lagged_array(double** data,
-		const unsigned int n_vec,
-		const unsigned int dim);
 /*
  * returns the index k of the nearest data[k] from data[index]. If we have a tie,
  *returns returns the vector with the higher index.
@@ -109,32 +118,5 @@ void del_lagged_array(double** data,
 unsigned int __find_nearest(Attractor &data,unsigned index);
 
 
-class recurrence_plot{
-	friend class ne_pairs;
-	public:
 
-	recurrence_plot(Attractor &ts_data,unsigned m_points=0,double dist_limit=0);
-	recurrence_plot(unsigned** data,unsigned size);
-	void generate(double limit);
-	~recurrence_plot();
-
-	unsigned size();
-	unsigned get(unsigned i, unsigned j);
-
-	double RR();
-	double DET();
-	double L();
-
-	unsigned points_in_diagonals();
-	ne_pairs burn(unsigned i,unsigned j);
-	unsigned diagonal_size(ne_pairs & cluster);
-	unsigned diagonals(std::vector<unsigned> & length);
-
-	private:
-
-	unsigned **__data;
-	Attractor *__ts_data;
-	unsigned __size;
-};
-
-
+#endif /*CHAOS_H*/

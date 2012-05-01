@@ -1,58 +1,47 @@
-/*
- *  time_series.h
- *
- *  Created on: Feb 23, 2010
- *  Author: gralha and angelo
- *
- *  Description: This module encapsulate the time series data.
- *
- */
-
-
 #ifndef _TIME_SERIES_H
 #define	_TIME_SERIES_H
-#include <vector>
+
 #include <math.h>
+#include <float.h>
+
+#include <vector>
 #include <algorithm>
 #include <string>
 #include <fstream>
-#include"lib_exceptions.h"
-#include "float.h"
-#include "utils.h"
+#include <iostream>
+#include <cassert>
 
-/*
+//TODO Print a header on the file with the séries information, and put every thing inside a name space SERIES.
+
+/*!  
  *  Time series class to work as data structure for nonlinear, statistical and
  *  fractal analysis.
+ *  The class is all costant, since the data should not change.
  */
-class time_series
+class TimeSeries
 {
 
 public:
 
-	/*the memory pointed by data is copiedto an private c-array _data.*/
-    time_series(double const *data, size_t size);
-    time_series(std::string file_name);
-    virtual ~time_series();
-    /*
-     * access operator
-     */
-    double& operator[](const int &aux);
-    double mean();
-    /*
-     * data variance
-     */
-    double var();
-    /*
-     * data standard deviation
-     */
-    double std();
-    double max();
-    double min();
-    unsigned int size();
-    void print(std::string file_name);
+	/*the memory pointed by data is copied to an vector named data.*/
+    TimeSeries(double const * const data, size_t size);
+    TimeSeries(const std::vector<double> & data);
+    TimeSeries(std::string file_name);
+    virtual ~TimeSeries();
+    //  access operator
+    const double& operator[](const int &aux) const;
+    double Mean() const;
+     //data variance
+    double Var() const;
+    // data standard deviation
+    double Std() const;
+    double Max() const;
+    double Min() const;
+    unsigned int Size() const;
+    void Print(std::string file_name) const;
 
 private:
-    std::vector<double> _data;
+    std::vector<double> data;
 
 };
 

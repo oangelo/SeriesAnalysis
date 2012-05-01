@@ -10,3 +10,8 @@
 *.lai
 *.la
 *.a
+
+.clang_complete
+.clang_complete
+Doxyfile
+

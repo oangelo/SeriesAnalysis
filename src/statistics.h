@@ -8,13 +8,15 @@
 #ifndef _STATISTICS_H
 #define	_STATISTICS_H
 
-#include "time_series.h"
-#include <gsl/gsl_histogram.h>
 #include <stdlib.h>
+
 #include <algorithm>
 
+#include <gsl/gsl_histogram.h>
 
+#include "time_series.h"
 
+#define EPSILON 0.000000000001
 class Histogram {
 public:
 	/*!Constructor:
@@ -36,6 +38,7 @@ public:
     Histogram(Histogram& orig);
     virtual ~Histogram();
 
+    Histogram & operator=(const Histogram & hist);
     /*! Copy histogram to another hostogram */
     double  operator=(const double & aux);
     /*! Returns the probability of a bin */
@@ -54,10 +57,10 @@ public:
     size_t n_bins(void);
     /*! Returns the max value one can input.
      * (The right value of the highest bin) */
-    double range_max(void);
+    double range_max(void) const ;
     /*! Returns the min value one can input.
     * (The left value of the lowest bin) */
-    double range_min(void);
+    double range_min(void) const;
     /**********************
     *Histogram Statistics**
     ***********************
@@ -104,24 +107,6 @@ public:
      */
     double sigma(void);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*
     *  TO BE INPLEMENTED
      * ***********************
@@ -130,16 +115,10 @@ public:
 
      *This function multiplies the contents of the bins of histogram h by the constant scale
      *i.e. h'_1(i) = h_1(i) * scale.
-
     int scale(double scale);
-
      *This function shifts the contents of the bins of histogram h by the constant offset,
      *i.e. h'_1(i) = h_1(i) + offset.
      int shift(double offset);
-     *
-     *
-     *
-     *
     —: int gsl_histogram_equal_bins_p (const gsl_histogram * h1, const gsl_histogram * h2)
     —: int gsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2)
     —: int gsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2)
@@ -155,9 +134,9 @@ private:
     
 };
 
-double entropy(time_series& ts);
-double auto_corr_func(time_series& ts,unsigned tau);
-double mutual_information(time_series& ts,unsigned  tau);
+double entropy(TimeSeries& ts);
+double auto_corr_func(TimeSeries& ts,unsigned tau);
+double mutual_information(TimeSeries& ts,unsigned  tau);
 
 #endif	/* _STATISTICS_H */
 

@@ -2,9 +2,9 @@
 # dos SOURCES e o nome do EXECUTABLE.
 
 CC=g++
-CFLAGS=-c -Wall 
-LDFLAGS=-lUnitTest++  -lgsl -lgslcblas -lm -lpthread
-SOURCES=   src/numerical_integration.cpp  src/utils.cpp src/chaos.cpp test_unit/tests.cpp    src/time_series.cpp   src/models.cpp          src/statistics.cpp             src/lib_exceptions.cpp
+CFLAGS=-c -Wall -Weffc++ -pedantic 
+LDFLAGS= -lgtest -lgsl -lgslcblas -lm -lpthread
+SOURCES=   src/recurrence_plot.cpp src/utils.cpp src/chaos.cpp test_unit/tests.cpp    src/time_series.cpp             src/statistics.cpp            
  
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests

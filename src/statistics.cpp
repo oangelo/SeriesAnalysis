@@ -8,30 +8,27 @@
 
 #include "statistics.h"
 
-Histogram::Histogram(int n, double xmin, double xmax) {
+Histogram::Histogram(int n, double xmin, double xmax):h(gsl_histogram_alloc(n)),_sum_value() {
 	//checking error
-    if((xmax-xmin) < EPSILON){
-		throw Value_error("xmax must be different from xmin");
-	}
+    assert((xmax-xmin) < EPSILON);
     //Alocating Memory for the histogram
-    h = gsl_histogram_alloc(n);
     gsl_histogram_set_ranges_uniform(h,xmin, xmax);
 }
 
-Histogram::Histogram(double std, size_t size, double xmin,double xmax){
+Histogram::Histogram(double std, size_t size, double xmin,double xmax):h(),_sum_value() {
 	//checking error
 	if((xmax-xmin) < EPSILON){
-		throw Value_error("xmax must be different from xmin");
+		//throw Value_error("xmax must be different from xmin");
 	}
 	//Alocating Memory for the histogram
 	double	bin_size = (3.5*std) / pow(size,1.0/3.0); //Scott's choice
 	unsigned n = ceil((xmax-xmin)/bin_size);
-    h = gsl_histogram_alloc(n);
 	gsl_histogram_set_ranges_uniform(h,xmin, xmax);
+    h = gsl_histogram_alloc(n);
 }
 
-Histogram::Histogram(Histogram& orig) {
-    h = gsl_histogram_alloc(orig.n_bins());
+Histogram::Histogram(Histogram& orig): h(gsl_histogram_alloc(orig.n_bins())),_sum_value(){
+    
     gsl_histogram_set_ranges_uniform(h,orig.range_min(), orig.range_max());
     //get the bin size
     double bin = (orig.range_max() - orig.range_min()) / orig.n_bins();
@@ -50,15 +47,21 @@ Histogram::~Histogram() {
     gsl_histogram_free(h);
 }
 
+Histogram & Histogram::operator=(const Histogram & hist){
+    if(&hist != this){
+        gsl_histogram_free(h);
+        gsl_histogram_set_ranges_uniform(h,hist.range_min(),range_max());
+    }
+    return *this;
+}
 double Histogram::operator[](const int & aux) {
     /*
      * This operator the probability of a bin
      */
 	//std::cout << "sum :" << _sum_value << std::endl;
-	if(aux<0 || ((unsigned)aux) > (n_bins()-1))
-		throw Index_error("Histogram index out of range");
+	assert(aux<0 || ((unsigned)aux) > (n_bins()-1));
 
-    return (get((size_t)aux) / _sum_value);
+    return (((double)get((size_t)aux)) / _sum_value);
 }
 
 double Histogram::operator[](const double & aux) {
@@ -67,7 +70,7 @@ double Histogram::operator[](const double & aux) {
      */
 	size_t i;
 	if(! ((aux >= this->h->range[0] ) && (aux < this->h->range[h->n])) ){
-		throw Value_error("Histogram out of range");
+//		throw Value_error("Histogram out of range");
 	}
 
 	gsl_histogram_find (h,aux,&i);
@@ -79,7 +82,7 @@ int Histogram::operator()(const double &aux){
 	size_t i;
 	//std::cout << aux << " " << h->range[h->n] << std::endl;
 	if(! ((aux >= this->h->range[0] ) && (aux < this->h->range[h->n])) ){
-		throw Value_error("Histogram out of range");
+//		throw Value_error("Histogram out of range");
 	}
 
 	gsl_histogram_find (h,aux,&i);
@@ -96,7 +99,7 @@ void Histogram::increment(double x) {
 		sum(); /*Recalculating the sum because we add a new value*/
 	}
 	else{
-		throw Value_error("Histogram out of range");
+//		throw Value_error("Histogram out of range");
 	}
 }
 
@@ -105,12 +108,12 @@ size_t Histogram::n_bins(void) {
     return (h->n);
 }
 
-double Histogram::range_max(void) {
+double Histogram::range_max(void) const  {
     //acessing C structure pointer uses structure->attr
     return (h->range[(int) h->n]);
 }
 
-double Histogram::range_min(void) {
+double Histogram::range_min(void) const  {
     //acessing C structure pointer uses structure->attr
     return (h->range[0]);
 }
@@ -191,12 +194,12 @@ double Histogram::sum() {
 
 
 
-double entropy(time_series& ts){
+double entropy(TimeSeries& ts){
 
 
-	Histogram hist(ts.std(),ts.size(),ts.min(),ts.max()+EPSILON);
+	Histogram hist(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
 
-	for (unsigned i = 0; i < ts.size();i++){
+	for (unsigned i = 0; i < ts.Size();i++){
 		//std::cout << i <<"inside:" << ts._data.back()<< std::endl;
 		hist.increment(ts[i]);
 	}
@@ -211,13 +214,13 @@ double entropy(time_series& ts){
 	//*/
 }
 
-double auto_corr_func(time_series& ts,unsigned tau)
+double auto_corr_func(TimeSeries& ts,unsigned tau)
 {
 	double c=0,mean;
-	mean = ts.mean();
-    //N =  ts.size() - tau;
+	mean = ts.Mean();
+    //N =  ts.Size() - tau;
 	double var_tau = 0.0;
-	for (unsigned i = 0 ; i < ts.size()-tau; i++){
+	for (unsigned i = 0 ; i < ts.Size()-tau; i++){
 		c+=(ts[i+tau]-mean)*(ts[i]-mean);
 		var_tau += (ts[i]-mean)*(ts[i]-mean);
 	}
@@ -225,18 +228,18 @@ double auto_corr_func(time_series& ts,unsigned tau)
 	c=c/(var_tau);
 	//checking for nans and infs
 	if(c!=c){
-		throw Value_error("Nan or inf found. Check var() method.");
+//		throw Value_error("Nan or inf found. Check var() method.");
 	}
 
 	return(c);
 }
 
-double mutual_information(time_series& ts,unsigned tau)
+double mutual_information(TimeSeries& ts,unsigned tau)
 {
-	int N = ts.size()-tau;
+	int N = ts.Size()-tau;
 	double sum=0.0;
-	Histogram pA(ts.std(),ts.size(),ts.min(),ts.max()+EPSILON);
-	Histogram pB(ts.std(),ts.size(),ts.min(),ts.max()+EPSILON);
+	Histogram pA(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
+	Histogram pB(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
 	int n_bins = pA.n_bins();
 	int P_cond[n_bins][n_bins];
 	int i=0,j=0;

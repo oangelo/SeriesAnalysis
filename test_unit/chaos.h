@@ -1,6 +1,59 @@
+#include "../src/chaos.h"
+
+class AttractorTest : public ::testing::Test {
+    public:
+        TimeSeries *teste;
+        Attractor *att;
+        ~AttractorTest(){
+            delete teste;
+            delete att;
+        }
+
+
+        AttractorTest(){
+            double data[10] = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 };
+            teste = new TimeSeries(data,10);
+            att = new Attractor(*teste,2,1);
+        }
+
+};
+
+TEST_F(AttractorTest,values) {
+    EXPECT_EQ((*att).Size(),9);
+    EXPECT_EQ((*att).get_dimension(),2);
+    EXPECT_EQ((*att).get_delay(),1);
+    for (unsigned i = 0; i < att->Size(); i++)
+    {
+        ASSERT_DOUBLE_EQ(att->get_data(i,0),i+1);
+    }
+    for (unsigned i = 0; i < att->Size(); i++)
+    {
+        ASSERT_DOUBLE_EQ(att->get_data(i,1),i+2);
+    }
+}
+
+TEST_F(AttractorTest,vec){
+    double data[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    TimeSeries teste(data, 10);
+    Attractor att_test(teste,2,1);
+    double vec1[2];
+    for(unsigned i=0;i<9;i++){
+        att_test.get_vec(i,vec1);
+        EXPECT_EQ(vec1[0],data[i]);
+        EXPECT_EQ(vec1[1],data[i+1]);
+    }
+    for(unsigned i=0;i<9;i++){
+        std::vector<double> vec1;
+        vec1 = att_test[i];
+        EXPECT_EQ(vec1[0],data[i]);
+        EXPECT_EQ(vec1[1],data[i+1]);
+        EXPECT_EQ(att_test[i][0],data[i]);
+        EXPECT_EQ(att_test[i][1],data[i+1]);
+
+    }
+}
 /*
- * Need to check an redo all this tests!
- */
+
     TEST(Test_attractor_from_file)
     {
         //Make a better test! write to a file, read attractor then delete the file  
@@ -28,15 +81,7 @@ SUITE(Attractor_class_test)
 
         TEST(Test_constructor_get_vec)
         {
-                double data[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                time_series teste(data, 10);
-                Attractor att_test(teste,2,1);
-                double vec1[2];
-                for(unsigned i=0;i<9;i++){
-                        att_test.get_vec(i,vec1);
-                        CHECK_EQUAL(vec1[0],data[i]);
-                        CHECK_EQUAL(vec1[1],data[i+1]);
-                }
+               }
         }
 
 }
@@ -390,7 +435,7 @@ SUITE(Time_Series_Fractal_dimensions_test)
     
 }
 
-/*
+
 SUITE(Time_Series_Generator_test)
 {
     

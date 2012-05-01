@@ -1,22 +1,22 @@
      
-       TEST(Test_ne_pairs)
+       TEST(utils,Test_ne_pairs)
     {
-        ne_pairs ne;
+        NePairs ne;
         ne.push_back(1,2);
         ne.push_back(1,2);
         ne.push_back(1,2);
-        CHECK_EQUAL(ne.size(),1);
-        ne_pairs ne2;
+        EXPECT_EQ(ne.Size(),1);
+        NePairs ne2;
         ne2.push_back(1,3);
         ne2.push_back(ne);
-        ne.take();
-        CHECK_EQUAL(ne.size(),0);
-        CHECK_EQUAL(ne2.size(),2);
-        CHECK_EQUAL((ne2.get(0))[0],1);
-        CHECK_EQUAL((ne2.get(0))[1],3);
-        CHECK_EQUAL((ne2.get(1))[0],1);
-        CHECK_EQUAL((ne2.get(1))[1],2);
-        ne_pairs ne0;
+        ne.Take();
+        EXPECT_EQ(ne.Size(),0);
+        EXPECT_EQ(ne2.Size(),2);
+        EXPECT_EQ((ne2.get_pair(0))[0],1);
+        EXPECT_EQ((ne2.get_pair(0))[1],3);
+        EXPECT_EQ((ne2.get_pair(1))[0],1);
+        EXPECT_EQ((ne2.get_pair(1))[1],2);
+        NePairs ne0;
         ne0.push_back(1,2);
         ne0.push_back(1,3);
         ne0.push_back(1,4);
@@ -26,5 +26,5 @@
         ne0.push_back(1,8);
         ne0.push_back(1,9);
         ne2.push_back(ne0);
-        CHECK_EQUAL(ne2.size(),8);
+        EXPECT_EQ(ne2.Size(),8);
     }
