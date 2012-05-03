@@ -6,12 +6,12 @@
 #include "statistics.h"
 #include "time_series.h"
 #include "chaos.h"
+#include "recurrence_plot.h"
 
 #define TRUE 1
 #define FALSE 0
 
 using namespace std;
-/*
 void rp_files(std::string from_path,std::string to_path){
     std::vector<std::string> file_name(ls(from_path));
     mkdir(to_path);
@@ -23,21 +23,26 @@ void rp_files(std::string from_path,std::string to_path){
         std::ofstream dados;
 
         Attractor att_data(file_path.str());
-        recurrence_plot rp(att_data,1000);	
+        double mean,std;
+        MeanOrbitDistance(att_data,mean,std);
+        std::cout << file_name[i] << ' ' << mean << ' ' << std <<  std::endl;
+        RecurrencePlot rp(att_data,mean+10*std,1000);	
         std::string out=result_path.str();
         dados.open(out.c_str());
-        dados << "#RR= " << rp.RR() << std::endl; 
-        dados << "#DET= " << rp.DET() << std::endl;
-        dados << "#L= " << rp.L() << std::endl;
-        for (unsigned k = 0; k < rp.size(); k++)
-            for (unsigned j = 0; j < rp.size(); j++)
-                if(rp.get(k,j)==1)
+        //dados << "#RR= " << rp.RR() << std::endl; 
+        //dados << "#DET= " << rp.DET() << std::endl;
+        //dados << "#L= " << rp.L() << std::endl;
+        for (unsigned k = 0; k < rp.Size(); k++)
+            for (unsigned j = 0; j < rp.Size(); j++)
+                if(rp[k][j]==1)
                     dados << k <<"  "<<  j << std::endl;
 
         dados.close();
+        
     } 
 }
 
+/*
 void rp_ts_files(std::string from_path,std::string to_path){
     std::vector<std::string> file_name(ls(from_path));
     mkdir(to_path);
@@ -206,9 +211,9 @@ int main() {
     }
     //*/
 
-    //rp_files("to_analyse/dp_ns/","results/dp_ns/");
-    //rp_files("to_analyse/dp_s/","results/dp_s/");
-    //rp_files("to_analyse/rossler/","results/rossler/");
+    rp_files("to_analyse/dp_ns/","results/dp_ns/");
+    rp_files("to_analyse/dp_s/","results/dp_s/");
+    rp_files("to_analyse/rossler/","results/rossler/");
     //mutual_info("to_analyse/rr_posicoe/","results/rr_posicoe/");
     //NN("to_analyse/rr_posicoe/","results/rr_posicoe_d/");
     //rp_ts_files("to_analyse/rr_posicoe/","results/rr_posicoe_rp/");

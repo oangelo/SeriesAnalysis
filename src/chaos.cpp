@@ -17,6 +17,15 @@ Attractor::Attractor(const double** p_data,const  unsigned int dimension,const  
     //LengthSide();
 }
 
+Attractor::Attractor(const std::vector< std::vector<double> > & vec_data):dimension(vec_data[0].size()),delay(0),n_vec(vec_data.size()),data(){
+    Allocate(n_vec,dimension);
+    for(unsigned int v=0;v<n_vec;v++){
+        for(unsigned int d=0;d<dimension;d++){
+            this->data[v][d] = vec_data[v][d];
+        }
+    }
+ 
+}
 Attractor::Attractor(const std::string file_name):dimension(),delay(),n_vec(),data(){
     unsigned lines;
     unsigned columns;
@@ -33,13 +42,9 @@ Attractor::Attractor(const std::string file_name):dimension(),delay(),n_vec(),da
         std::cerr << "Error: file could not be opened. file:" << file_name << std::endl;
         exit(1);
     }
-    for(unsigned i=0;i<dimension;i++)
-        indata >> data[0][i];
-    unsigned cont=1;
     for(unsigned j=0;j<n_vec;j++) { // keep reading until end-of-file
         for(unsigned i=0;i<dimension;i++)
-            indata >> data[cont][i];      
-        cont++;
+            indata >> data[j][i];      
     }
     indata.close();
 }
@@ -329,3 +334,39 @@ unsigned int false_nearest_nei(TimeSeries& ts,
     return(--D);
 }
 */
+void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
+    double mean_sequential,std_sequential=0;
+    for (unsigned i = 0; i < attractor.Size()-1; i++)
+    {
+        double distance = EuclideanDistance(attractor.get_vec(i + 1),attractor.get_vec(i)); 
+        mean_sequential = (distance + i*mean_sequential)/(i + 1);
+        std_sequential = std_sequential + (double(i)/(i + 1.0 )) * pow(distance - mean_sequential,2);
+    }
+    std_sequential = sqrt(std_sequential / (attractor.Size() - 1));
+    
+    mean = 0; std = 0;
+    unsigned counter=0;
+    std::vector<unsigned> neigboards(attractor.Size());
+    for (unsigned j = 0; j < attractor.Size(); j++){
+        double distance_min = DBL_MAX; 
+        neigboards[j]=j;//case there is no near geometric neigboard that is not neighboard on the array, the neighboard is the same point.
+        for (unsigned i = 0; i < attractor.Size(); i++)
+        {
+            double distance = EuclideanDistance(attractor.get_vec(j),attractor.get_vec(i)); 
+
+            if(distance < distance_min && abs(i-j) > ceil(distance / (mean_sequential-std_sequential)))
+            {
+                distance_min = distance;
+                neigboards[j]=i;
+            }
+            
+        }
+        if(neigboards[j] != j){
+            double distance = EuclideanDistance(attractor.get_vec(j),attractor.get_vec(neigboards[j])); 
+                mean = (distance + counter*mean)/(counter + 1);
+                std = std + (double(counter)/(counter + 1.0 )) * pow(distance - mean,2);
+                counter++;
+            }
+    }
+    std = sqrt(std / (attractor.Size() - 1));
+}

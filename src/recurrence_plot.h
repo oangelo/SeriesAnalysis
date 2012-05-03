@@ -7,8 +7,8 @@
 class RecurrencePlot{
     public:
 
-    RecurrencePlot(const TimeSeries &time_series,unsigned size=0,double dist_limit=0);
-    RecurrencePlot(const Attractor &attractor,unsigned size=0,double dist_limit=0);
+    RecurrencePlot(const TimeSeries &time_series,double threshold,unsigned size=0);
+    RecurrencePlot(const Attractor &attractor,double threshold,unsigned size=0);
     RecurrencePlot(unsigned** data,unsigned size);
     RecurrencePlot(const RecurrencePlot & rp);
     void Generate(double limit);

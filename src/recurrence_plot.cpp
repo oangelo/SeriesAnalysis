@@ -1,7 +1,7 @@
 #include "recurrence_plot.h"
 
 //m_poist is the size of one side of the mxm matrix
-RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,unsigned size,double dist_limit): size(size),data(){
+RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,double threshold,unsigned size): size(size),data(){
 
     //deciding the steps and allocating memory
     unsigned step = 1;
@@ -12,24 +12,10 @@ RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,unsigned size,doub
     }
     Allocate(this->size,this->size);
 
-    if(dist_limit == 0){
-        double mean = 0;
-        unsigned total_points = pow(size,2);
-        if(dist_limit == 0){
-            for(unsigned j = 0; j < time_series.Size(); j = j + step)
-                for(unsigned i = j; i < time_series.Size(); i = i + step){
-                        mean += pow(time_series[i] - time_series[j],2);
-                }
-        }
-        mean = mean / total_points;
-        Generate(mean/20,time_series);
-    }else{
-        Generate(dist_limit,time_series);
-    }
-    
+    Generate(threshold,time_series);
 }
 
-RecurrencePlot::RecurrencePlot(const Attractor &attractor,unsigned size,double dist_limit): size(size),data(){
+RecurrencePlot::RecurrencePlot(const Attractor &attractor,double threshold,unsigned size): size(size),data(){
 
     //deciding the steps and allocating memory
     unsigned step = 1;
@@ -40,23 +26,7 @@ RecurrencePlot::RecurrencePlot(const Attractor &attractor,unsigned size,double d
     }
     Allocate(this->size,this->size);
 
-    if(dist_limit == 0){
-        double mean = 0;
-        unsigned total_points = pow(size,2);
-        if(dist_limit == 0){
-            for(unsigned j = 0; j < attractor.Size(); j = j + step)
-                for(unsigned i = j; i < attractor.Size(); i = i + step){
-                    double dist = 0;
-                    for(unsigned k = 0; k < attractor.get_dimension(); k++)
-                        dist += pow(attractor[i][k] - attractor[j][k],2);
-                    dist = sqrt(dist);
-                    mean += dist/total_points;
-                }
-        }
-        Generate(mean/20,attractor);
-    }else{
-        Generate(dist_limit,attractor);
-    }
+    Generate(threshold,attractor);
     
 }
 void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
@@ -278,3 +248,5 @@ void RecurrencePlot::Deallocate(unsigned n_lines,unsigned n_columns){
     }
     delete [] this->data;   
 }
+
+

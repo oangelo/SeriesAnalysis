@@ -3,7 +3,7 @@
 
 CC=g++
 CFLAGS=-c -Wall -Weffc++ -Wextra -pedantic    
-LDFLAGS=-lUnitTest++  -lgsl -lgslcblas -lm -lpthread
+LDFLAGS= -lgsl -lgslcblas -lm -lpthread
 SOURCES= src/utils.cpp src/chaos.cpp src/main.cpp src/recurrence_plot.cpp src/time_series.cpp src/statistics.cpp
  
 OBJECTS=$(SOURCES:.cpp=.o)

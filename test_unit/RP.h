@@ -26,7 +26,7 @@ class RecurrencePlotTeste: public ::testing::Test {
             double data_ts[10] = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 };
             teste = new TimeSeries(data_ts,10);
             att = new Attractor(*teste,2,1);
-            rp = new RecurrencePlot(*att);
+            rp = new RecurrencePlot(*att,1);
             size = 40;
             data = new unsigned* [size];
             for (size_t i = 0; i < size; ++i)
@@ -55,7 +55,7 @@ TEST(RecurrencePlot,constructor){
     double data[3] = { 1.0, 2.0, 3.0 };
     TimeSeries teste(data, 3); //inicia um histograma com 10 bins com range de 1 até 10
     //Attractor at_teste(teste,1,1);
-    RecurrencePlot rp(teste,0,0.5);
+    RecurrencePlot rp(teste,0.5);
      for(unsigned j = 0; j < 3; j++){
         for(unsigned i = 0; i < 3; i++){
             if(i==j){
@@ -67,7 +67,7 @@ TEST(RecurrencePlot,constructor){
         }
         //std::cout << std::endl;
     }
-    RecurrencePlot rp1(teste,0,1.5); 
+    RecurrencePlot rp1(teste,1.5); 
     ASSERT_DOUBLE_EQ(rp1.get_data(0,2),0.0);
     ASSERT_DOUBLE_EQ(rp1.get_data(2,0),0.0);
 }

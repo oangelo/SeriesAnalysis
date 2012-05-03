@@ -1,15 +1,16 @@
 #ifndef CHAOS_H
 #define CHAOS_H
 
+#include "float.h"
+
 #include <stdio.h>
 #include <vector>
 #include <utility>
 
 #include "time_series.h"
 #include "utils.h"
-//TODO make a function for memory alocation
+//TODO: 
 //strip the correlation integrals and box count from the class
-//put the recurrence plot class in a nother file
 
 /*
  * Describe a n-dimensional attractor.
@@ -24,6 +25,7 @@ class Attractor{
     Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay);
     // organized as data[vector number][vector element]
     Attractor(const double** p_data,const  unsigned int dimension,const unsigned int n_vec);
+    Attractor(const std::vector< std::vector<double> > & vec_data);
     Attractor(const std::string file_name);
     Attractor(const  Attractor & att);
     ~Attractor();
@@ -116,6 +118,14 @@ void create_lagged_array(const TimeSeries &ts,
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$warning%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Memory leak on NN algorithm, need to put it in terms of attractors objects!
 unsigned int __find_nearest(Attractor &data,unsigned index);
+
+//A function that calculates the mean distance of orbits on the attractor.
+//fist, find the mean distance betewn sequential points.
+//then, chose a point, and find the point that is close to the chosem point,
+//and check if it is not an neighboard on the array.
+//This can be done by dividing the distance betwen points by the mean,
+//and assures that the distance on the array is bigger than this value
+void MeanOrbitDistance(Attractor & attractor,double &  mean, double &  std);
 
 
 

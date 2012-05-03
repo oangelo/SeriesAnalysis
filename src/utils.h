@@ -18,7 +18,7 @@
  * THEY MUST HAVE THE SAME SIZE (dim)
  */
 double EuclideanDistance(const double *vec_a,const double *vec_b,int dim);
-
+double EuclideanDistance(std::vector<double> vec_a,std::vector<double> vec_b);
 /*
  * Calculate the log in any basis.
  */
@@ -26,7 +26,7 @@ double u_log(double value,double base);
 void file_counter(std::string file_name,unsigned &lines,unsigned &columns);
 std::vector<std::string> ls(std::string dir);
 bool mkdir(std::string path);
-
+bool rm(std::string file);
 
 class NePairs{
 private:
