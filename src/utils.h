@@ -28,17 +28,5 @@ std::vector<std::string> ls(std::string dir);
 bool mkdir(std::string path);
 bool rm(std::string file);
 
-class NePairs{
-private:
-  std::vector< std::vector<unsigned> > pairs;
-public:
-  NePairs();
-  const bool push_back(unsigned i,unsigned j);
-  void push_back(NePairs  foo);
-  const bool push_back(std::vector<unsigned> aux);
-  const std::vector<unsigned> get_pair(unsigned i) const;
-  const std::vector<unsigned> Take();
-  const unsigned Size() const;
-};
   
 #endif /* UTILS_H_ */

@@ -92,46 +92,4 @@ bool rm(std::string file){
         return(0);
 }
 
-NePairs::NePairs() : pairs(){} 
 
-const bool NePairs::push_back(unsigned i,unsigned j){
-    bool exist=0;
-    for(unsigned cont=0;cont<pairs.size();cont++)
-        if(pairs[cont][0]==i && pairs[cont][1]==j)
-            exist=1;
-    if(!exist){
-        std::vector<unsigned> aux(2);
-        aux[0]=i;
-        aux[1]=j;
-        pairs.push_back(aux);
-    }    
-    return !exist;
-};
-const bool NePairs::push_back(std::vector<unsigned> aux){
-    bool exist=0;
-    for(unsigned cont=0;cont<pairs.size();cont++)
-        if(pairs[cont][0]==aux[0] && pairs[cont][1]==aux[1])
-            exist=1;
-    if(!exist)
-        pairs.push_back(aux);    
-    return !exist;
-};
-
-const std::vector<unsigned> NePairs::get_pair(unsigned i) const{
-    return(pairs[i]);
-}
-
-const std::vector<unsigned> NePairs::Take(){
-    std::vector<unsigned> buffer(pairs[0]);
-    pairs.erase(pairs.begin());
-    return(buffer);
-};
-
-const unsigned NePairs::Size() const{
-    return(pairs.size());
-};  
-
-void NePairs::push_back(NePairs foo){
-    for(unsigned counter=0;counter<foo.Size();counter++)
-        this->push_back(foo.get_pair(counter));
-}

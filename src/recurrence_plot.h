@@ -1,8 +1,12 @@
-
 #ifndef RECURRENCE_PLOT_H
 #define RECURRENCE_PLOT_H
 
+#include <set>
+#include <map>
+
 #include "chaos.h"
+
+typedef std::set<std::pair<unsigned,unsigned>> PairsList;  
 
 class RecurrencePlot{
     public:
@@ -24,8 +28,7 @@ class RecurrencePlot{
     double DET();
     double L();
 
-
-    const NePairs Burn(unsigned i,unsigned j) const;
+    const PairsList Burn(unsigned i,unsigned j) const;
     void Paint(unsigned i,unsigned j, unsigned color);
     private:
      

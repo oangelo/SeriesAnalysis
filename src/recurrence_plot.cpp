@@ -106,57 +106,58 @@ const unsigned RecurrencePlot::Size() const{
     return(size);
 }
 
-const NePairs RecurrencePlot::Burn(unsigned i,unsigned j) const{
+const PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
     assert(i < size  && j < size );
     //store the position of burned points
-    NePairs cluster;
+    PairsList cluster;
     //store points to be burned, and that needs to check neigboards
-    NePairs neigboards;
+    PairsList neigboards;
+
     if(data[i][j] == 1)  
-    neigboards.push_back(i,j);
-    while(neigboards.Size() != 0){
-        unsigned x=(neigboards.get_pair(0))[0];
-        unsigned y=(neigboards.get_pair(0))[1];
-        neigboards.Take();
+        neigboards.insert({i,j});
+    while(neigboards.size() != 0){
+        unsigned x = neigboards.begin()->first;
+        unsigned y = neigboards.begin()->second;
+        neigboards.erase(neigboards.begin());
         //search for neigboards
         //bulk
         if(x<size-1)
-            if(data[x+1][y] == 1 && cluster.push_back(x+1,y) )
-                neigboards.push_back(x+1,y);
+            if(data[x+1][y] == 1 && cluster.insert({x+1,y}).second )
+                neigboards.insert({x+1,y});
         if(y<size-1)
-            if(data[x][y+1] == 1 && cluster.push_back(x,y+1) )
-                neigboards.push_back(x,y+1);
+            if(data[x][y+1] == 1 && cluster.insert({x,y+1}).second )
+                neigboards.insert({x,y+1});
         if(x<size-1 && y<size-1)
-            if(data[x+1][y+1] == 1 && cluster.push_back(x+1,y+1) )
-                neigboards.push_back(x+1,y+1);
+            if(data[x+1][y+1] == 1 && cluster.insert({x+1,y+1}).second )
+                neigboards.insert({x+1,y+1});
 
         if(x>0)
-            if(data[x-1][y] == 1 && cluster.push_back(x-1,y) )
-                neigboards.push_back(x-1,y);
+            if(data[x-1][y] == 1 && cluster.insert({x-1,y}).second )
+                neigboards.insert({x-1,y});
         if(y>0)
-            if(data[x][y-1] == 1 && cluster.push_back(x,y-1) )
-                neigboards.push_back(x,y-1);
+            if(data[x][y-1] == 1 && cluster.insert({x,y-1}).second )
+                neigboards.insert({x,y-1});
         if(x>0 && y>0)
-            if(data[x-1][y-1] == 1 && cluster.push_back(x-1,y-1) )
-                neigboards.push_back(x-1,y-1);
+            if(data[x-1][y-1] == 1 && cluster.insert({x-1,y-1}).second )
+                neigboards.insert({x-1,y-1});
 
         if(x>0 && y<size-1)
-            if(data[x-1][y+1] == 1 && cluster.push_back(x-1,y+1) )
-                neigboards.push_back(x-1,y+1);
+            if(data[x-1][y+1] == 1 && cluster.insert({x-1,y+1}).second )
+                neigboards.insert({x-1,y+1});
         if(x<size-1 && y>0)
-            if(data[x+1][y-1] == 1 && cluster.push_back(x+1,y-1) ) 
-                neigboards.push_back(x+1,y-1);  
+            if(data[x+1][y-1] == 1 && cluster.insert({x+1,y-1}).second ) 
+                neigboards.insert({x+1,y-1});  
     }
 
     return(cluster);
 }
 void RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){ 
-    NePairs cluster=Burn(i,j);
-    for (unsigned i = 0; i < cluster.Size(); ++i)
+    PairsList cluster(Burn(i,j));
+    for (auto i: cluster)
     {
-       data[cluster.get_pair(i)[0]][cluster.get_pair(i)[1]]=color; 
+        data[i.first][i.second]=color; 
     }
-    
+
 }
 /*
 unsigned RecurrencePlot::points_in_diagonals(){

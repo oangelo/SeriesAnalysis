@@ -81,8 +81,8 @@ TEST_F(RecurrencePlotTeste,burn)
     rp.Paint(1,20,2);
     for(unsigned j = 0; j < length; j++){
         for(unsigned i = 0; i < length; i++){
-            if(data[i][j]==1)
-                EXPECT_EQ(rp[i][j],2);
+            if(data[i][j] == 1)
+                EXPECT_EQ(rp[i][j], 2);
             //std::cout <<  rp[i][j]<< " ";
         }
         //std::cout << std::endl;

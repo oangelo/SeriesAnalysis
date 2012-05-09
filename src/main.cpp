@@ -26,7 +26,7 @@ void rp_files(std::string from_path,std::string to_path){
         double mean,std;
         MeanOrbitDistance(att_data,mean,std);
         std::cout << file_name[i] << ' ' << mean << ' ' << std <<  std::endl;
-        RecurrencePlot rp(att_data,mean+10*std,1000);	
+        RecurrencePlot rp(att_data,2*(mean+std),2500);	
         std::string out=result_path.str();
         dados.open(out.c_str());
         //dados << "#RR= " << rp.RR() << std::endl; 
@@ -212,8 +212,8 @@ int main() {
     //*/
 
     rp_files("to_analyse/dp_ns/","results/dp_ns/");
-    rp_files("to_analyse/dp_s/","results/dp_s/");
-    rp_files("to_analyse/rossler/","results/rossler/");
+ //   rp_files("to_analyse/dp_s/","results/dp_s/");
+//    rp_files("to_analyse/rossler/","results/rossler/");
     //mutual_info("to_analyse/rr_posicoe/","results/rr_posicoe/");
     //NN("to_analyse/rr_posicoe/","results/rr_posicoe_d/");
     //rp_ts_files("to_analyse/rr_posicoe/","results/rr_posicoe_rp/");
