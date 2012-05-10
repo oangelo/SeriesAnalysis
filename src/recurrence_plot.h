@@ -30,6 +30,7 @@ class RecurrencePlot{
 
     const PairsList Burn(unsigned i,unsigned j) const;
     void Paint(unsigned i,unsigned j, unsigned color);
+
     private:
      
     void Generate(double limit, const TimeSeries & time_series);
@@ -40,9 +41,11 @@ class RecurrencePlot{
     unsigned size;
     unsigned** data;
 };
+
+unsigned diagonal_size(PairsList  cluster);
+
 /*
     unsigned points_in_diagonals();
-    unsigned diagonal_size(ne_pairs & cluster);
     unsigned diagonals(std::vector<unsigned> & length);
 */
 

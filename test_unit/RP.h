@@ -89,6 +89,36 @@ TEST_F(RecurrencePlotTeste,burn)
     }
 
 }
+
+TEST_F(RecurrencePlotTeste,Diagonals)
+{ 
+    for (size_t i = 0; i < size; ++i){
+
+        for (size_t j = 0; j < size; ++j){
+            data[i][j]=0;
+        }
+    } 
+    
+    for (size_t j = 4; j < size / 2; ++j){
+        data[j][j]=1;
+        data[j][j+1]=1;
+        data[j+10][size/2 - j]=1;
+    }
+    for (size_t j = 10; j < size / 3; ++j)
+        data[j][j+20]=1;
+    data[12][31]=1;
+    data[11][32]=1;
+    data[11][30]=1;
+    data[10][31]=1;
+ 
+    unsigned length=size;
+    RecurrencePlot rp(data,size);
+
+    EXPECT_EQ( diagonal_size(rp.Burn(4,4)) ,16);
+    EXPECT_EQ( diagonal_size(rp.Burn(10,30)),3);
+    EXPECT_EQ( diagonal_size(rp.Burn(14,(size/2)-14)),0);
+
+}
 /*
 
 

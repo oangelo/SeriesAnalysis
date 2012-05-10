@@ -81,6 +81,7 @@ RecurrencePlot::RecurrencePlot(const RecurrencePlot & rp) : size(rp.Size()),data
 RecurrencePlot::~RecurrencePlot(){
     Deallocate(size,size);
 }
+
 RecurrencePlot & RecurrencePlot::operator=(const RecurrencePlot & rp){
     if(&rp != this){
         Deallocate(size,size);
@@ -96,6 +97,7 @@ RecurrencePlot & RecurrencePlot::operator=(const RecurrencePlot & rp){
     }
     return *this;
 }
+
 unsigned const* RecurrencePlot::operator[](const unsigned &line) const{
     return(data[line]);
 }
@@ -159,7 +161,38 @@ void RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){
     }
 
 }
+
+unsigned diagonal_size(PairsList  cluster){
+    unsigned max=0;
+    for(auto counter: cluster ){
+        unsigned length=1;
+        bool exist=1;
+        while(exist){
+            exist=cluster.count({counter.first+length,counter.second+length});
+            if(exist)
+                length++;
+        }
+        if(length>max)
+            max=length;
+    }
+    return(max);
+}
+
 /*
+unsigned RecurrencePlot::diagonals(std::vector<unsigned> & length){
+    PairsList burnt;
+    for(unsigned j = 1; j < size-1; j++)
+        for(unsigned i = 1; i < size-1; i++)
+            if(data[i][j]==1)
+                if(!burnt.exist(i,j)){
+                    ne_pairs cluster(this->burn(i,j));
+                    burnt.push_back(cluster);  
+                    unsigned diag_length=diagonal_size(cluster);
+                    if(diag_length>1)
+                        length.push_back(diag_length);  
+                }
+    return(length.size());
+}
 unsigned RecurrencePlot::points_in_diagonals(){
     std::vector<unsigned>  length;
     diagonals(length);
@@ -182,37 +215,9 @@ double RecurrencePlot::L(){
     return(((double)sum)/counter);
 }
 
-unsigned RecurrencePlot::diagonals(std::vector<unsigned> & length){
-    ne_pairs burnt;
-    for(unsigned j = 1; j < size-1; j++)
-        for(unsigned i = 1; i < size-1; i++)
-            if(data[i][j]==1)
-                if(!burnt.exist(i,j)){
-                    ne_pairs cluster(this->burn(i,j));
-                    burnt.push_back(cluster);  
-                    unsigned diag_length=diagonal_size(cluster);
-                    if(diag_length>1)
-                        length.push_back(diag_length);  
-                }
-    return(length.size());
-}
 
-unsigned RecurrencePlot::diagonal_size(ne_pairs & cluster){
-    unsigned max=0;
-    for(unsigned counter=0;counter<cluster.size();counter++){
-        std::vector< unsigned > aux(cluster.get(counter));
-        unsigned length=1;
-        bool exist=1;
-        while(exist){
-            exist=cluster.exist(aux[0]+length,aux[1]+length);
-            if(exist)
-                length++;
-        }
-        if(length>max)
-            max=length;
-    }
-    return(max);
-}
+
+
 
 double RecurrencePlot::DET(){
     unsigned count=0;
