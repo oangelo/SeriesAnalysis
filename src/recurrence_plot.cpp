@@ -108,7 +108,7 @@ const unsigned RecurrencePlot::Size() const{
     return(size);
 }
 
-const PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
+PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
     assert(i < size  && j < size );
     //store the position of burned points
     PairsList cluster;
@@ -153,19 +153,20 @@ const PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
 
     return(cluster);
 }
-void RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){ 
+PairsList RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){ 
     PairsList cluster(Burn(i,j));
     for (auto i: cluster)
     {
         data[i.first][i.second]=color; 
     }
-
+    return cluster;
 }
 
-unsigned diagonal_size(PairsList  cluster){
+unsigned DiagonalSize(PairsList  cluster){
     unsigned max=0;
+    unsigned length;
     for(auto counter: cluster ){
-        unsigned length=1;
+        length=1;
         bool exist=1;
         while(exist){
             exist=cluster.count({counter.first+length,counter.second+length});
@@ -175,24 +176,29 @@ unsigned diagonal_size(PairsList  cluster){
         if(length>max)
             max=length;
     }
-    return(max);
+    if(max > 1)
+        return(max);
+    else
+        return(0);
 }
 
-/*
-unsigned RecurrencePlot::diagonals(std::vector<unsigned> & length){
-    PairsList burnt;
+std::vector<unsigned> RecurrencePlot::Diagonals(){
+    unsigned color = 10;
+    std::vector<unsigned> length;
     for(unsigned j = 1; j < size-1; j++)
         for(unsigned i = 1; i < size-1; i++)
-            if(data[i][j]==1)
-                if(!burnt.exist(i,j)){
-                    ne_pairs cluster(this->burn(i,j));
-                    burnt.push_back(cluster);  
-                    unsigned diag_length=diagonal_size(cluster);
-                    if(diag_length>1)
-                        length.push_back(diag_length);  
-                }
-    return(length.size());
+            if(data[i][j] == 1){
+                    unsigned len = DiagonalSize(Paint(i,j,color));  
+                    if( len > 0 )
+                        length.push_back(len);  
+            }
+    for(unsigned j = 1; j < size-1; j++)
+        for(unsigned i = 1; i < size-1; i++)
+            if(data[i][j] == color)
+                data[i][j] = 1;
+     return(length);
 }
+/*
 unsigned RecurrencePlot::points_in_diagonals(){
     std::vector<unsigned>  length;
     diagonals(length);

@@ -102,7 +102,9 @@ TEST_F(RecurrencePlotTeste,Diagonals)
     for (size_t j = 4; j < size / 2; ++j){
         data[j][j]=1;
         data[j][j+1]=1;
-        data[j+10][size/2 - j]=1;
+        data[j+17][size/2 - j]=1;
+        data[j][25]=1;
+        data[2][j+10]=1;
     }
     for (size_t j = 10; j < size / 3; ++j)
         data[j][j+20]=1;
@@ -110,15 +112,30 @@ TEST_F(RecurrencePlotTeste,Diagonals)
     data[11][32]=1;
     data[11][30]=1;
     data[10][31]=1;
+    data[20][0]=1;
  
     unsigned length=size;
     RecurrencePlot rp(data,size);
 
-    EXPECT_EQ( diagonal_size(rp.Burn(4,4)) ,16);
-    EXPECT_EQ( diagonal_size(rp.Burn(10,30)),3);
-    EXPECT_EQ( diagonal_size(rp.Burn(14,(size/2)-14)),0);
+    EXPECT_EQ( DiagonalSize(rp.Burn(4,4)) ,16);
+    EXPECT_EQ( DiagonalSize(rp.Burn(10,30)),3);
+    EXPECT_EQ( DiagonalSize(rp.Burn(14,(size/2)-4)),0);
+    EXPECT_EQ( DiagonalSize(rp.Burn(20,0)),0);
+    EXPECT_EQ( DiagonalSize(rp.Burn(5,25)),0);
+    EXPECT_EQ( DiagonalSize(rp.Burn(2,14)),0);
+    EXPECT_EQ( rp.Diagonals().size(),2);
+    EXPECT_EQ( rp.Diagonals()[0],16);
+    EXPECT_EQ( rp.Diagonals()[1],3);
 
+/*    for(unsigned j = 0; j < length; j++){
+        for(unsigned i = 0; i < length; i++){
+            std::cout <<  rp[size-1-i][j]<< " ";
+        }
+        std::cout << std::endl;
+    }
+*/
 }
+
 /*
 
 

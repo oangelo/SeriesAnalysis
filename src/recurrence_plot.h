@@ -28,9 +28,9 @@ class RecurrencePlot{
     double DET();
     double L();
 
-    const PairsList Burn(unsigned i,unsigned j) const;
-    void Paint(unsigned i,unsigned j, unsigned color);
-
+    PairsList Burn(unsigned i,unsigned j) const;
+    PairsList Paint(unsigned i,unsigned j, unsigned color);
+    std::vector<unsigned> Diagonals();
     private:
      
     void Generate(double limit, const TimeSeries & time_series);
@@ -42,7 +42,7 @@ class RecurrencePlot{
     unsigned** data;
 };
 
-unsigned diagonal_size(PairsList  cluster);
+unsigned DiagonalSize(PairsList  cluster);
 
 /*
     unsigned points_in_diagonals();
