@@ -59,9 +59,9 @@ TEST(RecurrencePlot,constructor){
      for(unsigned j = 0; j < 3; j++){
         for(unsigned i = 0; i < 3; i++){
             if(i==j){
-                ASSERT_DOUBLE_EQ(rp.get_data(i,j),1.0);
+                EXPECT_EQ(rp.get_data(i,j),1);
             }else{
-                ASSERT_DOUBLE_EQ(rp.get_data(i,j),0.0);
+                EXPECT_EQ(rp.get_data(i,j),0);
             } 
           //std::cout << rp.get_data(i,j) << " ";
         }

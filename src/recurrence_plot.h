@@ -6,7 +6,7 @@
 
 #include "chaos.h"
 
-typedef std::set<std::pair<unsigned,unsigned>> PairsList;  
+typedef std::set<std::pair<unsigned,unsigned> > PairsList;  
 
 class RecurrencePlot{
     public:
@@ -18,8 +18,8 @@ class RecurrencePlot{
     void Generate(double limit);
     ~RecurrencePlot();
 
-    const unsigned Size() const;
-    const unsigned get_data(unsigned i, unsigned j) const;
+    unsigned Size() const;
+    unsigned get_data(unsigned i, unsigned j) const;
     
     RecurrencePlot & operator=(const RecurrencePlot & rp);
     unsigned const* operator[](const unsigned &line) const;
@@ -31,21 +31,25 @@ class RecurrencePlot{
     PairsList Burn(unsigned i,unsigned j) const;
     PairsList Paint(unsigned i,unsigned j, unsigned color);
     std::vector<unsigned> Diagonals();
+
+    enum{WHITE_DOT = 0, BLACK_DOT = 1};
     private:
      
     void Generate(double limit, const TimeSeries & time_series);
     void Generate(double limit, const Attractor &  attractor);
     void Allocate(unsigned n_lines,unsigned n_columns);
     void Deallocate(unsigned n_lines,unsigned n_columns);
+    unsigned CountBlackDots();
  
     unsigned size;
     unsigned** data;
+    std::vector<unsigned> diagonals;
+    unsigned n_black_dots;
 };
 
 unsigned DiagonalSize(PairsList  cluster);
 
 /*
-    unsigned points_in_diagonals();
     unsigned diagonals(std::vector<unsigned> & length);
 */
 

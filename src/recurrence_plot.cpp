@@ -1,73 +1,37 @@
 #include "recurrence_plot.h"
 
 //m_poist is the size of one side of the mxm matrix
-RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,double threshold,unsigned size): size(size),data(){
-
-    //deciding the steps and allocating memory
-    unsigned step = 1;
-    if(size < time_series.Size() && size >0){
-        step = time_series.Size() / size;
-    }else{
+RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series,double threshold,unsigned size): size(size),data(),diagonals(),n_black_dots(){
+    if(size > time_series.Size() || size == 0){
         this->size = time_series.Size();
     }
     Allocate(this->size,this->size);
-
     Generate(threshold,time_series);
+    diagonals = Diagonals();
+    n_black_dots = CountBlackDots();
 }
 
-RecurrencePlot::RecurrencePlot(const Attractor &attractor,double threshold,unsigned size): size(size),data(){
-
-    //deciding the steps and allocating memory
-    unsigned step = 1;
-    if(size < attractor.Size() && size >0){
-        step = attractor.Size() / size;
-    }else{
+RecurrencePlot::RecurrencePlot(const Attractor &attractor,double threshold,unsigned size): size(size),data(),diagonals(),n_black_dots(){
+    if(size > attractor.Size() || size == 0){
         this->size = attractor.Size();
     }
     Allocate(this->size,this->size);
-
     Generate(threshold,attractor);
-    
-}
-void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
-    double step = time_series.Size()/size;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++){
-            double dist = fabs(time_series[i]-time_series[j]);  
-            if(dist < limit){
-                data[i][j]=1;
-            }else{
-                data[i][j]=0;
-            }
-        }
-}
-void RecurrencePlot::Generate(double limit, const Attractor & attractor){
-    double vec_i[attractor.get_dimension()],vec_j[attractor.get_dimension()];
-    double step = attractor.Size()/size;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++){
-            attractor.get_vec(i*step,vec_i);
-            attractor.get_vec(j*step,vec_j);
-            double dist = EuclideanDistance(vec_i,vec_j,attractor.get_dimension());
-            if(dist < limit){
-                data[i][j]=1;
-            }else{
-                data[i][j]=0;
-            }
-        }
+    diagonals = Diagonals();
+    n_black_dots = CountBlackDots();
 }
 
-RecurrencePlot::RecurrencePlot(unsigned** data,unsigned size):size(size),data(){
-
+RecurrencePlot::RecurrencePlot(unsigned** data,unsigned size):size(size),data(),diagonals(),n_black_dots(){
     this->size = size; 
     Allocate(size,size);
     for(unsigned int i=0;i<size;i++)
         for(unsigned int j=0;j<size;j++)
             this->data[i][j]=data[i][j];
-
+    diagonals = Diagonals();
+    n_black_dots = CountBlackDots();
 }
 
-RecurrencePlot::RecurrencePlot(const RecurrencePlot & rp) : size(rp.Size()),data()
+RecurrencePlot::RecurrencePlot(const RecurrencePlot & rp) : size(rp.Size()),data(),diagonals(),n_black_dots()
 {
     Allocate(size,size);
     for (unsigned i = 0; i < size; ++i)
@@ -77,7 +41,40 @@ RecurrencePlot::RecurrencePlot(const RecurrencePlot & rp) : size(rp.Size()),data
           data[i][j] = rp[i][j]; 
        } 
     }
-}    
+    diagonals = Diagonals();
+    n_black_dots = CountBlackDots();
+}
+
+void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
+    double step = time_series.Size()/size;
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++){
+            double dist = fabs(time_series[i]-time_series[j]);  
+            if(dist < limit){
+                data[i][j] = BLACK_DOT;
+            }else{
+                data[i][j] = WHITE_DOT;
+            }
+        }
+}
+
+void RecurrencePlot::Generate(double limit, const Attractor & attractor){
+    double vec_i[attractor.get_dimension()],vec_j[attractor.get_dimension()];
+    double step = attractor.Size()/size;
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++){
+            attractor.get_vec(i*step,vec_i);
+            attractor.get_vec(j*step,vec_j);
+            double dist = EuclideanDistance(vec_i,vec_j,attractor.get_dimension());
+            if(dist < limit){
+                data[i][j]= BLACK_DOT;
+            }else{
+                data[i][j]= WHITE_DOT;
+            }
+        }
+}
+
+    
 RecurrencePlot::~RecurrencePlot(){
     Deallocate(size,size);
 }
@@ -101,10 +98,10 @@ RecurrencePlot & RecurrencePlot::operator=(const RecurrencePlot & rp){
 unsigned const* RecurrencePlot::operator[](const unsigned &line) const{
     return(data[line]);
 }
-const unsigned RecurrencePlot::get_data(unsigned i, unsigned j) const{
+unsigned RecurrencePlot::get_data(unsigned i, unsigned j) const{
     return(data[i][j]);
 }
-const unsigned RecurrencePlot::Size() const{ 
+unsigned RecurrencePlot::Size() const{ 
     return(size);
 }
 
@@ -115,7 +112,7 @@ PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
     //store points to be burned, and that needs to check neigboards
     PairsList neigboards;
 
-    if(data[i][j] == 1)  
+    if(data[i][j] == BLACK_DOT)  
         neigboards.insert({i,j});
     while(neigboards.size() != 0){
         unsigned x = neigboards.begin()->first;
@@ -124,30 +121,30 @@ PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
         //search for neigboards
         //bulk
         if(x<size-1)
-            if(data[x+1][y] == 1 && cluster.insert({x+1,y}).second )
+            if(data[x+1][y] == BLACK_DOT && cluster.insert({x+1,y}).second )
                 neigboards.insert({x+1,y});
         if(y<size-1)
-            if(data[x][y+1] == 1 && cluster.insert({x,y+1}).second )
+            if(data[x][y+1] == BLACK_DOT  && cluster.insert({x,y+1}).second )
                 neigboards.insert({x,y+1});
         if(x<size-1 && y<size-1)
-            if(data[x+1][y+1] == 1 && cluster.insert({x+1,y+1}).second )
+            if(data[x+1][y+1] == BLACK_DOT   && cluster.insert({x+1,y+1}).second )
                 neigboards.insert({x+1,y+1});
 
         if(x>0)
-            if(data[x-1][y] == 1 && cluster.insert({x-1,y}).second )
+            if(data[x-1][y] == BLACK_DOT   && cluster.insert({x-1,y}).second )
                 neigboards.insert({x-1,y});
         if(y>0)
-            if(data[x][y-1] == 1 && cluster.insert({x,y-1}).second )
+            if(data[x][y-1] == BLACK_DOT   && cluster.insert({x,y-1}).second )
                 neigboards.insert({x,y-1});
         if(x>0 && y>0)
-            if(data[x-1][y-1] == 1 && cluster.insert({x-1,y-1}).second )
+            if(data[x-1][y-1] == BLACK_DOT   && cluster.insert({x-1,y-1}).second )
                 neigboards.insert({x-1,y-1});
 
         if(x>0 && y<size-1)
-            if(data[x-1][y+1] == 1 && cluster.insert({x-1,y+1}).second )
+            if(data[x-1][y+1] == BLACK_DOT   && cluster.insert({x-1,y+1}).second )
                 neigboards.insert({x-1,y+1});
         if(x<size-1 && y>0)
-            if(data[x+1][y-1] == 1 && cluster.insert({x+1,y-1}).second ) 
+            if(data[x+1][y-1] == BLACK_DOT   && cluster.insert({x+1,y-1}).second ) 
                 neigboards.insert({x+1,y-1});  
     }
 
@@ -185,68 +182,47 @@ unsigned DiagonalSize(PairsList  cluster){
 std::vector<unsigned> RecurrencePlot::Diagonals(){
     unsigned color = 10;
     std::vector<unsigned> length;
-    for(unsigned j = 1; j < size-1; j++)
-        for(unsigned i = 1; i < size-1; i++)
-            if(data[i][j] == 1){
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++)
+            if(data[i][j] == BLACK_DOT){
                     unsigned len = DiagonalSize(Paint(i,j,color));  
                     if( len > 0 )
                         length.push_back(len);  
             }
-    for(unsigned j = 1; j < size-1; j++)
-        for(unsigned i = 1; i < size-1; i++)
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++)
             if(data[i][j] == color)
-                data[i][j] = 1;
+                data[i][j] = BLACK_DOT;
      return(length);
 }
-/*
-unsigned RecurrencePlot::points_in_diagonals(){
-    std::vector<unsigned>  length;
-    diagonals(length);
-    unsigned sum=0;
-    for(unsigned j = 0; j < length.size(); j++)
-        if(length[j]>3)
-            sum+=length[j];
-    return(sum);
+
+unsigned RecurrencePlot::CountBlackDots(){
+    unsigned count=0;
+    for(unsigned j = 0; j < size; j++)
+        for(unsigned i = 0; i < size; i++)
+            if(data[i][j] == BLACK_DOT )
+                count++;
+    return(count);
 }
 
 double RecurrencePlot::L(){
-    std::vector<unsigned>  length;
-    diagonals(length);
-    unsigned sum=0,counter=0;
-    for(unsigned j = 0; j < length.size(); j++)
-        if(length[j]>3){
-            sum+=length[j];
-            counter++;
-        }
-    return(((double)sum)/counter);
+    unsigned sum = 0;
+    for(auto item : diagonals)
+            sum += item;
+    return(double(sum) / diagonals.size());
 }
 
-
-
-
-
 double RecurrencePlot::DET(){
-    unsigned count=0;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++)
-            if(data[i][j]==1)
-                count++;
-
-    return(((double)points_in_diagonals())/count);
-
+    unsigned points_in_diagonals = 0;
+    for(auto item : diagonals)
+        points_in_diagonals += item;
+    return(double(points_in_diagonals) / n_black_dots);
 }
 
 double RecurrencePlot::RR(){
-    unsigned count=0;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++)
-            if(data[i][j]==1)
-                count++;
-    return(((double)count)/(size*size));
-
+    return(double(n_black_dots) / (size*size));
 }
 
-*/
 inline
 void RecurrencePlot::Allocate(unsigned n_lines,unsigned n_columns){
     this->data = new unsigned* [n_lines];
