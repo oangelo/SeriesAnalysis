@@ -1,142 +1,52 @@
-/* 
- * File:   Histogram.h
- * Author: angelo
- *
- * Created on September 7, 2009, 6:50 PM
- */
-
 #ifndef _STATISTICS_H
 #define	_STATISTICS_H
 
 #include <stdlib.h>
 
 #include <algorithm>
+#include <exception>
+#include <numeric>
+
 
 #include <gsl/gsl_histogram.h>
-
 #include "time_series.h"
 
 #define EPSILON 0.000000000001
-class Histogram {
-public:
-	/*!Constructor:
-	 * n: number of bins
-	 * xmin: minimum value
-	 * xmax: max value*/
-    Histogram(int n,double xmin, double xmax);
 
-	/*!Constructor:
-	 * using Scott's choice to binning, see:
-	 * DAVID W. SCOTT Biometrika 1979 66(3):605-610;
-	 * std: data std
-	 * size: number of points
-	 * xmin: minimum value
-	 * xmax: max value*/
 
-    Histogram(double std, size_t size, double xmin,double xmax);
+class Histogram1D{
+    public:
 
-    Histogram(Histogram& orig);
-    virtual ~Histogram();
+        Histogram1D(const double min,const double max,const unsigned number_of_bins);
+        //set values on the histogram
+        size_t operator()(const double value);
+        //get values from histogram
+        unsigned operator[](const size_t index) const;
+        double Mean() const;
+        double Std() const;
+        size_t Max() ;
+        size_t Min() ; 
+        unsigned Sum() const;
+        std::pair<double,double> BinRange(size_t index);
+        size_t Size() const;
 
-    Histogram & operator=(const Histogram & hist);
-    /*! Copy histogram to another hostogram */
-    double  operator=(const double & aux);
-    /*! Returns the probability of a bin */
-    double  operator[](const int &aux);
-    /*! return the probability of a value */
-    double  operator[](const double &aux);
-    /*! return the bin of a value */
-    int operator()(const double &aux);
-    /*! increment the bin on the range of x*/
-    void increment(double x);
-    /*! return how many times that bin was incremented*/
-    double get(const size_t & i);
-    /*! set all bins to 0.*/
-    void reset(void);
-    /*! Returns how many bins we have.*/
-    size_t n_bins(void);
-    /*! Returns the max value one can input.
-     * (The right value of the highest bin) */
-    double range_max(void) const ;
-    /*! Returns the min value one can input.
-    * (The left value of the lowest bin) */
-    double range_min(void) const;
-    /**********************
-    *Histogram Statistics**
-    ***********************
-    */
-    /*
-     *!This function returns the FIRST maximum value found in the contained
-     * in the histogram bins.
-     */
-    double max_val(void);
-     /*
-     * !This function returns the index of the bin containing the maximum value.
-     * In the case where several bins contain the same maximum value the
-     * smallest index is returned.
-     */
-    size_t max_bin(void);
-     /*
-     * !This function returns the minimum value contained in the histogram bins.
-     */
-    double min_val(void);
-     /*
-     * This function returns the index of the bin containing the minimum value.
-     * In the case where several bins contain the same maximum value the smallest
-     * index is returned.
-     */
-    size_t min_bin(void);
-     /*
-     * !This function returns the mean of the histogrammed variable,
-     * where the histogram is regarded as a probability distribution.
-     * Negative bin values are ignored for the purposes of this calculation.
-     * The accuracy of the result is limited by the bin width.
-     */
-    double mean(void);
-     /*
-     * This function returns the sum of all bin values. Negative bin values are
-     * included in the sum.
-     */
-    
-    double sum(void);
-     /*
-     * !This function returns the standard deviation of the histogrammed variable,
-     * where the histogram is regarded as a probability distribution.
-     * Negative bin values are ignored for the purposes of this calculation.
-     * The accuracy of the result is limited by the bin width.
-     */
-    double sigma(void);
+        class IndexErro : public std::exception {
+            virtual const char* what() const throw(){return "Index is out of range!";}
+        } index_erro;
+        class ValueErro : public std::exception {
+            virtual const char* what() const throw(){return "Value is wrong!";}
+        } value_erro;
 
-    /*
-    *  TO BE INPLEMENTED
-     * ***********************
-     * Histogram Operations
-     * ***********************
+    private:
+        size_t HashFunction(const double value) const;
 
-     *This function multiplies the contents of the bins of histogram h by the constant scale
-     *i.e. h'_1(i) = h_1(i) * scale.
-    int scale(double scale);
-     *This function shifts the contents of the bins of histogram h by the constant offset,
-     *i.e. h'_1(i) = h_1(i) + offset.
-     int shift(double offset);
-    —: int gsl_histogram_equal_bins_p (const gsl_histogram * h1, const gsl_histogram * h2)
-    —: int gsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2)
-    —: int gsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2)
-    —: int gsl_histogram_mul (gsl_histogram * h1, const gsl_histogram * h2)
-    —: int gsl_histogram_div (gsl_histogram * h1, const gsl_histogram * h2)
-    —: int gsl_histogram_fprintf (FILE * stream, const gsl_histogram * h, const char * range_format, const char * bin_format)
-    —: int gsl_histogram_fscanf (FILE * stream, gsl_histogram * h)
-
-    */
-private:
-    gsl_histogram * h;
-    double _sum_value;
-    
+        double max,min,bin_width;
+        std::vector<unsigned> histogram;
 };
 
-double entropy(TimeSeries& ts);
-double auto_corr_func(TimeSeries& ts,unsigned tau);
-double mutual_information(TimeSeries& ts,unsigned  tau);
+double Entropy(TimeSeries& ts);
+double AutoCorrelation(TimeSeries& ts,unsigned tau);
+double MutualInformation(TimeSeries& ts,unsigned  tau);
 
 #endif	/* _STATISTICS_H */
 

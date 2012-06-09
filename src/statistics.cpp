@@ -1,246 +1,119 @@
-/*
- * File:   Histogram.cpp
- * Author: angelo
- *
- * Created on September 7, 2009, 6:50 PM
- */
-
-
 #include "statistics.h"
 
-Histogram::Histogram(int n, double xmin, double xmax):h(gsl_histogram_alloc(n)),_sum_value() {
-	//checking error
-    assert((xmax-xmin) < EPSILON);
-    //Alocating Memory for the histogram
-    gsl_histogram_set_ranges_uniform(h,xmin, xmax);
-}
 
-Histogram::Histogram(double std, size_t size, double xmin,double xmax):h(),_sum_value() {
-	//checking error
-	if((xmax-xmin) < EPSILON){
-		//throw Value_error("xmax must be different from xmin");
-	}
-	//Alocating Memory for the histogram
-	double	bin_size = (3.5*std) / pow(size,1.0/3.0); //Scott's choice
-	unsigned n = ceil((xmax-xmin)/bin_size);
-	gsl_histogram_set_ranges_uniform(h,xmin, xmax);
-    h = gsl_histogram_alloc(n);
-}
-
-Histogram::Histogram(Histogram& orig): h(gsl_histogram_alloc(orig.n_bins())),_sum_value(){
-    
-    gsl_histogram_set_ranges_uniform(h,orig.range_min(), orig.range_max());
-    //get the bin size
-    double bin = (orig.range_max() - orig.range_min()) / orig.n_bins();
-
-    //counting how many elements each bin have
-    for (unsigned int i = 0 ; i < orig.n_bins() ; i++){
-        for(int j = 0 ; j < orig.get(i) ; j++){
-            this->increment(orig.range_min() + ((i*bin) +  bin/2));
-        }
+Histogram1D::Histogram1D(const double min, const double max, const unsigned number_of_bins)
+    : max(max), min(min), histogram(number_of_bins,0.0),bin_width(static_cast<double>(max-min)/number_of_bins){
+    if(min >= max)
+    {
+        std::cerr << " Max < min, was not possible to construct the histogram." << std::endl;
+        throw value_erro;
     }
-    this->sum();
-}
-
-Histogram::~Histogram() {
-    //Free the histogram memory
-    gsl_histogram_free(h);
-}
-
-Histogram & Histogram::operator=(const Histogram & hist){
-    if(&hist != this){
-        gsl_histogram_free(h);
-        gsl_histogram_set_ranges_uniform(h,hist.range_min(),range_max());
+    if(number_of_bins == 0){
+        std::cerr << "Number of beans must be bigger then 0, was not possible to construct the histogram." << std::endl;
+        throw value_erro;
     }
-    return *this;
-}
-double Histogram::operator[](const int & aux) {
-    /*
-     * This operator the probability of a bin
-     */
-	//std::cout << "sum :" << _sum_value << std::endl;
-	assert(aux<0 || ((unsigned)aux) > (n_bins()-1));
-
-    return (((double)get((size_t)aux)) / _sum_value);
 }
 
-double Histogram::operator[](const double & aux) {
-    /*
-     * This operator the probability of a bin
-     */
-	size_t i;
-	if(! ((aux >= this->h->range[0] ) && (aux < this->h->range[h->n])) ){
-//		throw Value_error("Histogram out of range");
-	}
-
-	gsl_histogram_find (h,aux,&i);
-    return (get(i) / _sum_value);
+//set values on the histogram
+size_t Histogram1D::operator()(const double value) {
+    histogram[HashFunction(value)]++;
+    return HashFunction(value);
 }
 
-//foi ideia do angelo, eu queria fazer um find(): Ass: gralha
-int Histogram::operator()(const double &aux){
-	size_t i;
-	//std::cout << aux << " " << h->range[h->n] << std::endl;
-	if(! ((aux >= this->h->range[0] ) && (aux < this->h->range[h->n])) ){
-//		throw Value_error("Histogram out of range");
-	}
-
-	gsl_histogram_find (h,aux,&i);
-	return((int)i);
+//get values from histogram
+unsigned Histogram1D::operator[](const size_t index) const{
+    return histogram[index];
 }
 
-void Histogram::increment(double x) {
-    /*
-     * This function updates the histogram h by adding one (1.0) to the bin whose
-     * range contains the coordinate x.
-     */
-	if( (x >= this->h->range[0] ) && (x < this->h->range[h->n]) ){
-		gsl_histogram_increment(h, x);
-		sum(); /*Recalculating the sum because we add a new value*/
-	}
-	else{
-//		throw Value_error("Histogram out of range");
-	}
+double Histogram1D::Mean() const{
+    double bin_w = bin_width,min_val = min;
+    unsigned counter = 0;
+    return std::accumulate(histogram.begin(),histogram.end(),0.0,[bin_w,&counter,min_val](double sum,unsigned value ){
+                sum += value*(min_val + bin_w / 2 + counter*bin_w); 
+                ++counter;
+                return sum;
+            }) / std::accumulate(histogram.begin(),histogram.end(),0.0); 
 }
 
-size_t Histogram::n_bins(void) {
-    //acessing C structure pointer uses structure->attr
-    return (h->n);
+double Histogram1D::Std() const{
+    double bin_w(bin_width),min_val(min);
+    unsigned counter(0);
+    double mean(Mean());
+    return sqrt (std::accumulate(histogram.begin(),histogram.end(),0.0,[bin_w,&counter,min_val,mean](double sum,unsigned value ){
+                sum += value*pow(mean - (min_val + bin_w / 2 + counter*bin_w),2); 
+                ++counter;
+                return sum;
+            }) / std::accumulate(histogram.begin(),histogram.end(),0.0));
 }
 
-double Histogram::range_max(void) const  {
-    //acessing C structure pointer uses structure->attr
-    return (h->range[(int) h->n]);
+size_t Histogram1D::Max() {
+    std::vector<unsigned>::iterator result = std::max_element(histogram.begin(),histogram.end()); 
+    return std::distance(histogram.begin(),result);
 }
 
-double Histogram::range_min(void) const  {
-    //acessing C structure pointer uses structure->attr
-    return (h->range[0]);
+size_t Histogram1D::Min() {
+    std::vector<unsigned>::iterator result = std::min_element(histogram.begin(),histogram.end()); 
+    return std::distance(histogram.begin(),result);
+} 
+
+unsigned Histogram1D::Sum() const{
+    return std::accumulate(histogram.begin(), histogram.end(), 0);
 }
 
-double Histogram::get(const size_t & i) {
-    return (gsl_histogram_get(h, i));
+std::pair<double,double> Histogram1D::BinRange(size_t index){
+    return std::pair<double, double>(min+bin_width*index,min+bin_width*(index+1));
 }
 
-void Histogram::reset() {
-    gsl_histogram_reset(h);
+size_t Histogram1D::Size() const {
+    return histogram.size();
+}
+
+size_t Histogram1D::HashFunction(double value) const{
+    if(value >= max || value < min){
+        std::cerr << "Is not possible to insert " << value << ", value is out of the range of the histogram." << std::endl;
+        throw value_erro;
+    }
+    return static_cast<size_t>((value-min) / bin_width); 
 }
 
 
-/*
- *Histogram Statistics**********************************************************
- */
-double Histogram::max_val() {
-    /*
-     *This function returns the maximum value contained in the histogram bins.
-     */
-    return (gsl_histogram_max_val(h));
-}
-
-size_t Histogram::max_bin() {
-    /*
-     * This function returns the index of the bin containing the maximum value.
-     * In the case where several bins contain the same maximum value the smallest
-     * index is returned.
-     */
-    return (gsl_histogram_max_bin(h));
-}
-
-double Histogram::min_val() {
-    /*
-     * This function returns the minimum value contained in the histogram bins.
-     */
-    return (gsl_histogram_min_val(h));
-}
-
-size_t Histogram::min_bin() {
-    /*
-     * This function returns the index of the bin containing the minimum value.
-     * In the case where several bins contain the same maximum value the smallest
-     * index is returned.
-     */
-    return (gsl_histogram_min_bin(h));
-}
-
-double Histogram::mean() {
-    /*
-     * This function returns the mean of the histogrammed variable,
-     * where the histogram is regarded as a probability distribution.
-     * Negative bin values are ignored for the purposes of this calculation.
-     * The accuracy of the result is limited by the bin width.
-     */
-    return (gsl_histogram_mean(h));
-}
-
-double Histogram::sigma() {
-    /*
-     * This function returns the standard deviation of the histogrammed variable,
-     * where the histogram is regarded as a probability distribution.
-     * Negative bin values are ignored for the purposes of this calculation.
-     * The accuracy of the result is limited by the bin width.
-     */
-    return (gsl_histogram_sigma(h));
-}
-
-double Histogram::sum() {
-    /*
-     * This function returns the sum of all bin values. Negative bin values are
-     * included in the sum.
-     */
-    _sum_value=gsl_histogram_sum(h);
-    return (_sum_value);
-}
-
-
-
-
-double entropy(TimeSeries& ts){
-
-
-	Histogram hist(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
-
+double Entropy(TimeSeries& ts){
+	Histogram1D hist(ts.Min(),ts.Max()+EPSILON,sqrt(ts.Size()));
 	for (unsigned i = 0; i < ts.Size();i++){
-		//std::cout << i <<"inside:" << ts._data.back()<< std::endl;
-		hist.increment(ts[i]);
+		hist(ts[i]);
 	}
-	//hist.increment(1.2);
 	double sum = 0;
-
-	for (int i = 0 ; i < (int)hist.n_bins(); i++){
-		if(hist[i] > 0) sum -= hist[i]*(log(hist[i])/log(2));
-		//std::cout << hist[i]<< std::endl;
+	for (size_t i = 0 ; i < hist.Size(); i++){
+		if(hist[i] > 0){ 
+            double probability = static_cast<double>(hist[i])/hist.Sum();
+            sum -= probability*(log(probability)/log(2));
+        }
 	}
 	return (sum);
-	//*/
 }
 
-double auto_corr_func(TimeSeries& ts,unsigned tau)
+double AutoCorrelation(TimeSeries& ts,unsigned tau)
 {
-	double c=0,mean;
+	double correlation = 0, mean;
 	mean = ts.Mean();
-    //N =  ts.Size() - tau;
 	double var_tau = 0.0;
-	for (unsigned i = 0 ; i < ts.Size()-tau; i++){
-		c+=(ts[i+tau]-mean)*(ts[i]-mean);
-		var_tau += (ts[i]-mean)*(ts[i]-mean);
+	for (unsigned i = 0; i < ts.Size()-tau; i++){
+		correlation += (ts[i + tau] - mean) * (ts[i] - mean);
+		var_tau += pow(ts[i] - mean, 2);
 	}
 
-	c=c/(var_tau);
-	//checking for nans and infs
-	if(c!=c){
-//		throw Value_error("Nan or inf found. Check var() method.");
-	}
+	correlation = correlation / var_tau;
 
-	return(c);
+	return(correlation);
 }
 
-double mutual_information(TimeSeries& ts,unsigned tau)
+double MutualInformation(TimeSeries& ts,unsigned tau)
 {
 	int N = ts.Size()-tau;
-	double sum=0.0;
-	Histogram pA(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
-	Histogram pB(ts.Std(),ts.Size(),ts.Min(),ts.Max()+EPSILON);
-	int n_bins = pA.n_bins();
+	double sum = 0.0;
+	Histogram1D pA(ts.Min(),ts.Max()+EPSILON,sqrt(ts.Size()));
+	Histogram1D pB(ts.Min(),ts.Max()+EPSILON,sqrt(ts.Size()));
+	int n_bins = pA.Size();
 	int P_cond[n_bins][n_bins];
 	int i=0,j=0;
 	// initi the 2D histogram
@@ -252,18 +125,16 @@ double mutual_information(TimeSeries& ts,unsigned tau)
 
     //increment the histograms
 	for (i=0;i<N;i++){
-		pA.increment(ts[i]);
-		pB.increment(ts[i+tau]);
-		P_cond[pA(ts[i])][pA(ts[i+tau])]++;
+		P_cond[pA(ts[i])][pB(ts[i+tau])]++;
 	}
 	//counting the 2D-histogram
 	double logtwo = 1.0/log(2);
-	for(i=0;i<n_bins;i++){
+	for(i=0; i < n_bins; i++){
 		if(pA[i] > 0){
-			for(j=0;j<n_bins;j++){
+			for(j=0; j < n_bins; j++){
 				if(P_cond[i][j] > 0 && pB[j] > 0){
 					double pij = ((double)P_cond[i][j] / N);
-					double argv = pij / (pA[i]*pB[j]);
+					double argv = pij / ((pA[i] * pB[j]) / pA.Sum()*pB.Sum());
 					sum += pij*(log(argv)*logtwo);
 				}
 			}

@@ -14,7 +14,7 @@
 using namespace std;
 
 
-//#include "statistics.h"
+#include "statistics.h"
 #include "TimeSeries.h"
 #include "chaos.h"
 #include "utils.h"

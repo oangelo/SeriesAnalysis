@@ -1,4 +1,74 @@
-/*Using this in several tests to fill a test histogram*/
+TEST(statistics, constructor){
+    EXPECT_ANY_THROW(Histogram1D(1,1,10));
+    EXPECT_ANY_THROW(Histogram1D(1,10,0));
+}
+
+TEST(statistics, operators){
+    Histogram1D hist(0,10,10);
+    hist(0);
+    hist(1);
+    hist(2);
+    hist(3);
+    hist(4);
+    hist(5);
+    hist(6);
+    hist(7);
+    hist(8);
+    hist(9);
+    for (size_t i = 0; i < 10; ++i)
+    {
+        std::pair<double,double> range = hist.BinRange(i);
+        //std::cout << "["<< range.first << " , " << range.second << ") " << hist[i] << std::endl; 
+        EXPECT_EQ(range.first,i);
+        EXPECT_EQ(range.second,i+1);
+        EXPECT_EQ(hist[i],1);
+    }
+    EXPECT_ANY_THROW(hist(10));
+}
+TEST(statistics, max_and_min){
+    Histogram1D hist(0,10,10);
+    hist(0);
+    hist(1);
+    hist(2);
+    hist(3);
+    //hist(4);
+    hist(5);
+    hist(6);
+    hist(7);
+    hist(8);
+    hist(9);
+    hist(9);
+    EXPECT_EQ(hist.Min(),4);
+    EXPECT_EQ(hist.Max(),9);
+}
+TEST(statistics, mean){
+    Histogram1D hist(0.5,4.5,4);
+    hist(1);
+    hist(2);
+    hist(3);
+    hist(4);
+    EXPECT_EQ(hist.Mean(),10.0/4.0);
+    hist(1);
+    hist(1);
+    EXPECT_EQ(hist.Mean(),12.0/6.0);
+}
+
+TEST(statistics, std){
+    Histogram1D hist(0.5,4.5,4);
+    hist(4);
+    hist(2);
+    hist(4);
+    hist(2);
+    EXPECT_EQ(hist.Std(),1.0);
+    Histogram1D hist1(0.5,4.5,4);
+    hist1(2);
+    hist1(2);
+    hist1(2);
+    hist1(2);
+    EXPECT_EQ(hist1.Std(),0.0);
+
+}
+/*Using this in several tests to fill a test histogram
 void fill(Histogram &teste, size_t n_bins) {
 	for (int i = 0; i < (int) n_bins; i++)
 		teste.increment(i);
@@ -45,7 +115,7 @@ SUITE(Histogram_test)
 		CHECK_THROW(teste.increment(15), Value_error);
 	}
 
-	/*Testing boundary conditions for the smallest(2 bins) histogram*/
+	//Testing boundary conditions for the smallest(2 bins) histogram
 	TEST(Test_Increment_smallest)
 	{
 		Histogram teste(2, 0, 2);
@@ -214,3 +284,4 @@ SUITE(Histogram_test)
 	}
 
 }
+*/
