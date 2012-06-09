@@ -11,6 +11,8 @@
 #include <iostream>
 #include <cassert>
 
+#include "statistics.h"
+
 //TODO Print a header on the file with the séries information, and put every thing inside a name space SERIES.
 
 /*!  
@@ -45,5 +47,8 @@ private:
 
 };
 
+double Entropy(TimeSeries& ts);
+double AutoCorrelation(TimeSeries& ts,unsigned tau);
+double MutualInformation(TimeSeries& ts,unsigned  tau);
 
 #endif	/* _TIME_SERIES_H */

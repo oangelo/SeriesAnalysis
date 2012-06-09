@@ -6,10 +6,9 @@
 #include <algorithm>
 #include <exception>
 #include <numeric>
-
+#include <iostream>
 
 #include <gsl/gsl_histogram.h>
-#include "time_series.h"
 
 #define EPSILON 0.000000000001
 
@@ -43,10 +42,6 @@ class Histogram1D{
         double max,min,bin_width;
         std::vector<unsigned> histogram;
 };
-
-double Entropy(TimeSeries& ts);
-double AutoCorrelation(TimeSeries& ts,unsigned tau);
-double MutualInformation(TimeSeries& ts,unsigned  tau);
 
 #endif	/* _STATISTICS_H */
 
