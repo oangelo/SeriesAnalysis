@@ -2,7 +2,7 @@
 # dos SOURCES e o nome do EXECUTABLE.
 
 CC=g++
-CFLAGS=-c -Wall -Weffc++ -Wextra -pedantic    
+CFLAGS=-c -Wall -Weffc++ -Wextra -pedantic -std=c++0x   
 LDFLAGS= -lgsl -lgslcblas -lm -lpthread
 SOURCES= src/utils.cpp src/chaos.cpp src/main.cpp src/recurrence_plot.cpp src/time_series.cpp src/statistics.cpp
  
