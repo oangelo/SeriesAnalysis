@@ -45,8 +45,8 @@ std::vector< std::vector<type> >  ReadFile(std::string file_name){
                 type value;
                 while(line_stream >> value)
                     values.push_back(value);
+                data.push_back(values);
             }
-            data.push_back(values);
 
         }
 

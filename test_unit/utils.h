@@ -42,6 +42,7 @@ TEST(utils,ReadFile){
             file << j << '\t';
             file << std::endl;
     }
+    file << std::endl;
     file.close();
     std::vector< std::vector<int> > data(ReadFile<int>("teste.txt"));
     unsigned i(0),j(0);
