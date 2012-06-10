@@ -126,7 +126,19 @@ void NN(std::string from_path,std::string to_path){
     }
 }
 */
-int main() {
+int main(int argc, char* argv[]) {
+    for (size_t i = 1; i < argc; ++i)
+    {
+        if((std::string(argv[i]) == "--mutual_info") && (i+1 < argc)){
+            TimeSeries ts(std::string(argv[i+1]));
+            std::cout << "#delay mutual_info" << std::endl;
+            for (size_t i = 1; i < 0.01*ts.Size(); ++i)
+            {
+                std::cout << i << " " << MutualInformation(ts,i) << std::endl; 
+            }
+
+        } 
+    }
     /*
        std::string file_name[14]={"cassia","daniel","fernando","gabriel",
        "julio","juscelino","leandro","maciel","maurilio","pedrod",
@@ -211,7 +223,7 @@ int main() {
     }
     //*/
 
-    rp_files("to_analyse/dp_ns/","results/dp_ns/");
+//    rp_files("to_analyse/dp_ns/","results/dp_ns/");
  //   rp_files("to_analyse/dp_s/","results/dp_s/");
 //    rp_files("to_analyse/rossler/","results/rossler/");
     //mutual_info("to_analyse/rr_posicoe/","results/rr_posicoe/");

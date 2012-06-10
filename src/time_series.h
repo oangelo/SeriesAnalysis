@@ -10,8 +10,10 @@
 #include <fstream>
 #include <iostream>
 #include <cassert>
+#include <exception>
 
 #include "statistics.h"
+#include "utils.h"
 
 //TODO Print a header on the file with the séries information, and put every thing inside a name space SERIES.
 
@@ -42,6 +44,12 @@ public:
     unsigned int Size() const;
     void Print(std::string file_name) const;
 
+    class BadFile: public std::exception
+    {
+        virtual const char* what() const throw(){
+            return "Tring to read a bad file!";
+        }
+    } bad_file;
 private:
     std::vector<double> data;
 
@@ -49,6 +57,7 @@ private:
 
 double Entropy(TimeSeries& ts);
 double AutoCorrelation(TimeSeries& ts,unsigned tau);
+double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2);
 double MutualInformation(TimeSeries& ts,unsigned  tau);
 
 #endif	/* _TIME_SERIES_H */
