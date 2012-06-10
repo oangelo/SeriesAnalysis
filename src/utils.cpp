@@ -30,30 +30,33 @@ double u_log(double value,double base)
 }
 
 void file_counter(std::string file_name,unsigned &lines,unsigned &columns){
+    std::vector<unsigned> counter;
     std::string line;
-    unsigned counter=0;
-    unsigned spaces=0;
     std::ifstream myfile(file_name.c_str());
     if(myfile.is_open())
     {
-        getline (myfile,line);
-        counter++;
-        for(unsigned i=0; i!=line.size(); ++i)
-            spaces+=( line.at(i)=='\t');
-        for(unsigned i=0; i!=line.size(); ++i)
-            spaces+=( line.at(i)==' ');
-        while ( myfile.good() )
+        while (myfile.good())
         {
-            getline (myfile,line);
-            if(line!=""){counter++;}
+            getline(myfile, line);
+            unsigned spaces = 0; 
+            if((line.front() != '#') && !line.empty() ){
+                for(unsigned i=0; i!=line.size(); ++i)
+                    spaces += (line.at(i) == '\t');
+                for(unsigned i=0; i != line.size(); ++i)
+                    spaces += (line.at(i) == ' ');
+                    counter.push_back(spaces);
+            }
+
         }
         myfile.close();
     }
-    else std::cout << "Unable to open file"; 
-    columns=spaces+1;
-    lines=counter;
+    else std::cout << "Unable to open file" << std::endl; 
+    columns = counter[0]+1;
+    lines = counter.size();
 
 }
+
+
 
 std::vector<std::string> ls(std::string dir)
 {
