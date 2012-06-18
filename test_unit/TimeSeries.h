@@ -79,7 +79,22 @@ TEST(TimeSeries,ReadFile_two_columns) {
     }
     rm("teste.txt");
 }
-
+TEST(TimeSeries,ReadFile_not_all_columns) {
+    std::ofstream file;
+    file.open("teste.txt");
+    for (size_t i = 0; i < 10; ++i)
+    {
+        file << i << std::endl;
+    }
+    file.close();
+    TimeSeries ts("teste.txt",5);
+    EXPECT_EQ(ts.Size(),5);
+    for (size_t i = 0; i < 5; ++i)
+    {
+        EXPECT_EQ(ts[i],i);
+    }
+    rm("teste.txt");
+}
 
 TEST(TimeSeries,Test_binary_entropy)
 {
@@ -134,7 +149,7 @@ TEST(TimeSeries,Less_MutualInformation)
     double data2[10] = { 1.0, 0.0, 9.0, 3.0, 0.0, 8.0, 4.0, 9.0, 1.0 };
     TimeSeries ts1(data1, 9); //inicia um histograma com 10 bins com range de 1 até 10
     TimeSeries ts2(data2, 9); //inicia um histograma com 10 bins com range de 1 até 10
-    EXPECT_GT(MutualInformation(ts1,1),MutualInformation(ts2,1));
+    EXPECT_GT(MutualInformation(ts1, 1, 3),MutualInformation(ts2,1, 3));
 }
 
 TEST(TimeSeries,High_MutualInformation)
@@ -142,12 +157,12 @@ TEST(TimeSeries,High_MutualInformation)
     double data1[10] = { 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0};
     //double data[10] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
     TimeSeries ts1(data1, 9); 
-    EXPECT_NEAR(MutualInformation(ts1,1),1,0.001);
+    EXPECT_NEAR(MutualInformation(ts1, 1, 3), 1, 0.001);
 }
 TEST(TimeSeries,Low_MutualInformation)
 {
     double data1[10] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
     TimeSeries ts1(data1, 9); 
     //by definition this must be zero
-    EXPECT_NEAR(MutualInformation(ts1,1),0,0.001);
+    EXPECT_NEAR(MutualInformation(ts1, 1, 3), 0, 0.001);
 }

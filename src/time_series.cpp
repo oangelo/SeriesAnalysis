@@ -11,7 +11,7 @@ TimeSeries::TimeSeries(const std::vector<double> & data) : data(data)
 {
 }
 
-TimeSeries::TimeSeries(std::string file_name):data()
+TimeSeries::TimeSeries(std::string file_name, size_t rows_to_read ):data()
 { 
     std::vector< std::vector<double> > file_data(ReadFile<double>(file_name)); 
     if(file_data[0].size() == 1){
@@ -34,6 +34,8 @@ TimeSeries::TimeSeries(std::string file_name):data()
             throw bad_file; 
     }
 
+    if(rows_to_read != 0 &&  rows_to_read < data.size())
+        data.resize(rows_to_read);
 
 }
 
@@ -147,11 +149,11 @@ double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2)
 	return(correlation);
 }
 
-double MutualInformation(TimeSeries& ts, unsigned tau)
+double MutualInformation(TimeSeries& ts, unsigned tau, unsigned bins)
 {
 	int N = ts.Size() - tau;
-	Histogram1D pA(ts.Min(), ts.Max()+EPSILON, sqrt(ts.Size()));
-	Histogram1D pB(ts.Min(), ts.Max()+EPSILON, sqrt(ts.Size()));
+	Histogram1D pA(ts.Min(), ts.Max()+EPSILON, bins);
+	Histogram1D pB(ts.Min(), ts.Max()+EPSILON, bins);
 	int n_bins = pA.Size();
 	int P_cond[n_bins][n_bins];
 	int i = 0, j = 0;

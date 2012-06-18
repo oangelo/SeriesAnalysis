@@ -30,7 +30,7 @@ public:
 	/*the memory pointed by data is copied to an vector named data.*/
     TimeSeries(double const * const data, size_t size);
     TimeSeries(const std::vector<double> & data);
-    TimeSeries(std::string file_name);
+    TimeSeries(std::string file_name, size_t rows_to_read = 0);
     virtual ~TimeSeries();
     //  access operator
     const double& operator[](const int &aux) const;
@@ -58,6 +58,6 @@ private:
 double Entropy(TimeSeries& ts);
 double AutoCorrelation(TimeSeries& ts,unsigned tau);
 double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2);
-double MutualInformation(TimeSeries& ts,unsigned  tau);
+double MutualInformation(TimeSeries& ts,unsigned  tau, unsigned bins);
 
 #endif	/* _TIME_SERIES_H */
