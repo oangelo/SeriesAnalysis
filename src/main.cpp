@@ -127,119 +127,51 @@ void NN(std::string from_path,std::string to_path){
 }
 */
 int main(int argc, char* argv[]) {
+    TimeSeries *time_series;
+    double rows = 0;
+    unsigned bins = 0;
     for (size_t i = 1; i < argc; ++i)
     {
-        if((std::string(argv[i]) == "--mutual_info") && (i+1 < argc)){
-            TimeSeries ts(std::string(argv[i+1]));
+        if( std::string(argv[i]) == "-n")
+            if(i + 1 < argc) 
+                rows = atoi(argv[i + 1]);
+
+        if( std::string(argv[i]) == "--bins")
+            if(i + 1 < argc) 
+                bins = atoi(argv[i + 1]);
+
+        if(std::string(argv[i]) == "-ts"){
+            time_series = new  TimeSeries(std::string(argv[i+1]), rows);
+        }
+        
+        if((std::string(argv[i]) == "--mutual_information") || (std::string(argv[i]) == "-mi")){
+            double normalize = 1;
+            if(i + 1 < argc) 
+                if( std::string(argv[i + 1]) == "--normalize")
+                    normalize = MutualInformation(*time_series, 0, bins); 
+
             std::cout << "#delay mutual_info" << std::endl;
-            for (size_t i = 1; i < 0.01*ts.Size(); ++i)
+            for (size_t i = 0; i < 0.01 * time_series->Size(); ++i)
+               std::cout << i << " " << MutualInformation(*time_series, i, bins) / normalize << std::endl; 
+        } 
+        /*
+        if((std::string(argv[i]) == "--cross_correlation") && (i+2 < argc)){
+            TimeSeries ts1(std::string(argv[i+1]));
+            if(i + 2 < argc && std::string(argv[i+2]) == "--normalize" )
+                    normalize = MutualInformation(ts,0); 
+            std::cout << "#delay mutual_info" << std::endl;
+            for (size_t i = 0; i < 0.01*ts.Size(); ++i)
             {
-                std::cout << i << " " << MutualInformation(ts,i) << std::endl; 
+                std::cout << i << " " << MutualInformation(ts,i) / normalize << std::endl; 
             }
 
         } 
-    }
-    /*
-       std::string file_name[14]={"cassia","daniel","fernando","gabriel",
-       "julio","juscelino","leandro","maciel","maurilio","pedrod",
-       "pedrol","renata","suzane","thiago"};
+        */
 
-       std::string second_f="pos1";
-       for(unsigned i=0;i<14;i++){   
-       std::stringstream file_path;
-       file_path << "to_analyse/rr-remo/" << second_f <<"/" << file_name[i]; 
-       time_series teste(file_path.str());
-       std::stringstream file;
-       file << "./results/" << second_f << "/" << file_name[i];
 
-       std::ofstream dados;
-       int TAU_MAX = 50;
-       std::string out=file.str();
-       dados.open(out.c_str());
-       for (int i = 0; i < TAU_MAX; i++) {
-       dados << i << " " << mutual_information(teste, i) << endl;
-       }
-       dados.close();
-
-       }
-       */
-
-    /*std::string file_name[14]={"cassia","daniel","fernando","gabriel",
-      "julio","juscelino","leandro","maciel","maurilio","pedrod",
-      "pedrol","renata","suzane","thiago"};
-
-      std::string second_f="pos1";
-      for(unsigned i=0;i<14;i++){   
-      std::stringstream file_path;
-      file_path << "to_analyse/rr-remo/" << second_f <<"/" << file_name[i]; 
-      time_series teste(file_path.str());
-      std::stringstream file;
-      file << "./results/" << second_f << "/" << file_name[i];
-
-      std::ofstream dados;
-      int N = 7000;
-      int tau = 15;
-      int dmax = 8;
-      double R_t = 12.0;
-      double fnn_list[dmax]; // number of false neigh for each dimension
-      false_nearest_nei(teste,tau,dmax,R_t,fnn_list,TRUE);
-
-      std::string out=file.str();
-      dados.open(out.c_str());
-      for (int i = 0; i < dmax; i++) {
-      dados << i <<"  "<<  fnn_list[i]/N << std::endl;
-      }
-      dados.close();
-
-      }
-      */
-
-    /*
-    //Dados do pos1 da cassia = do pedrol, checar!!!
-    std::string file_name[14]={"cassia","daniel","fernando","gabriel",
-    "julio","juscelino","leandro","maciel","maurilio","pedrod",
-    "pedrol","renata","suzane","thiago"};
-
-    std::string second_f="pre1";
-    for(unsigned i=0;i<14;i++){   
-    std::stringstream file_path;
-    file_path << "to_analyse/rr-remo/" << second_f <<"/" << file_name[i]; 
-    time_series teste(file_path.str());
-    std::stringstream file;
-    file << "./results/" << second_f << "/" << file_name[i];
-    std::ofstream dados;
-
-    Attractor att_data(teste,5,15);
-    recurrence_plot rp(att_data);	
-    std::string out=file.str();
-    dados.open(out.c_str());
-    for (int k = 0; k < att_data.size(); k++)
-    for (int j = 0; j < att_data.size(); j++)
-    if(rp.get(k,j)==1)
-    dados << k <<"  "<<  j << std::endl;
-
-    dados.close();
 
     }
-    //*/
-
-//    rp_files("to_analyse/dp_ns/","results/dp_ns/");
- //   rp_files("to_analyse/dp_s/","results/dp_s/");
-//    rp_files("to_analyse/rossler/","results/rossler/");
-    //mutual_info("to_analyse/rr_posicoe/","results/rr_posicoe/");
-    //NN("to_analyse/rr_posicoe/","results/rr_posicoe_d/");
-    //rp_ts_files("to_analyse/rr_posicoe/","results/rr_posicoe_rp/");
-    /*    std::ofstream dados;
-          Attractor att_data("to_analyse/rossler/rosler_series_f3_norbet_sstep");
-          recurrence_plot rp(att_data,0,5);	
-          dados.open("rp.out");
-          for (int k = 0; k < rp.size(); k++)
-          for (int j = 0; j < rp.size(); j++)
-          if(rp.get(k,j)==1)
-          dados << k <<"  "<<  j << std::endl;
-
-          dados.close();
-          */  
+    delete time_series;
     return 0; 
 }
 
