@@ -47,7 +47,7 @@ public:
     class BadFile: public std::exception
     {
         virtual const char* what() const throw(){
-            return "Tring to read a bad file!";
+            return "Bad file!";
         }
     } bad_file;
 private:

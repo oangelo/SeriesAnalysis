@@ -1,42 +1,71 @@
-
 #include "math.h"
-#include "../src/recurrence_plot.h"
+#include "../src/recurrence_analytics.h"
 
-//#include "../src/chaos.h"
-
-class RecurrencePlotTeste: public ::testing::Test {
-    public:
-        TimeSeries *teste;
-        Attractor *att;
-        RecurrencePlot *rp;
-        unsigned** data;
-        unsigned size;            
-
-        ~RecurrencePlotTeste(){
-            delete teste;
-            delete att;
-            delete rp;
-            for (size_t i = 0; i < size; ++i)
-                delete[] data[i];
-            delete data;
+TEST(RecurrencePlot,ConstructorTimeSeries){
+    double data[3] = { 1.0, 2.0, 3.0 };
+    TimeSeries teste(data, 3); 
+    RecurrencePlot rp(teste,0.5);
+     for(unsigned j = 0; j < 3; j++){
+        for(unsigned i = 0; i < 3; i++){
+            if(i==j){
+                EXPECT_EQ(rp[i][j],1);
+            }else{
+                EXPECT_EQ(rp[i][j],0);
+            } 
         }
+    }
+    RecurrencePlot rp1(teste,1.5); 
+    ASSERT_DOUBLE_EQ(rp1[0][2],0.0);
+    ASSERT_DOUBLE_EQ(rp1[2][0],0.0);
+}
+
+TEST(RecurrencePlot,ConstructorAttractor){
+    double data[3] = { 1.0, 2.0, 3.0 };
+    TimeSeries teste(data, 3); 
+    Attractor at_teste(teste,1,1);
+    RecurrencePlot rp(at_teste,0.5);
+    for(unsigned j = 0; j < rp.size(); j++){
+        for(unsigned i = 0; i < rp.size(); i++){
+            if(i==j){
+                EXPECT_EQ(rp[i][j],1);
+            }else{
+                EXPECT_EQ(rp[i][j],0);
+            } 
+        }
+    }
+    RecurrencePlot rp1(teste,1.5); 
+    ASSERT_DOUBLE_EQ(rp1[0][2],0.0);
+    ASSERT_DOUBLE_EQ(rp1[2][0],0.0);
+}
+
+TEST(RecurrencePlot,ConstructorMatrix){
+    std::vector<unsigned> v1({ 1, 0, 0 });
+    std::vector<unsigned> v2({ 0, 1, 0 });
+    std::vector<unsigned> v3({ 0, 0, 1 });
+    std::vector<std::vector<unsigned>> matrix;
+    matrix.push_back(v1);
+    matrix.push_back(v2);
+    matrix.push_back(v3);
+    RecurrencePlot rp(matrix);
+    for(unsigned j = 0; j < rp.size(); j++){
+        for(unsigned i = 0; i < rp.size(); i++){
+            if(i==j){
+                EXPECT_EQ(rp[i][j],1);
+            }else{
+                EXPECT_EQ(rp[i][j],0);
+            } 
+        }
+    }
+}
 
 
-        RecurrencePlotTeste(){
-            double data_ts[10] = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 };
-            teste = new TimeSeries(data_ts,10);
-            att = new Attractor(*teste,2,1);
-            rp = new RecurrencePlot(*att,1);
-            size = 40;
-            data = new unsigned* [size];
-            for (size_t i = 0; i < size; ++i)
-                data[i]=NULL;
-            for (size_t i = 0; i < size; ++i)
-                data[i]=new unsigned[size];
-            for (size_t i = 0; i < size; ++i)
-                for (size_t j = 0; j < size; ++j){
-                    data[i][j]=0;
-                }
+class RecurrenceAnalyticsTests: public ::testing::Test {
+    public:
+        vector<vector<unsigned>> data;
+        RecurrenceAnalyticsTests(){
+            size_t size = 40;
+            for (size_t j = 0; j < 40; ++j)
+                data.push_back(std::vector<unsigned>(size,0));
             for (size_t i = 0; i < size; ++i){
                     data[(int)fabs(19-19*sin((3.14*double(i))/size))][i]=1;
                     data[(int)fabs(20-19*sin((3.14*double(i))/size))][i]=1;
@@ -51,36 +80,13 @@ class RecurrencePlotTeste: public ::testing::Test {
 
 };
 
-TEST(RecurrencePlot,constructor){
-    double data[3] = { 1.0, 2.0, 3.0 };
-    TimeSeries teste(data, 3); //inicia um histograma com 10 bins com range de 1 até 10
-    //Attractor at_teste(teste,1,1);
-    RecurrencePlot rp(teste,0.5);
-     for(unsigned j = 0; j < 3; j++){
-        for(unsigned i = 0; i < 3; i++){
-            if(i==j){
-                EXPECT_EQ(rp.get_data(i,j),1);
-            }else{
-                EXPECT_EQ(rp.get_data(i,j),0);
-            } 
-          //std::cout << rp.get_data(i,j) << " ";
-        }
-        //std::cout << std::endl;
-    }
-    RecurrencePlot rp1(teste,1.5); 
-    ASSERT_DOUBLE_EQ(rp1.get_data(0,2),0.0);
-    ASSERT_DOUBLE_EQ(rp1.get_data(2,0),0.0);
-}
-
-TEST_F(RecurrencePlotTeste,burn)
+TEST_F(RecurrenceAnalyticsTests, Burn)
 { 
-
-    unsigned length=size;
-    RecurrencePlot rp(data,size);
+    RecurrencePlot rp(data);
     //NePairs burn(rp.burn(0,20));
-    rp.Paint(1,20,2);
-    for(unsigned j = 0; j < length; j++){
-        for(unsigned i = 0; i < length; i++){
+    Paint(rp, 1,20,2);
+    for(unsigned j = 0; j < data.size(); j++){
+        for(unsigned i = 0; i < data.size(); i++){
             if(data[i][j] == 1)
                 EXPECT_EQ(rp[i][j], 2);
             //std::cout <<  rp[i][j]<< " ";
@@ -90,15 +96,15 @@ TEST_F(RecurrencePlotTeste,burn)
 
 }
 
-TEST_F(RecurrencePlotTeste,Diagonals)
+TEST_F(RecurrenceAnalyticsTests, Diagonals)
 { 
+    size_t size = data.size();
     for (size_t i = 0; i < size; ++i){
 
         for (size_t j = 0; j < size; ++j){
             data[i][j]=0;
         }
     } 
-    
     for (size_t j = 4; j < size / 2; ++j){
         data[j][j]=1;
         data[j][j+1]=1;
@@ -114,60 +120,99 @@ TEST_F(RecurrencePlotTeste,Diagonals)
     data[10][31]=1;
     data[20][0]=1;
  
-    unsigned length=size;
-    RecurrencePlot rp(data,size);
+    RecurrencePlot rp(data);
 
-    EXPECT_EQ( DiagonalSize(rp.Burn(4,4)) ,16);
-    EXPECT_EQ( DiagonalSize(rp.Burn(10,30)),3);
-    EXPECT_EQ( DiagonalSize(rp.Burn(14,(size/2)-4)),0);
-    EXPECT_EQ( DiagonalSize(rp.Burn(20,0)),0);
-    EXPECT_EQ( DiagonalSize(rp.Burn(5,25)),0);
-    EXPECT_EQ( DiagonalSize(rp.Burn(2,14)),0);
-    EXPECT_EQ( rp.Diagonals().size(),2);
-    EXPECT_EQ( rp.Diagonals()[0],16);
-    EXPECT_EQ( rp.Diagonals()[1],3);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 4, 4)) , 16);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 10, 30)), 3);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 14, (size / 2) - 4)), 0);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 20, 0)), 0);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 5, 25)), 0);
+    EXPECT_EQ( DiagonalSize(Burn(rp, 2, 14)), 0);
+    EXPECT_EQ( Diagonals(rp).size(), 2);
+    EXPECT_EQ( Diagonals(rp)[0], 16);
+    EXPECT_EQ( Diagonals(rp)[1], 3);
 
-/*    for(unsigned j = 0; j < length; j++){
-        for(unsigned i = 0; i < length; i++){
+/*    for(unsigned j = 0; j < rp.size(); j++){
+        for(unsigned i = 0; i < rp.size(); i++){
             std::cout <<  rp[size-1-i][j]<< " ";
         }
         std::cout << std::endl;
     }
-*/
+//*/
 }
 
+TEST_F(RecurrenceAnalyticsTests, Verticals)
+{ 
+    size_t size = data.size();
+    for (size_t i = 0; i < size; ++i){
+
+        for (size_t j = 0; j < size; ++j){
+            data[i][j]=0;
+        }
+    } 
+    for (size_t j = 4; j < size / 2; ++j){
+        data[j][j]=1;
+        data[j][j+1]=1;
+        data[j+17][size/2 - j]=1;
+        data[j][25]=1;
+        data[2][j+10]=1;
+    }
+    for (size_t j = 10; j < size / 3; ++j)
+        data[j][j+20]=1;
+    data[12][31]=1;
+    data[11][32]=1;
+    data[11][30]=1;
+    data[10][31]=1;
+    data[20][0]=1;
+ 
+    RecurrencePlot rp(data);
+
+    EXPECT_EQ( VerticalSize(Burn(rp, 4, 4)) , 2);
+    EXPECT_EQ( VerticalSize(Burn(rp, 10, 30)), 3);
+    EXPECT_EQ( VerticalSize(Burn(rp, 14, (size / 2) - 4)), 0);
+    EXPECT_EQ( VerticalSize(Burn(rp, 20, 0)), 0);
+    EXPECT_EQ( VerticalSize(Burn(rp, 5, 25)), 0);
+    EXPECT_EQ( VerticalSize(Burn(rp, 2, 14)), 16);
+    EXPECT_EQ( Verticals(rp).size(), 3);
+    EXPECT_EQ( Verticals(rp)[0], 2);
+    EXPECT_EQ( Verticals(rp)[1], 16);
+    EXPECT_EQ( Verticals(rp)[2], 3);
 /*
+    for(unsigned j = 0; j < rp.size(); j++){
+        for(unsigned i = 0; i < rp.size(); i++){
+            std::cout <<  rp[size-1-i][j]<< " ";
+        }
+        std::cout << std::endl;
+    }
+//*/
+}
 
+TEST_F(RecurrenceAnalyticsTests, BlackDots)
+{ 
+    for (size_t i = 0; i < data.size(); ++i){
 
-TEST(Test_rp_RR)
-{
-
-    double data[3] = { 1.0, 1.0, 1.0 };
-    time_series teste(data, 3); //inicia um histograma com 10 bins com range de 1 até 10
-    Attractor at_teste(teste,1,1);
-    recurrence_plot rp(at_teste,3,0.5);
-    CHECK_CLOSE(rp.RR(),1,0.0001);
-
-    double data1[3] = { 1.0, 2.0, 3.0 };
-    time_series teste1(data1, 3); //inicia um histograma com 10 bins com range de 1 até 10
-    Attractor at_teste1(teste1,1,1);
-    recurrence_plot rp1(at_teste1,3,0.5);
-    CHECK_CLOSE(rp1.RR(),0.33333,0.0001);
-
+        for (size_t j = 0; j < data.size(); ++j){
+            data[i][j]=0;
+        }
+    } 
+    for (size_t j = 4; j < data.size() / 2; ++j){
+        data[j][j]=1;
+        data[j][j+1]=1;
+        data[j+17][data.size() / 2 - j]=1;
+        data[j][25]=1;
+        data[2][j+10]=1;
+    }
+ 
+    RecurrencePlot rp(data);
+    EXPECT_EQ( NumberOfBlackDots(rp), 80);
+/*
+    for(unsigned j = 0; j < rp.size(); j++){
+        for(unsigned i = 0; i < rp.size(); i++){
+            std::cout <<  rp[data.size()-1-i][j]<< " ";
+        }
+        std::cout << std::endl;
+    }
+//*/
 }
 
 
-
-TEST(Test_rp_diagonals)
-{  
-    double data1[10] = { 1.0, 2.0, 3.0,3.0,5.0,6.0,7.0,2,3,20};
-    time_series teste1(data1, 10); //inicia um histograma com 10 bins com range de 1 até 10
-    Attractor at_teste1(teste1,1,1);
-    recurrence_plot rp(at_teste1,10,0.5);
-    ne_pairs burn(rp.burn(7,1));
-    std::vector<unsigned> length;
-    EXPECT_EQ(rp.diagonals(length),3);
-    EXPECT_EQ(rp.points_in_diagonals(),14);
-    CHECK_CLOSE(rp.DET(),14.0/18.0,0.00001);
-}
-*/

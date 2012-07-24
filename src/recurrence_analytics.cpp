@@ -1,6 +1,19 @@
-PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
+#include "recurrence_analytics.h"
+
+unsigned NumberOfBlackDots(RecurrencePlot data){
+    unsigned count = 0;
+    for(unsigned j = 0; j < data.size(); j++)
+        for(unsigned i = 0; i < data.size(); i++)
+            if(data[i][j] == BLACK_DOT )
+                count++;
+    return(count);
+}
+
+PairsList Burn(RecurrencePlot data, unsigned i,unsigned j){
+
     unsigned size = data.size();
     assert(i < size  && j < size );
+
     //store the position of burned points
     PairsList cluster;
     //store points to be burned, and that needs to check neigboards
@@ -44,28 +57,29 @@ PairsList RecurrencePlot::Burn(unsigned i,unsigned j) const{
 
     return(cluster);
 }
-PairsList RecurrencePlot::Paint(unsigned i,unsigned j,unsigned color){ 
-    PairsList cluster(Burn(i,j));
+
+PairsList Paint(RecurrencePlot & data, unsigned i,unsigned j,unsigned color){ 
+    PairsList cluster(Burn(data, i, j));
     for (auto i: cluster)
     {
-        data[i.first][i.second]=color; 
+        data[i.first][i.second] = color; 
     }
     return cluster;
 }
 
-unsigned Diagonalsize(PairsList  cluster){
-    unsigned max=0;
+unsigned DiagonalSize(PairsList  cluster){
+    unsigned max = 0;
     unsigned length;
     for(auto counter: cluster ){
-        length=1;
-        bool exist=1;
+        length = 1;
+        bool exist = true;
         while(exist){
-            exist=cluster.count({counter.first+length,counter.second+length});
+            exist = cluster.count({counter.first + length, counter.second + length});
             if(exist)
                 length++;
         }
-        if(length>max)
-            max=length;
+        if(length > max)
+            max = length;
     }
     if(max > 1)
         return(max);
@@ -73,8 +87,52 @@ unsigned Diagonalsize(PairsList  cluster){
         return(0);
 }
 
+std::vector<unsigned> Diagonals(RecurrencePlot data){
+    unsigned color = 10;
+    std::vector<unsigned> length;
+    for(unsigned j = 0; j < data.size(); j++)
+        for(unsigned i = 0; i < data.size(); i++)
+            if(data[i][j] == BLACK_DOT){
+                    unsigned len = DiagonalSize(Paint(data, i, j, color));  
+                    if( len > 0 )
+                        length.push_back(len);  
+            }
+     return(length);
+}
 
+unsigned VerticalSize(PairsList  cluster){
+    unsigned max = 0;
+    unsigned length;
+    for(auto counter: cluster ){
+        length = 1;
+        bool exist = true;
+        while(exist){
+            exist = cluster.count({counter.first, counter.second + length});
+            if(exist)
+                length++;
+        }
+        if(length > max)
+            max = length;
+    }
+    if(max > 1)
+        return(max);
+    else
+        return(0);
+}
 
+std::vector<unsigned> Verticals(RecurrencePlot data){
+    unsigned color = 10;
+    std::vector<unsigned> length;
+    for(unsigned j = 0; j < data.size(); j++)
+        for(unsigned i = 0; i < data.size(); i++)
+            if(data[i][j] == BLACK_DOT){
+                    unsigned len = VerticalSize(Paint(data, i, j, color));  
+                    if( len > 0 )
+                        length.push_back(len);  
+            }
+     return(length);
+}
+/*
 double RecurrencePlot::L(){
     unsigned sum = 0;
     for(auto item : diagonals)
@@ -94,32 +152,4 @@ double RecurrencePlot::RR(){
     return(double(n_black_dots) / (size*size));
 }
 
-
-std::vector<unsigned> RecurrencePlot::Diagonals(){
-    unsigned size = data.size();
-    unsigned color = 10;
-    std::vector<unsigned> length;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++)
-            if(data[i][j] == BLACK_DOT){
-                    unsigned len = Diagonalsize(Paint(i,j,color));  
-                    if( len > 0 )
-                        length.push_back(len);  
-            }
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++)
-            if(data[i][j] == color)
-                data[i][j] = BLACK_DOT;
-     return(length);
-}
-
-unsigned RecurrencePlot::CountBlackDots(){
-    unsigned size = data.size();
-    unsigned count=0;
-    for(unsigned j = 0; j < size; j++)
-        for(unsigned i = 0; i < size; i++)
-            if(data[i][j] == BLACK_DOT )
-                count++;
-    return(count);
-}
-
+*/

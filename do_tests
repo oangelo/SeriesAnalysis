@@ -1,7 +1,7 @@
 rm src/*.o
 rm src/*~
-rm test_unit/*.o
-rm test_unit/*~
+rm unit_test/*.o
+rm unit_test/*~
 rm tests
 clear
 make -f Maketest

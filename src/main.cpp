@@ -26,14 +26,14 @@ void rp_files(std::string from_path,std::string to_path){
         double mean,std;
         MeanOrbitDistance(att_data,mean,std);
         std::cout << file_name[i] << ' ' << mean << ' ' << std <<  std::endl;
-        RecurrencePlot rp(att_data,2*(mean+std),2500);	
+        RecurrencePlot rp(att_data,2*(mean+std));	
         std::string out=result_path.str();
         dados.open(out.c_str());
         //dados << "#RR= " << rp.RR() << std::endl; 
         //dados << "#DET= " << rp.DET() << std::endl;
         //dados << "#L= " << rp.L() << std::endl;
-        for (unsigned k = 0; k < rp.Size(); k++)
-            for (unsigned j = 0; j < rp.Size(); j++)
+        for (unsigned k = 0; k < rp.size(); k++)
+            for (unsigned j = 0; j < rp.size(); j++)
                 if(rp[k][j]==1)
                     dados << k <<"  "<<  j << std::endl;
 
@@ -127,7 +127,7 @@ void NN(std::string from_path,std::string to_path){
 }
 */
 int main(int argc, char* argv[]) {
-    TimeSeries *time_series;
+    TimeSeries *time_series = NULL;
     double rows = 0;
     unsigned bins = 0;
     for (size_t i = 1; i < argc; ++i)
