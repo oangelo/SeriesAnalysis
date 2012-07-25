@@ -132,24 +132,29 @@ std::vector<unsigned> Verticals(RecurrencePlot data){
             }
      return(length);
 }
-/*
-double RecurrencePlot::L(){
-    unsigned sum = 0;
-    for(auto item : diagonals)
-            sum += item;
-    return(double(sum) / diagonals.size());
+
+RecurrenceAnalytics::RecurrenceAnalytics(const RecurrencePlot & data)
+:verticals(Verticals(data)), diagonals(Diagonals(data)), n_black_dots(NumberOfBlackDots(data)), size(data.size()),
+points_in_diagonals(std::accumulate(diagonals.begin(), diagonals.end(), 0.0)),
+points_in_verticals(std::accumulate(verticals.begin(), verticals.end(), 0.0)){
 }
 
-double RecurrencePlot::DET(){
-    unsigned points_in_diagonals = 0;
-    for(auto item : diagonals)
-        points_in_diagonals += item;
-    return(double(points_in_diagonals) / n_black_dots);
-}
-
-double RecurrencePlot::RR(){
-    unsigned size = data.size();
+double RecurrenceAnalytics::RR(){
     return(double(n_black_dots) / (size*size));
 }
 
-*/
+double RecurrenceAnalytics::DET(){
+    return( points_in_diagonals / n_black_dots);
+}
+
+double RecurrenceAnalytics::LAM(){}
+double RecurrenceAnalytics::RATIO(){}
+double RecurrenceAnalytics::L(){
+    return(points_in_diagonals / diagonals.size());
+}
+double RecurrenceAnalytics::TT(){}
+double RecurrenceAnalytics::LMax(){}
+double RecurrenceAnalytics::VMax(){}
+double RecurrenceAnalytics::DIV(){}
+double RecurrenceAnalytics::ENTR(){}
+double RecurrenceAnalytics::TREND(){}

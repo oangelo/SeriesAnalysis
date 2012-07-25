@@ -4,6 +4,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <numeric>
 
 #include "recurrence_plot.h"
 
@@ -22,7 +23,7 @@ std::vector<unsigned> Verticals(RecurrencePlot data);
 
 class RecurrenceAnalytics{
     public:
-        RecurrenceAnalytics(RecurrencePlot data);
+        RecurrenceAnalytics(const RecurrencePlot & data);
         double RR();
         double DET();
         double LAM();
@@ -38,6 +39,9 @@ class RecurrenceAnalytics{
         std::vector<unsigned> verticals;
         std::vector<unsigned> diagonals;
         unsigned n_black_dots;
+        size_t size;
+        unsigned points_in_diagonals;
+        unsigned points_in_verticals;
 };
 
 #endif /* RECURRENCE_ANALYTICS_H */
