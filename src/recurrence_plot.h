@@ -13,6 +13,7 @@ class RecurrencePlot{
         RecurrencePlot(const Attractor &attractor,double threshold);
         RecurrencePlot(unsigned** data,unsigned size);
         RecurrencePlot(std::vector<std::vector<unsigned>> data);
+        void PrintOnScreen();
 
         unsigned size() const;
         std::vector<unsigned> & operator[](const unsigned &line);

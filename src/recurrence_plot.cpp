@@ -37,6 +37,14 @@ std::vector<std::vector<unsigned>> RecurrencePlot::get_data() const{
     return(data);
 }
 
+void RecurrencePlot::PrintOnScreen(){
+    for (size_t i = 0; i < data.size(); ++i){
+        for (size_t j = 0; j < data.size(); ++j)
+            if(data[i][j])
+                std::cout << i << " " << j << std::endl;
+    }
+}
+
 //######################################################################################
 //#################################***Private Methods***################################
 //######################################################################################
