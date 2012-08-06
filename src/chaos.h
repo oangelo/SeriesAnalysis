@@ -37,7 +37,7 @@ class Attractor{
     const unsigned get_dimension() const;
     const unsigned get_delay() const;
 
-    const unsigned Size() const;
+    const unsigned size() const;
     
     const std::vector<double>  operator[](const unsigned &vec) const;
 

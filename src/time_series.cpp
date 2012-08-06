@@ -92,7 +92,7 @@ double TimeSeries::Min() const
     return(*(std::min_element( data.begin(), data.end() )) );
 }
 
-unsigned int TimeSeries::Size() const
+unsigned int TimeSeries::size() const
 {
     return(data.size());
 }
@@ -110,12 +110,12 @@ void TimeSeries::Print(std::string file_name) const
 
 
 double Entropy(TimeSeries& ts){
-	Histogram1D hist(ts.Min(),ts.Max()+EPSILON,sqrt(ts.Size()));
-	for (unsigned i = 0; i < ts.Size();i++){
+	Histogram1D hist(ts.Min(),ts.Max()+EPSILON,sqrt(ts.size()));
+	for (unsigned i = 0; i < ts.size();i++){
 		hist(ts[i]);
 	}
 	double sum = 0;
-	for (size_t i = 0 ; i < hist.Size(); i++){
+	for (size_t i = 0 ; i < hist.size(); i++){
 		if(hist[i] > 0){ 
             double probability = static_cast<double>(hist[i])/hist.Sum();
             sum -= probability*(log(probability)/log(2));
@@ -128,10 +128,10 @@ double AutoCorrelation(TimeSeries& ts,unsigned tau)
 {
 	double correlation = 0, mean;
 	mean = ts.Mean();
-	for (unsigned i = 0; i < ts.Size()-tau; i++){
+	for (unsigned i = 0; i < ts.size()-tau; i++){
 		correlation += (ts[i + tau] - mean) * (ts[i] - mean);
 	}
-    correlation /= ts.Size()-tau;
+    correlation /= ts.size()-tau;
 	correlation /=  pow(ts.Std(),2);
 	return(correlation);
 }
@@ -141,20 +141,20 @@ double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2)
 	double correlation = 0, mean1, mean2;
 	mean1 = ts1.Mean();
 	mean2 = ts2.Mean();
-	for (unsigned i = 0; i < ts1.Size(); i++){
+	for (unsigned i = 0; i < ts1.size(); i++){
 		correlation += (ts1[i] - mean1) * (ts2[i] - mean2);
 	}
-    correlation /= ts1.Size();
+    correlation /= ts1.size();
     correlation /= (ts1.Std() * ts2.Std());
 	return(correlation);
 }
 
 double MutualInformation(TimeSeries& ts, unsigned tau, unsigned bins)
 {
-	int N = ts.Size() - tau;
+	int N = ts.size() - tau;
 	Histogram1D pA(ts.Min(), ts.Max()+EPSILON, bins);
 	Histogram1D pB(ts.Min(), ts.Max()+EPSILON, bins);
-	int n_bins = pA.Size();
+	int n_bins = pA.size();
 	int P_cond[n_bins][n_bins];
 	int i = 0, j = 0;
 	// initi the 2D histogram

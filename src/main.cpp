@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "-at_from_ts"){
-            attractor = new Attractor(*time_series, atoi(argv[i + 1]), atoi(argv[i + 1]));
+            attractor = new Attractor(*time_series, atoi(argv[i + 1]), atoi(argv[i + 2]));
             std::cout << "# Conjurating Attractor From Time Series" << std::endl;
         }
     }
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
                     normalize = MutualInformation(*time_series, 0, bins); 
 
             std::cout << "#delay mutual_info" << std::endl;
-            for (size_t i = 0; i < 0.01 * time_series->Size(); ++i)
+            for (size_t i = 0; i < 0.01 * time_series->size(); ++i)
                 std::cout << i << " " << MutualInformation(*time_series, i, bins) / normalize << std::endl; 
         } 
         if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm"))

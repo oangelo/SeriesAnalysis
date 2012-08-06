@@ -64,7 +64,7 @@ std::pair<double,double> Histogram1D::BinRange(size_t index){
     return std::pair<double, double>(min+bin_width*index,min+bin_width*(index+1));
 }
 
-size_t Histogram1D::Size() const {
+size_t Histogram1D::size() const {
     return histogram.size();
 }
 

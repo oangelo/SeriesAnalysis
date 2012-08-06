@@ -19,14 +19,14 @@ class AttractorTest : public ::testing::Test {
 };
 
 TEST_F(AttractorTest,values) {
-    EXPECT_EQ((*att).Size(),9);
+    EXPECT_EQ((*att).size(),9);
     EXPECT_EQ((*att).get_dimension(),2);
     EXPECT_EQ((*att).get_delay(),1);
-    for (unsigned i = 0; i < att->Size(); i++)
+    for (unsigned i = 0; i < att->size(); i++)
     {
         ASSERT_DOUBLE_EQ(att->get_data(i,0),i+1);
     }
-    for (unsigned i = 0; i < att->Size(); i++)
+    for (unsigned i = 0; i < att->size(); i++)
     {
         ASSERT_DOUBLE_EQ(att->get_data(i,1),i+2);
     }

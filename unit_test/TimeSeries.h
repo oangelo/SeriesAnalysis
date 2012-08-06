@@ -17,7 +17,7 @@ class TimeSeriesTest : public ::testing::Test {
 };
 
 TEST_F(TimeSeriesTest,values) {
-    EXPECT_EQ((*teste).Size(),10);
+    EXPECT_EQ((*teste).size(),10);
     for (int i = 0; i < 10; i++)
     {
         ASSERT_DOUBLE_EQ((*teste)[i],i+1);
@@ -88,7 +88,7 @@ TEST(TimeSeries,ReadFile_not_all_columns) {
     }
     file.close();
     TimeSeries ts("teste.txt",5);
-    EXPECT_EQ(ts.Size(),5);
+    EXPECT_EQ(ts.size(),5);
     for (size_t i = 0; i < 5; ++i)
     {
         EXPECT_EQ(ts[i],i);

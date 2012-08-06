@@ -1,7 +1,7 @@
 #include "chaos.h"
 
 
-Attractor::Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay) : dimension(dimension),delay(delay), n_vec(ts.Size() - delay*(dimension-1)),data() {
+Attractor::Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay) : dimension(dimension),delay(delay), n_vec(ts.size() - delay*(dimension-1)),data() {
     Allocate(n_vec,dimension);
     create_lagged_array(ts, delay, dimension,data);
     //LengthSide();
@@ -49,7 +49,7 @@ Attractor::Attractor(const std::string file_name):dimension(),delay(),n_vec(),da
     indata.close();
 }
 
-Attractor::Attractor(const  Attractor & att):dimension(att.get_dimension()),delay(att.get_delay()),n_vec(att.Size()),data()
+Attractor::Attractor(const  Attractor & att):dimension(att.get_dimension()),delay(att.get_delay()),n_vec(att.size()),data()
 {
     
     Allocate(n_vec,dimension);
@@ -72,7 +72,7 @@ Attractor& Attractor::operator=(const Attractor &rhs) {
         Dealocate(n_vec, dimension);
         delay = rhs.get_delay();
         dimension = rhs.get_dimension();
-        n_vec=rhs.Size();
+        n_vec = rhs.size();
     }
 
     return *this;
@@ -98,7 +98,7 @@ const std::vector<double>  Attractor::get_vec(const unsigned vec) const{
 const unsigned Attractor::get_dimension() const{return(dimension);};
 const unsigned Attractor::get_delay() const{return(delay);};
 
-const unsigned Attractor::Size() const{return(n_vec);};
+const unsigned Attractor::size() const{return(n_vec);};
 
 
 const std::vector<double> Attractor::operator[](const unsigned &vec) const{
@@ -124,7 +124,7 @@ void create_lagged_array(const TimeSeries &ts,
         const unsigned int dim,
         double** data)
 {
-    unsigned int n_vec=ts.Size()-delay*(dim-1);
+    unsigned int n_vec=ts.size()-delay*(dim-1);
     unsigned int i,j;
         for(i=0;i<n_vec;i++){
         for(j=0;j<dim;j++){
@@ -318,7 +318,7 @@ unsigned int false_nearest_nei(TimeSeries& ts,
         Attractor att(ts,D,delay);
         double vec_i[att.get_dim()],vec_j[att.get_dim()];
         count_NN=0;
-        for(i=0;i< ts.Size()-delay*D;i++){
+        for(i=0;i< ts.size()-delay*D;i++){
             j = __find_nearest(att,i);
             //if(j<att.size()-delay*D){
             att.get_vec(i,vec_i);
@@ -336,21 +336,21 @@ unsigned int false_nearest_nei(TimeSeries& ts,
 */
 void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
     double mean_sequential,std_sequential=0;
-    for (unsigned i = 0; i < attractor.Size()-1; i++)
+    for (unsigned i = 0; i < attractor.size()-1; i++)
     {
         double distance = EuclideanDistance(attractor.get_vec(i + 1),attractor.get_vec(i)); 
         mean_sequential = (distance + i*mean_sequential)/(i + 1);
         std_sequential = std_sequential + (double(i)/(i + 1.0 )) * pow(distance - mean_sequential,2);
     }
-    std_sequential = sqrt(std_sequential / (attractor.Size() - 1));
+    std_sequential = sqrt(std_sequential / (attractor.size() - 1));
     
     mean = 0; std = 0;
     unsigned counter=0;
-    std::vector<unsigned> neigboards(attractor.Size());
-    for (unsigned j = 0; j < attractor.Size(); j++){
+    std::vector<unsigned> neigboards(attractor.size());
+    for (unsigned j = 0; j < attractor.size(); j++){
         double distance_min = DBL_MAX; 
         neigboards[j]=j;//case there is no near geometric neigboard that is not neighboard on the array, the neighboard is the same point.
-        for (unsigned i = 0; i < attractor.Size(); i++)
+        for (unsigned i = 0; i < attractor.size(); i++)
         {
             double distance = EuclideanDistance(attractor.get_vec(j),attractor.get_vec(i)); 
 
@@ -368,5 +368,5 @@ void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
                 counter++;
             }
     }
-    std = sqrt(std / (attractor.Size() - 1));
+    std = sqrt(std / (attractor.size() - 1));
 }

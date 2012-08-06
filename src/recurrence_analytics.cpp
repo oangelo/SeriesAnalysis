@@ -186,7 +186,7 @@ double RecurrenceAnalytics::ENTR(){
     for(auto item: diagonals)
         histogram(item);
     double entropy = 0, sum = histogram.Sum();
-    for (size_t i = 0; i < histogram.Size(); ++i){
+    for (size_t i = 0; i < histogram.size(); ++i){
        double p = histogram[i] / sum; 
        entropy += p * log(p); 
     }

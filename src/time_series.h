@@ -41,7 +41,7 @@ public:
     double Std() const;
     double Max() const;
     double Min() const;
-    unsigned int Size() const;
+    unsigned int size() const;
     void Print(std::string file_name) const;
 
     class BadFile: public std::exception

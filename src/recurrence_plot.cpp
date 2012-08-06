@@ -5,12 +5,12 @@
 //######################################################################################
 
 RecurrencePlot::RecurrencePlot(const TimeSeries  &time_series, double threshold):data(){
-    Allocate(time_series.Size());
+    Allocate(time_series.size());
     Generate(threshold,time_series);
 }
 
 RecurrencePlot::RecurrencePlot(const Attractor &attractor, double threshold):data(){
-    Allocate(attractor.Size());
+    Allocate(attractor.size());
     Generate(threshold,attractor);
 }
 
@@ -50,8 +50,8 @@ void RecurrencePlot::PrintOnScreen(){
 //######################################################################################
 
 void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
-    for(unsigned j = 0; j < time_series.Size(); j++)
-        for(unsigned i = 0; i < time_series.Size(); i++){
+    for(unsigned j = 0; j < time_series.size(); j++)
+        for(unsigned i = 0; i < time_series.size(); i++){
             double dist = fabs(time_series[i]-time_series[j]);  
             if(dist < limit){
                 data[i][j] = BLACK_DOT;
@@ -63,8 +63,8 @@ void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
 
 void RecurrencePlot::Generate(double limit, const Attractor & attractor){
     double vec_i[attractor.get_dimension()],vec_j[attractor.get_dimension()];
-    for(unsigned j = 0; j < attractor.Size(); j++)
-        for(unsigned i = 0; i < attractor.Size(); i++){
+    for(unsigned j = 0; j < attractor.size(); j++)
+        for(unsigned i = 0; i < attractor.size(); i++){
             attractor.get_vec(i,vec_i);
             attractor.get_vec(j,vec_j);
             double dist = EuclideanDistance(vec_i,vec_j,attractor.get_dimension());

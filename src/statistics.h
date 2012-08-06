@@ -27,7 +27,7 @@ class Histogram1D{
         size_t Min() ; 
         unsigned Sum() const;
         std::pair<double,double> BinRange(size_t index);
-        size_t Size() const;
+        size_t size() const;
 
         class IndexErro : public std::exception {
             virtual const char* what() const throw(){return "Index is out of range!";}
