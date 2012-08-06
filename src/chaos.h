@@ -29,7 +29,7 @@ class Attractor{
     Attractor(const std::string file_name);
     Attractor(const  Attractor & att);
     ~Attractor();
-    Attractor& operator=(const Attractor &rhs);
+    Attractor& operator = (const Attractor &rhs);
 
     const double get_data(const unsigned vec,const unsigned dim) const;
     const void get_vec(const unsigned vec,double *p_vec) const;
@@ -115,9 +115,11 @@ void create_lagged_array(const TimeSeries &ts,
  * returns the index k of the nearest data[k] from data[index]. If we have a tie,
  *returns returns the vector with the higher index.
  */
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$warning%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//Memory leak on NN algorithm, need to put it in terms of attractors objects!
-unsigned int __find_nearest(Attractor &data,unsigned index);
+std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
+        unsigned delay,
+        unsigned dimension_max,
+        double Rt,
+        bool SECOND_COND);
 
 //A function that calculates the mean distance of orbits on the attractor.
 //fist, find the mean distance betewn sequential points.

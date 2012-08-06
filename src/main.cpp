@@ -134,12 +134,29 @@ int main(int argc, char* argv[]) {
     Attractor *attractor = NULL;
     RecurrencePlot *rp;
     std::string file_name;
+    unsigned dimension = 0;
+    unsigned delay = 0;
+    double treshold = 0;
     //###########################################################################################
     //                                        Setting Data Up
     //###########################################################################################
     for (size_t i = 1; i < argc; ++i)
     {
-        if( std::string(argv[i]) == "-n")
+        if(std::string(argv[i]) == "--dimension" || std::string(argv[i]) == "-d")
+            if(i + 1 < argc) 
+                dimension = atoi(argv[i + 1]);
+
+        if(std::string(argv[i]) == "--delay" || std::string(argv[i]) == "-tau")
+            if(i + 1 < argc) 
+                delay = atoi(argv[i + 1]);
+
+        if(std::string(argv[i]) == "--treshold" || std::string(argv[i]) == "-th")
+            if(i + 1 < argc) 
+                treshold = atof(argv[i + 1]);
+
+
+
+        if(std::string(argv[i]) == "-n")
             if(i + 1 < argc) 
                 rows = atoi(argv[i + 1]);
 
@@ -195,6 +212,16 @@ int main(int argc, char* argv[]) {
             for (size_t i = 0; i < 0.01 * time_series->size(); ++i)
                 std::cout << i << " " << MutualInformation(*time_series, i, bins) / normalize << std::endl; 
         } 
+
+        if((std::string(argv[i]) == "--FalseNearestNeighbors") || (std::string(argv[i]) == "-fnn")){
+            std::cout << "#Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
+            std::cout << "#Delay: " << delay  << std::endl; 
+            std::cout << "#Treshold: " << treshold << std::endl; 
+            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, treshold, false);
+            for (size_t i = 0; i < nff.size(); ++i)
+                std::cout << i + 1 << " " << nff[i] << std::endl; 
+        } 
+ 
         if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm"))
             if(rp){
                 Paint(*rp,0,0,0);
