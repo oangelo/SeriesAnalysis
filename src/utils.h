@@ -28,7 +28,7 @@ void file_counter(std::string file_name,unsigned &lines,unsigned &columns);
 std::vector<std::string> ls(std::string dir);
 bool mkdir(std::string path);
 bool rm(std::string file);
-
+std::vector<std::vector<double>> ReadDoubleStdin(char delimiter);
 template<class type>
 std::vector< std::vector<type> >  ReadFile(std::string file_name){
     std::vector< std::vector<type> > data;

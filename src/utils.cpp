@@ -18,7 +18,7 @@ double EuclideanDistance(const double *vec_a,const double *vec_b,int dim)
 
 double EuclideanDistance(std::vector<double> vec_a,std::vector<double> vec_b){
     double sum = 0.0;
-    for(int i=0;i<vec_a.size();i++){
+    for(unsigned i=0;i<vec_a.size();i++){
         sum += (vec_a[i]-vec_b[i])*(vec_a[i]-vec_b[i]);
     }
     return(sqrt(sum));
@@ -95,4 +95,37 @@ bool rm(std::string file){
         return(0);
 }
 
+std::vector<std::string> &Split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while(std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+std::vector<std::string> Split(const std::string &s, char delim = ' ') {
+    std::vector<std::string> elems;
+    return Split(s, delim, elems);
+}
+
+std::vector<std::vector<double>> ReadDoubleStdin(char delimiter = ' ') {
+
+    std::string input_line;
+    std::vector<std::vector<double>> data;
+
+    //  Don't sync C++ and C I/O
+    std::ios_base::sync_with_stdio(false);
+    while(std::cin) {
+        std::getline(std::cin, input_line);
+        std::vector<double> vec;
+        for(auto item: Split(input_line, delimiter)) {
+            double number;
+            std::istringstream(item) >> number;
+            vec.push_back(number);
+        }
+        data.push_back(vec);
+    }
+    return(data);
+}
 
