@@ -11,33 +11,12 @@ TimeSeries::TimeSeries(const std::vector<double> & data) : data(data)
 {
 }
 
-TimeSeries::TimeSeries(std::string file_name, size_t rows_to_read ):data()
-{ 
-    std::vector< std::vector<double> > file_data(ReadFile<double>(file_name)); 
-    if(file_data[0].size() == 1){
-        for(auto item: file_data){
-            if(item.size() != 1)
-                throw bad_file;
-            data.push_back(item[0]);
-        }
-    }
-    else
-    {
-        if(file_data[0].size() == 2){
-            for(auto item: file_data){
-                if(item.size() != 2)
-                    throw bad_file;
-                data.push_back(item[1]);
-            }
-        }
-        else
-            throw bad_file; 
-    }
-
-    if(rows_to_read != 0 &&  rows_to_read < data.size())
-        data.resize(rows_to_read);
-
+TimeSeries::TimeSeries(const std::vector<std::vector<double>> & many_data, unsigned column) : data()
+{
+    for(auto vec: many_data)
+        data.push_back(vec[column]);
 }
+
 
 TimeSeries::~TimeSeries()
 {

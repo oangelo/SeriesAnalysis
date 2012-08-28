@@ -38,63 +38,7 @@ TEST_F(TimeSeriesTest,std) {
     ASSERT_DOUBLE_EQ((*teste_alt).Std(),0.5);
 }
 
-TEST(TimeSeries,ReadFile_BadFile) {
-    std::ofstream file;
-    file.open("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        file << i << " " << i << " " << i << std::endl;
-    }
-    file.close();
-    EXPECT_THROW(TimeSeries ts("teste.txt"), TimeSeries::BadFile);
-    rm("teste.txt");
-}
-TEST(TimeSeries,ReadFile_one_column) {
-    std::ofstream file;
-    file.open("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        file << i << std::endl;
-    }
-    file.close();
-    TimeSeries ts("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        EXPECT_EQ(ts[i],i);
-    }
-    rm("teste.txt");
-}
-TEST(TimeSeries,ReadFile_two_columns) {
-    std::ofstream file;
-    file.open("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        file << 1 << " " << i+1 << std::endl;
-    }
-    file.close();
-    TimeSeries ts("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        EXPECT_EQ(ts[i],i+1);
-    }
-    rm("teste.txt");
-}
-TEST(TimeSeries,ReadFile_not_all_columns) {
-    std::ofstream file;
-    file.open("teste.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-        file << i << std::endl;
-    }
-    file.close();
-    TimeSeries ts("teste.txt",5);
-    EXPECT_EQ(ts.size(),5);
-    for (size_t i = 0; i < 5; ++i)
-    {
-        EXPECT_EQ(ts[i],i);
-    }
-    rm("teste.txt");
-}
+
 
 TEST(TimeSeries,Test_binary_entropy)
 {

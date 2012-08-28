@@ -30,7 +30,7 @@ public:
 	/*the memory pointed by data is copied to an vector named data.*/
     TimeSeries(double const * const data, size_t size);
     TimeSeries(const std::vector<double> & data);
-    TimeSeries(std::string file_name, size_t rows_to_read = 0);
+    TimeSeries(const std::vector<std::vector<double>> & many_data, unsigned column = 0);
     virtual ~TimeSeries();
     //  access operator
     const double& operator[](const int &aux) const;
@@ -44,12 +44,6 @@ public:
     unsigned int size() const;
     void Print(std::string file_name) const;
 
-    class BadFile: public std::exception
-    {
-        virtual const char* what() const throw(){
-            return "Bad file!";
-        }
-    } bad_file;
 private:
     std::vector<double> data;
 

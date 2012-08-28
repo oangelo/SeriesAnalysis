@@ -128,8 +128,11 @@ dados.close();
 }
 */
 int main(int argc, char* argv[]) {
+    bool from_file = false;
+    std::vector<std::vector<double>> data;
+
     TimeSeries *time_series = NULL;
-    double rows = 0;
+    double rows = 0,column = 0;
     unsigned bins = 0;
     Attractor *attractor = NULL;
     RecurrencePlot *rp;
@@ -140,59 +143,75 @@ int main(int argc, char* argv[]) {
     //###########################################################################################
     //                                        Setting Data Up
     //###########################################################################################
-    for (size_t i = 1; i < argc; ++i)
-    {
+    for (size_t i = 1; i < argc; ++i) {
         if(std::string(argv[i]) == "--dimension" || std::string(argv[i]) == "-d")
-            if(i + 1 < argc) 
+            if(i + 1 < argc) { 
                 dimension = atoi(argv[i + 1]);
+                std::cerr << "Dimension: " << dimension << std::endl;
+            }
 
         if(std::string(argv[i]) == "--delay" || std::string(argv[i]) == "-tau")
-            if(i + 1 < argc) 
+            if(i + 1 < argc) {
                 delay = atoi(argv[i + 1]);
+                std::cerr << "Delay: " << delay << std::endl;
+            }
 
         if(std::string(argv[i]) == "--treshold" || std::string(argv[i]) == "-th")
-            if(i + 1 < argc) 
+            if(i + 1 < argc) {
                 treshold = atof(argv[i + 1]);
+                std::cerr << "Treshold: " << treshold << std::endl;
+            }
 
-
-
-        if(std::string(argv[i]) == "-n")
+        if(std::string(argv[i]) == "--column" || std::string(argv[i]) == "-c")
             if(i + 1 < argc) 
-                rows = atoi(argv[i + 1]);
+                column = atoi(argv[i + 1]);
 
         if( std::string(argv[i]) == "--bins")
             if(i + 1 < argc) 
                 bins = atoi(argv[i + 1]);
 
-        if(std::string(argv[i]) == "-ts"){
-            time_series = new  TimeSeries(std::string(argv[i+1]), rows);
-            file_name = std::string(argv[i+1]);
-            std::cout << "# Reading file:" << file_name  << std::endl;
-        }
-        if(std::string(argv[i]) == "-att"){
-            attractor = new  Attractor(std::string(argv[i+1]));
-            file_name = std::string(argv[i+1]);
-            std::cout << "# Reading file:" << file_name  << std::endl;
- 
-        }
+        if(std::string(argv[i]) == "--file" || std::string(argv[i]) == "-f")
+            if(i + 1 < argc){ 
+                data =  ReadFile<double>(std::string(argv[i+1]));
+                file_name = std::string(argv[i+1]);
+                std::cerr << "Reading file:" << file_name  << std::endl;
+                from_file = true; 
+            }
+        if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
+                file_name = std::string(argv[i+1]);
 
     }
+    if(!from_file)
+        data = ReadStdin<double>();
+
+    //Creating basics objects
+    for (size_t i = 1; i < argc; ++i) {
+        if(std::string(argv[i]) == "-ts" || std::string(argv[i]) == "--time_series"){
+            time_series = new  TimeSeries(data, column);
+        }
+        if(std::string(argv[i]) == "-att" || std::string(argv[i]) == "--attractor"){
+            attractor = new  Attractor(data);
+        }
+    }
+
     //Using time series
     for (size_t i = 1; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "-at_from_ts"){
-            attractor = new Attractor(*time_series, atoi(argv[i + 1]), atoi(argv[i + 2]));
-            std::cout << "# Conjurating Attractor From Time Series" << std::endl;
+        if(std::string(argv[i]) == "-att_from_ts"){
+            if(time_series) {
+                attractor = new Attractor(*time_series, dimension, delay);
+                std::cerr << ">> Conjurating Attractor From Time Series" << std::endl;
+            }
         }
     }
     //Using attractor
     for (size_t i = 1; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "-rp_from_at"){
+        if(std::string(argv[i]) == "-rp_from_att"){
             if(attractor){
-                std::cout << "# Conjurating RecurrencePlot From Attractor" << std::endl;
-                rp = new RecurrencePlot(*attractor, atof(argv[i + 1]));
-                if( (i + 1) < argc && std::string(argv[i + 2]) == "print")
+                std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
+                rp = new RecurrencePlot(*attractor, treshold);
+                if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
                     rp->PrintOnScreen();
             }
         }
@@ -208,20 +227,20 @@ int main(int argc, char* argv[]) {
                 if( std::string(argv[i + 1]) == "--normalize")
                     normalize = MutualInformation(*time_series, 0, bins); 
 
-            std::cout << "#delay mutual_info" << std::endl;
+            std::cout << "#delay x mutual_info" << std::endl;
             for (size_t i = 0; i < 0.01 * time_series->size(); ++i)
                 std::cout << i << " " << MutualInformation(*time_series, i, bins) / normalize << std::endl; 
         } 
 
         if((std::string(argv[i]) == "--FalseNearestNeighbors") || (std::string(argv[i]) == "-fnn")){
-            std::cout << "#Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
-            std::cout << "#Delay: " << delay  << std::endl; 
-            std::cout << "#Treshold: " << treshold << std::endl; 
+            std::cerr << ">> Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
+            std::cerr << ">> Delay: " << delay  << std::endl; 
+            std::cerr << ">> Treshold: " << treshold << std::endl; 
             std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, treshold, false);
             for (size_t i = 0; i < nff.size(); ++i)
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
- 
+
         if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm"))
             if(rp){
                 Paint(*rp,0,0,0);

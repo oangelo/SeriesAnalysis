@@ -24,11 +24,15 @@ double EuclideanDistance(std::vector<double> vec_a,std::vector<double> vec_b);
  * Calculate the log in any basis.
  */
 double u_log(double value,double base);
+
 void file_counter(std::string file_name,unsigned &lines,unsigned &columns);
+
 std::vector<std::string> ls(std::string dir);
+
 bool mkdir(std::string path);
+
 bool rm(std::string file);
-std::vector<std::vector<double>> ReadDoubleStdin(char delimiter);
+
 template<class type>
 std::vector< std::vector<type> >  ReadFile(std::string file_name){
     std::vector< std::vector<type> > data;
@@ -57,4 +61,23 @@ std::vector< std::vector<type> >  ReadFile(std::string file_name){
 
 }
 
+template<class type>
+std::vector< std::vector<type> >  ReadStdin(){
+    std::vector< std::vector<type> > data;
+    std::string line;
+        while (std::cin)
+        {
+            std::vector<type> values;
+            getline(std::cin, line);
+            if((line.front() != '#') && !line.empty() ){
+                std::stringstream line_stream(line);
+                type value;
+                while(line_stream >> value)
+                    values.push_back(value);
+                data.push_back(values);
+            }
+
+        }
+    return data;
+}
 #endif /* UTILS_H_ */

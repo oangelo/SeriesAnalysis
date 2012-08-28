@@ -78,23 +78,40 @@ unsigned DiagonalSize(PairsList  cluster){
             if(exist)
                 length++;
         }
-        if(length > max)
+        if(length > 1 && length > max)
             max = length;
     }
-    if(max > 1)
-        return(max);
-    else
-        return(0);
+    return(max);
+}
+
+unsigned DiagonalSizeOrthogonal(PairsList  cluster){
+    unsigned max = 0;
+    unsigned length;
+    for(auto counter: cluster ){
+        length = 1;
+        bool exist = true;
+        while(exist){
+            exist = cluster.count({counter.first + length, counter.second - length});
+            if(exist)
+                length++;
+        }
+        if(length > 1 && length > max)
+            max = length;
+    }
+    return(max);
 }
 
 std::vector<unsigned> Diagonals(RecurrencePlot data){
     unsigned color = 10;
+    RecurrencePlot data_aux(data);
     std::vector<unsigned> length;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == BLACK_DOT){
                     unsigned len = DiagonalSize(Paint(data, i, j, color));  
-                    if( len > 0 )
+                    unsigned len_orth = DiagonalSizeOrthogonal(Paint(data_aux, i, j, color));  
+                    //std::cout << len << " " << len_orth << std::endl;
+                    if( len > 2 * len_orth )
                         length.push_back(len);  
             }
      return(length);
@@ -124,32 +141,50 @@ unsigned VerticalSize(PairsList  cluster){
             if(exist)
                 length++;
         }
-        if(length > max)
+        if(length > 1 && length > max)
             max = length;
     }
-    if(max > 1)
-        return(max);
-    else
-        return(0);
+    return(max);
+}
+
+unsigned HorizontalSize(PairsList  cluster){
+    unsigned max = 0;
+    unsigned length;
+    for(auto counter: cluster ){
+        length = 1;
+        bool exist = true;
+        while(exist){
+            exist = cluster.count({counter.first, counter.second + length});
+            if(exist)
+                length++;
+        }
+        if(length > 1 && length > max)
+            max = length;
+    }
+    return(max);
 }
 
 std::vector<unsigned> Verticals(RecurrencePlot data){
     unsigned color = 10;
+    RecurrencePlot data_aux(data);
     std::vector<unsigned> length;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == BLACK_DOT){
-                    unsigned len = VerticalSize(Paint(data, i, j, color));  
-                    if( len > 0 )
-                        length.push_back(len);  
+                    unsigned len_vertical = VerticalSize(Paint(data, i, j, color));  
+                    unsigned len_horizontal = HorizontalSize(Paint(data_aux, i, j, color));  
+                    if( len_vertical > 2 * len_horizontal)
+                        length.push_back(len_vertical);  
             }
      return(length);
 }
 
 RecurrenceAnalytics::RecurrenceAnalytics(const RecurrencePlot & data)
-:verticals(Verticals(data)), diagonals(Diagonals(data)), diagonals_distances(DiagonalsDistances(data)), n_black_dots(NumberOfBlackDots(data)), size(data.size()),
+:verticals(Verticals(data)), diagonals(Diagonals(data)), 
+diagonals_distances(DiagonalsDistances(data)), n_black_dots(NumberOfBlackDots(data)),
+size(data.size()),
 points_in_diagonals(std::accumulate(diagonals.begin(), diagonals.end(), 0.0)),
-points_in_verticals(std::accumulate(verticals.begin(), verticals.end(), 0.0)){
+points_in_verticals(std::accumulate(verticals.begin(), verticals.end(), 0.0)) {
 }
 
 double RecurrenceAnalytics::RR(){

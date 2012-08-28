@@ -18,10 +18,12 @@ PairsList Burn(RecurrencePlot data, unsigned i,unsigned j);
 PairsList Paint(RecurrencePlot & data, unsigned i,unsigned j,unsigned color);
 
 unsigned DiagonalSize(PairsList  cluster);
+unsigned DiagonalSizeOrthogonal(PairsList  cluster);
 std::vector<unsigned> Diagonals(RecurrencePlot data);
 std::vector<int> DiagonalsDistances(RecurrencePlot data);
 
 unsigned VerticalSize(PairsList  cluster);
+unsigned HorizontalSize(PairsList  cluster);
 std::vector<unsigned> Verticals(RecurrencePlot data);
 
 class RecurrenceAnalytics{
