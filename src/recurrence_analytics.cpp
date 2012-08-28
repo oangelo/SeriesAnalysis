@@ -112,7 +112,7 @@ std::vector<unsigned> PointsInDiagonal(RecurrencePlot data){
                     unsigned len = DiagonalLength(cluster);  
                     unsigned len_orth = DiagonalLengthOrthogonal(cluster);  
                     //std::cout << len << " " << len_orth << std::endl;
-                    if( len > 2 * len_orth )
+                    if( len > 1.5 * (len_orth + 1))
                         length.push_back(cluster.size());  
             }
      return(length);
@@ -174,7 +174,7 @@ std::vector<unsigned> PointsInVertical(RecurrencePlot data){
                     PairsList  cluster(Paint(data, i, j, color));
                     unsigned len_vertical = VerticalLength(cluster);  
                     unsigned len_horizontal = HorizontalLength(cluster);  
-                    if( len_vertical > 2 * len_horizontal)
+                    if( len_vertical > 1.5 * (len_horizontal + 1))
                         length.push_back(cluster.size());  
             }
      return(length);

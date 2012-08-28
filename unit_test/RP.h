@@ -104,7 +104,7 @@ class RecurrenceAnalyticsTests: public ::testing::Test {
             data2.push_back({0, 0, 0, 0, 1, 1, 0});
             data2.push_back({0, 1, 1, 0, 0, 1, 0});
             data2.push_back({0, 1, 1, 0, 0, 0, 0});
-            data2.push_back({0, 0, 0, 0, 0, 0, 0});
+            data2.push_back({0, 0, 0, 0, 1, 0, 0});
 
            /*
             for (int i = data2.size() - 1; i >= 0 ; i--)

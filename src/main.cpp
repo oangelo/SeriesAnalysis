@@ -255,7 +255,7 @@ int main(int argc, char* argv[]) {
                 std::cout << analytics.LMax()  << " "; 
                 std::cout << analytics.VMax()  << " "; 
                 std::cout << analytics.DIV()  << " "; 
-                std::cout << analytics.ENTR()  << " "; 
+                //std::cout << analytics.ENTR()  << " "; 
                 //std::cout << analytics.TREND()  << " "; 
                 std::cout << std::endl; 
             }
