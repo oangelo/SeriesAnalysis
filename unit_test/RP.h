@@ -134,7 +134,7 @@ TEST_F(RecurrenceAnalyticsTests, Burn)
 
 }
 
-TEST_F(RecurrenceAnalyticsTests, Diagonals)
+TEST_F(RecurrenceAnalyticsTests, PointsInDiagonal)
 { 
     size_t size = data.size();
     for (size_t i = 0; i < size; ++i){
@@ -159,40 +159,38 @@ TEST_F(RecurrenceAnalyticsTests, Diagonals)
     data[20][0]=1;
 
     RecurrencePlot rp(data);
-/*
-    EXPECT_EQ( DiagonalSize(Burn(rp, 4, 4)) , 16);
-    EXPECT_EQ( DiagonalSize(Burn(rp, 10, 30)), 3);
-    EXPECT_EQ( DiagonalSize(Burn(rp, 14, (size / 2) - 4)), 0);
-    EXPECT_EQ( DiagonalSize(Burn(rp, 20, 0)), 0);
-    EXPECT_EQ( DiagonalSize(Burn(rp, 5, 25)), 0);
-    EXPECT_EQ( DiagonalSize(Burn(rp, 2, 14)), 0);
-    EXPECT_EQ( Diagonals(rp).size(), 2);
-    EXPECT_EQ( Diagonals(rp)[0], 16);
-    EXPECT_EQ( Diagonals(rp)[1], 3);
+//*
+    EXPECT_EQ( DiagonalLength(Burn(rp, 4, 4)) , 16);
+    EXPECT_EQ( DiagonalLength(Burn(rp, 10, 30)), 3);
+    EXPECT_EQ( DiagonalLength(Burn(rp, 14, (size / 2) - 4)), 0);
+    EXPECT_EQ( DiagonalLength(Burn(rp, 20, 0)), 0);
+    EXPECT_EQ( DiagonalLength(Burn(rp, 5, 25)), 0);
+    EXPECT_EQ( DiagonalLength(Burn(rp, 2, 14)), 0);
+    EXPECT_EQ( PointsInDiagonal(rp).size(), 1);
+    EXPECT_EQ( PointsInDiagonal(rp)[0], 32);
 
-    EXPECT_EQ( Diagonals(RecurrencePlot(data_rp)).size(), 1);
-    EXPECT_EQ( Diagonals(RecurrencePlot(data_rp))[0], 4);
-    EXPECT_EQ( DiagonalsDistances(RecurrencePlot(data_rp))[0], 3);
-*/
+    EXPECT_EQ( PointsInDiagonal(RecurrencePlot(data_rp)).size(), 1);
+    EXPECT_EQ( PointsInDiagonal(RecurrencePlot(data_rp))[0], 4);
+    EXPECT_EQ( PointsInDiagonalDistances(RecurrencePlot(data_rp))[0], 3);
+//*/
 
     
 
     /*
-    for (size_t i = 0; i < data2.size(); ++i)
+    for (size_t i = 0; i < data.size(); ++i)
     {
-        for (int j = data2.size() - 1; j >= 0 ; j--)
-            std::cout << data2[i][j] << " ";
+        for (int j = data.size() - 1; j >= 0 ; j--)
+            std::cout << data[i][j] << " ";
         std::cout << std::endl;
     }
     //*/
-    std::cout << "teste" << std::endl;
-    EXPECT_EQ( Diagonals(RecurrencePlot(data2)).size(), 1);
-    EXPECT_EQ( Diagonals(RecurrencePlot(data2))[0], 5);
+    EXPECT_EQ( PointsInDiagonal(RecurrencePlot(data2)).size(), 1);
+    EXPECT_EQ( PointsInDiagonal(RecurrencePlot(data2))[0], 12);
 
    
 }
 
-TEST_F(RecurrenceAnalyticsTests, Verticals)
+TEST_F(RecurrenceAnalyticsTests, PointsInVertical)
 { 
     size_t size = data.size();
     for (size_t i = 0; i < size; ++i){
@@ -225,17 +223,17 @@ TEST_F(RecurrenceAnalyticsTests, Verticals)
         std::cout << std::endl;
     }
     //*/
-    EXPECT_EQ( VerticalSize(Burn(rp, 4, 4)) , 2);
-    EXPECT_EQ( VerticalSize(Burn(rp, 10, 30)), 3);
-    EXPECT_EQ( VerticalSize(Burn(rp, 14, (size / 2) - 4)), 0);
-    EXPECT_EQ( VerticalSize(Burn(rp, 20, 0)), 0);
-    EXPECT_EQ( VerticalSize(Burn(rp, 5, 25)), 16);
-    EXPECT_EQ( VerticalSize(Burn(rp, 2, 14)), 0);
-    EXPECT_EQ( Verticals(rp).size(), 1);
-    EXPECT_EQ( Verticals(rp)[0], 16);
+    EXPECT_EQ( VerticalLength(Burn(rp, 4, 4)) , 2);
+    EXPECT_EQ( VerticalLength(Burn(rp, 10, 30)), 3);
+    EXPECT_EQ( VerticalLength(Burn(rp, 14, (size / 2) - 4)), 0);
+    EXPECT_EQ( VerticalLength(Burn(rp, 20, 0)), 0);
+    EXPECT_EQ( VerticalLength(Burn(rp, 5, 25)), 16);
+    EXPECT_EQ( VerticalLength(Burn(rp, 2, 14)), 0);
+    EXPECT_EQ( PointsInVertical(rp).size(), 1);
+    EXPECT_EQ( PointsInVertical(rp)[0], 16);
 
-    EXPECT_EQ( Verticals(RecurrencePlot(data_rp)).size(), 1);
-    EXPECT_EQ( Verticals(RecurrencePlot(data_rp))[0], 4);
+    EXPECT_EQ( PointsInVertical(RecurrencePlot(data_rp)).size(), 1);
+    EXPECT_EQ( PointsInVertical(RecurrencePlot(data_rp))[0], 4);
 
 }
 

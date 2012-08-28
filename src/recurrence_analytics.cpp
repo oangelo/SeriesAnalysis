@@ -67,7 +67,7 @@ PairsList Paint(RecurrencePlot & data, unsigned i,unsigned j,unsigned color){
     return cluster;
 }
 
-unsigned DiagonalSize(PairsList  cluster){
+unsigned DiagonalLength(PairsList  cluster){
     unsigned max = 0;
     unsigned length;
     for(auto counter: cluster ){
@@ -84,7 +84,7 @@ unsigned DiagonalSize(PairsList  cluster){
     return(max);
 }
 
-unsigned DiagonalSizeOrthogonal(PairsList  cluster){
+unsigned DiagonalLengthOrthogonal(PairsList  cluster){
     unsigned max = 0;
     unsigned length;
     for(auto counter: cluster ){
@@ -101,36 +101,37 @@ unsigned DiagonalSizeOrthogonal(PairsList  cluster){
     return(max);
 }
 
-std::vector<unsigned> Diagonals(RecurrencePlot data){
+std::vector<unsigned> PointsInDiagonal(RecurrencePlot data){
     unsigned color = 10;
     RecurrencePlot data_aux(data);
     std::vector<unsigned> length;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == BLACK_DOT){
-                    unsigned len = DiagonalSize(Paint(data, i, j, color));  
-                    unsigned len_orth = DiagonalSizeOrthogonal(Paint(data_aux, i, j, color));  
+                    PairsList  cluster(Paint(data, i, j, color));
+                    unsigned len = DiagonalLength(cluster);  
+                    unsigned len_orth = DiagonalLengthOrthogonal(cluster);  
                     //std::cout << len << " " << len_orth << std::endl;
                     if( len > 2 * len_orth )
-                        length.push_back(len);  
+                        length.push_back(cluster.size());  
             }
      return(length);
 }
 
-std::vector<int> DiagonalsDistances(RecurrencePlot data){
+std::vector<int> PointsInDiagonalDistances(RecurrencePlot data){
     unsigned color = 10;
     std::vector<int> length;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == BLACK_DOT){
-                    unsigned len = DiagonalSize(Paint(data, i, j, color));  
+                    unsigned len = DiagonalLength(Paint(data, i, j, color));  
                     if( len > 0 )
                         length.push_back(i-j);  
             }
      return(length);
 }
 
-unsigned VerticalSize(PairsList  cluster){
+unsigned VerticalLength(PairsList  cluster){
     unsigned max = 0;
     unsigned length;
     for(auto counter: cluster ){
@@ -147,7 +148,7 @@ unsigned VerticalSize(PairsList  cluster){
     return(max);
 }
 
-unsigned HorizontalSize(PairsList  cluster){
+unsigned HorizontalLength(PairsList  cluster){
     unsigned max = 0;
     unsigned length;
     for(auto counter: cluster ){
@@ -164,24 +165,24 @@ unsigned HorizontalSize(PairsList  cluster){
     return(max);
 }
 
-std::vector<unsigned> Verticals(RecurrencePlot data){
+std::vector<unsigned> PointsInVertical(RecurrencePlot data){
     unsigned color = 10;
-    RecurrencePlot data_aux(data);
     std::vector<unsigned> length;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == BLACK_DOT){
-                    unsigned len_vertical = VerticalSize(Paint(data, i, j, color));  
-                    unsigned len_horizontal = HorizontalSize(Paint(data_aux, i, j, color));  
+                    PairsList  cluster(Paint(data, i, j, color));
+                    unsigned len_vertical = VerticalLength(cluster);  
+                    unsigned len_horizontal = HorizontalLength(cluster);  
                     if( len_vertical > 2 * len_horizontal)
-                        length.push_back(len_vertical);  
+                        length.push_back(cluster.size());  
             }
      return(length);
 }
 
 RecurrenceAnalytics::RecurrenceAnalytics(const RecurrencePlot & data)
-:verticals(Verticals(data)), diagonals(Diagonals(data)), 
-diagonals_distances(DiagonalsDistances(data)), n_black_dots(NumberOfBlackDots(data)),
+:verticals(PointsInVertical(data)), diagonals(PointsInDiagonal(data)), 
+diagonals_distances(PointsInDiagonalDistances(data)), n_black_dots(NumberOfBlackDots(data)),
 size(data.size()),
 points_in_diagonals(std::accumulate(diagonals.begin(), diagonals.end(), 0.0)),
 points_in_verticals(std::accumulate(verticals.begin(), verticals.end(), 0.0)) {

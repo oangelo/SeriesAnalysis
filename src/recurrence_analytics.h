@@ -17,14 +17,16 @@ unsigned NumberOfBlackDots(RecurrencePlot data);
 PairsList Burn(RecurrencePlot data, unsigned i,unsigned j);
 PairsList Paint(RecurrencePlot & data, unsigned i,unsigned j,unsigned color);
 
-unsigned DiagonalSize(PairsList  cluster);
-unsigned DiagonalSizeOrthogonal(PairsList  cluster);
-std::vector<unsigned> Diagonals(RecurrencePlot data);
-std::vector<int> DiagonalsDistances(RecurrencePlot data);
+unsigned DiagonalLength(PairsList  cluster);
+unsigned DiagonalLenghtOrthogonal(PairsList  cluster);
+//points that form diagonals lines
+std::vector<unsigned> PointsInDiagonal(RecurrencePlot data);
+std::vector<int> PointsInDiagonalDistances(RecurrencePlot data);
 
-unsigned VerticalSize(PairsList  cluster);
-unsigned HorizontalSize(PairsList  cluster);
-std::vector<unsigned> Verticals(RecurrencePlot data);
+unsigned VerticalLength(PairsList  cluster);
+unsigned HorizontalLength(PairsList  cluster);
+//points that form vertical lines
+std::vector<unsigned> PointsInVertical(RecurrencePlot data);
 
 class RecurrenceAnalytics{
     public:
