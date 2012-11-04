@@ -1,21 +1,15 @@
 #ifndef RECURRENCE_ANALYTICS_H
 #define RECURRENCE_ANALYTICS_H 
 
-#include <set>
-#include <map>
-#include <vector>
-#include <numeric>
-#include <algorithm>
 
-#include "recurrence_plot.h"
+#include "rp.h"
 #include "statistics.h"
+#include "burn.h"
 
-typedef std::set<std::pair<unsigned,unsigned> > PairsList; 
 
 unsigned NumberOfBlackDots(RecurrencePlot data);
 
-PairsList Burn(RecurrencePlot data, unsigned i,unsigned j);
-PairsList Paint(RecurrencePlot & data, unsigned i,unsigned j,unsigned color);
+
 
 unsigned DiagonalLength(PairsList  cluster);
 unsigned DiagonalLenghtOrthogonal(PairsList  cluster);

@@ -6,8 +6,7 @@
 #include "statistics.h"
 #include "time_series.h"
 #include "chaos.h"
-#include "recurrence_plot.h"
-#include "recurrence_analytics.h"
+#include "rqa.h"
 
 #define TRUE 1
 #define FALSE 0

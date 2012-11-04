@@ -15,10 +15,10 @@ using namespace std;
 
 
 #include "statistics.h"
-#include "TimeSeries.h"
+#include "time_series.h"
 #include "chaos.h"
 #include "utils.h"
-#include "RP.h"
+#include "rp.h"
 
 int main(int argc, char *argv[])
 {

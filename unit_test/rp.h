@@ -1,5 +1,5 @@
 #include "math.h"
-#include "../src/recurrence_analytics.h"
+#include "../src/rqa.h"
 
 TEST(RecurrencePlot,ConstructorTimeSeries){
     double data[3] = { 1.0, 2.0, 3.0 };
