@@ -1,8 +1,0 @@
-rm src/*.o
-rm src/*~
-rm unit_test/*.o
-rm unit_test/*~
-rm tests
-clear
-make -f Maketest
-./tests

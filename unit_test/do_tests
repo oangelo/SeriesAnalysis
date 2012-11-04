@@ -1,0 +1,4 @@
+rm tests
+clear
+make -B 
+./tests

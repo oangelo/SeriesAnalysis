@@ -4,7 +4,7 @@
 CC=g++
 CFLAGS=-c -Wall -Weffc++ -pedantic -std=c++0x  
 LDFLAGS= -lgtest -lgsl -lgslcblas -lm -lpthread
-SOURCES=   src/recurrence_plot.cpp src/recurrence_analytics.cpp src/utils.cpp src/chaos.cpp unit_test/tests.cpp src/time_series.cpp src/statistics.cpp            
+SOURCES=   ../src/recurrence_plot.cpp ../src/recurrence_analytics.cpp ../src/utils.cpp ../src/chaos.cpp tests.cpp ../src/time_series.cpp ../src/statistics.cpp            
  
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests

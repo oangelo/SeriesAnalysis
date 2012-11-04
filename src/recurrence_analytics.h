@@ -42,6 +42,9 @@ class RecurrenceAnalytics{
         double DIV();
         double ENTR();
         double TREND();
+
+        unsigned NumberOfDiagonals();
+        unsigned NumberOfVerticals();
     private:
         std::vector<unsigned> verticals;
         std::vector<unsigned> diagonals;

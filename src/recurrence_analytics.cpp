@@ -242,3 +242,10 @@ double RecurrenceAnalytics::TREND(){
 
 }
         */
+unsigned RecurrenceAnalytics::NumberOfDiagonals() {
+    return diagonals.size();
+}
+
+unsigned RecurrenceAnalytics::NumberOfVerticals() {
+    return verticals.size();
+}
