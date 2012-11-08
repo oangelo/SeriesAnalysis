@@ -5,7 +5,6 @@
 #include <map>
 
 #include "chaos.h"
-enum{WHITE_DOT = 0, BLACK_DOT = 1};
 
 class RecurrencePlot{
     public:
@@ -21,6 +20,8 @@ class RecurrencePlot{
 
         typedef std::vector<unsigned> rp_row;
         typedef std::vector<rp_row> rp_data ;
+
+        enum{WHITE_DOT = 0, BLACK_DOT = 1};
         
     private:
         void Generate(double limit, const TimeSeries & time_series);

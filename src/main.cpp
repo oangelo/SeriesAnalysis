@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
 
         if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm"))
             if(rp){
-                Paint(*rp,0,0,0);
+                burn::Paint(*rp,0,0,0);
                 RecurrenceAnalytics analytics(*rp);
                 std::cout << file_name  << " "; 
                 std::cout << analytics.RR()  << " "; 
@@ -251,13 +251,16 @@ int main(int argc, char* argv[]) {
                 std::cout << analytics.RATIO()  << " "; 
                 std::cout << analytics.L()  << " "; 
                 std::cout << analytics.TT()  << " "; 
-                std::cout << analytics.LMax()  << " "; 
-                std::cout << analytics.VMax()  << " "; 
-                std::cout << analytics.DIV()  << " "; 
+                //std::cout << analytics.LMax()  << " "; 
+                //std::cout << analytics.VMax()  << " "; 
+                //std::cout << analytics.DIV()  << " "; 
                 //std::cout << analytics.ENTR()  << " "; 
                 //std::cout << analytics.TREND()  << " "; 
                 std::cout << analytics.NumberOfDiagonals()  << " "; 
                 std::cout << analytics.NumberOfVerticals()  << " "; 
+                std::cout << analytics.HitPercentage()  << " "; 
+                std::cout << analytics.NumberOfUnknown()  << " "; 
+                std::cout << analytics.NumberOfHorizontals()  << " "; 
                 std::cout << std::endl; 
             }
         /*

@@ -4,132 +4,19 @@ unsigned NumberOfBlackDots(RecurrencePlot data){
     unsigned count = 0;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
-            if(data[i][j] == BLACK_DOT )
+            if(data[i][j] == burn::BLACK_DOT )
                 count++;
     return(count);
 }
 
 
 
-unsigned DiagonalLength(PairsList  cluster){
-    unsigned max = 0;
-    unsigned length;
-    for(auto counter: cluster ){
-        length = 1;
-        bool exist = true;
-        while(exist){
-            exist = cluster.count({counter.first + length, counter.second + length});
-            if(exist)
-                length++;
-        }
-        if(length > 1 && length > max)
-            max = length;
-    }
-    return(max);
-}
 
-unsigned DiagonalLengthOrthogonal(PairsList  cluster){
-    unsigned max = 0;
-    unsigned length;
-    for(auto counter: cluster ){
-        length = 1;
-        bool exist = true;
-        while(exist){
-            exist = cluster.count({counter.first + length, counter.second - length});
-            if(exist)
-                length++;
-        }
-        if(length > 1 && length > max)
-            max = length;
-    }
-    return(max);
-}
-
-std::vector<unsigned> PointsInDiagonal(RecurrencePlot data){
-    unsigned color = 10;
-    RecurrencePlot data_aux(data);
-    std::vector<unsigned> length;
-    for(unsigned j = 0; j < data.size(); j++)
-        for(unsigned i = 0; i < data.size(); i++)
-            if(data[i][j] == BLACK_DOT){
-                    PairsList  cluster(Paint(data, i, j, color));
-                    unsigned len = DiagonalLength(cluster);  
-                    unsigned len_orth = DiagonalLengthOrthogonal(cluster);  
-                    //std::cout << len << " " << len_orth << std::endl;
-                    if( len > 1.5 * (len_orth + 1))
-                        length.push_back(cluster.size());  
-            }
-     return(length);
-}
-
-std::vector<int> PointsInDiagonalDistances(RecurrencePlot data){
-    unsigned color = 10;
-    std::vector<int> length;
-    for(unsigned j = 0; j < data.size(); j++)
-        for(unsigned i = 0; i < data.size(); i++)
-            if(data[i][j] == BLACK_DOT){
-                    unsigned len = DiagonalLength(Paint(data, i, j, color));  
-                    if( len > 0 )
-                        length.push_back(i-j);  
-            }
-     return(length);
-}
-
-unsigned VerticalLength(PairsList  cluster){
-    unsigned max = 0;
-    unsigned length;
-    for(auto counter: cluster ){
-        length = 1;
-        bool exist = true;
-        while(exist){
-            exist = cluster.count({counter.first + length, counter.second});
-            if(exist)
-                length++;
-        }
-        if(length > 1 && length > max)
-            max = length;
-    }
-    return(max);
-}
-
-unsigned HorizontalLength(PairsList  cluster){
-    unsigned max = 0;
-    unsigned length;
-    for(auto counter: cluster ){
-        length = 1;
-        bool exist = true;
-        while(exist){
-            exist = cluster.count({counter.first, counter.second + length});
-            if(exist)
-                length++;
-        }
-        if(length > 1 && length > max)
-            max = length;
-    }
-    return(max);
-}
-
-std::vector<unsigned> PointsInVertical(RecurrencePlot data){
-    unsigned color = 10;
-    std::vector<unsigned> length;
-    for(unsigned j = 0; j < data.size(); j++)
-        for(unsigned i = 0; i < data.size(); i++)
-            if(data[i][j] == BLACK_DOT){
-                    PairsList  cluster(Paint(data, i, j, color));
-                    unsigned len_vertical = VerticalLength(cluster);  
-                    unsigned len_horizontal = HorizontalLength(cluster);  
-                    if( len_vertical > 1.5 * (len_horizontal + 1))
-                        length.push_back(cluster.size());  
-            }
-     return(length);
-}
 
 RecurrenceAnalytics::RecurrenceAnalytics(const RecurrencePlot & data)
-:verticals(PointsInVertical(data)), diagonals(PointsInDiagonal(data)), 
-diagonals_distances(PointsInDiagonalDistances(data)), n_black_dots(NumberOfBlackDots(data)),
-size(data.size()),
-points_in_diagonals(std::accumulate(diagonals.begin(), diagonals.end(), 0.0)),
-points_in_verticals(std::accumulate(verticals.begin(), verticals.end(), 0.0)) {
+:n_black_dots(NumberOfBlackDots(data)), size(data.size()), pattern(data, 2)
+{
+    std::cerr << " >> Unknown features: " << pattern.unknown_cluster.size() << std::endl;
 }
 
 double RecurrenceAnalytics::RR(){
@@ -137,32 +24,45 @@ double RecurrenceAnalytics::RR(){
 }
 
 double RecurrenceAnalytics::DET(){
-    return(static_cast<double>(points_in_diagonals) / n_black_dots);
+    unsigned sum(0);
+    for(auto &iten: pattern.secondary_diagonal_cluster)
+        sum += iten.size();
+    return static_cast<double>(sum) / n_black_dots;
 }
 
 double RecurrenceAnalytics::LAM(){
-    return(static_cast<double>(points_in_verticals) / n_black_dots);
+    unsigned sum(0);
+    for(auto &iten: pattern.vertical_cluster)
+        sum += iten.size();
+    return static_cast<double>(sum) / n_black_dots;
 }
+
 double RecurrenceAnalytics::RATIO(){
     return DET() / RR();
 }
+
 double RecurrenceAnalytics::L(){
-    return(static_cast<double>(points_in_diagonals) / diagonals.size());
+    unsigned sum(0);
+    for(auto &iten: pattern.secondary_diagonal_length)
+        sum += iten;
+    return static_cast<double>(sum) / pattern.secondary_diagonal_length.size();
 }
+
 double RecurrenceAnalytics::TT(){
-    return(static_cast<double>(points_in_verticals) / verticals.size());
+    unsigned sum(0);
+    for(auto &iten: pattern.vertical_length)
+        sum += iten;
+    return static_cast<double>(sum) / pattern.vertical_length.size();
 }
+
 double RecurrenceAnalytics::LMax(){
-    return *std::max_element(diagonals.begin(), diagonals.end()); 
 }
 double RecurrenceAnalytics::VMax(){
-    return *std::max_element(verticals.begin(), verticals.end()); 
 }
 double RecurrenceAnalytics::DIV(){
-    return 1 / LMax();
 }
 double RecurrenceAnalytics::ENTR(){
-    Histogram1D histogram(1, LMax()+1,sqrt(diagonals.size()));
+/*    Histogram1D histogram(1, LMax()+1,sqrt(diagonals.size()));
     for(auto item: diagonals)
         histogram(item);
     double entropy = 0, sum = histogram.Sum();
@@ -171,6 +71,7 @@ double RecurrenceAnalytics::ENTR(){
        entropy += p * log(p); 
     }
     return entropy;
+*/
 }
 
     /* Needing implementation
@@ -187,9 +88,21 @@ double RecurrenceAnalytics::TREND(){
 }
         */
 unsigned RecurrenceAnalytics::NumberOfDiagonals() {
-    return diagonals.size();
+    return pattern.secondary_diagonal_length.size();
 }
 
 unsigned RecurrenceAnalytics::NumberOfVerticals() {
-    return verticals.size();
+    return pattern.vertical_length.size();
+}
+
+unsigned RecurrenceAnalytics::NumberOfHorizontals() {
+    return pattern.horizontal_length.size();
+}
+
+unsigned RecurrenceAnalytics::NumberOfUnknown(){
+    return pattern.unknown_cluster.size();
+}
+
+double RecurrenceAnalytics::HitPercentage(){
+    return static_cast<double>(NumberOfVerticals() + NumberOfDiagonals()) / NumberOfUnknown();
 }
