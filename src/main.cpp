@@ -7,6 +7,7 @@
 #include "time_series.h"
 #include "chaos.h"
 #include "rqa.h"
+#include "statistics/statistics.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -240,7 +241,7 @@ int main(int argc, char* argv[]) {
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
 
-        if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm"))
+        if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm")) {
             if(rp){
                 burn::Paint(*rp,0,0,0);
                 RecurrenceAnalytics analytics(*rp);
@@ -261,8 +262,21 @@ int main(int argc, char* argv[]) {
                 std::cout << analytics.HitPercentage()  << " "; 
                 std::cout << analytics.NumberOfUnknown()  << " "; 
                 std::cout << analytics.NumberOfHorizontals()  << " "; 
+                if(time_series){
+                    Mean<double> mean;
+                    StDeviation<double> std;
+                    for (size_t i = 0; i < time_series->size(); ++i)
+                    {
+                        mean((*time_series)[i]);
+                        std((*time_series)[i]);
+                    }
+                    std::cout << mean  << " "; 
+                    std::cout << std << " "; 
+                }
                 std::cout << std::endl; 
             }
+            
+        }
         /*
            if((std::string(argv[i]) == "--cross_correlation") && (i+2 < argc)){
            TimeSeries ts1(std::string(argv[i+1]));

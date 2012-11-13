@@ -38,10 +38,11 @@ std::vector<std::vector<unsigned>> RecurrencePlot::get_data() const{
 }
 
 void RecurrencePlot::PrintOnScreen(){
-    for (size_t i = 0; i < data.size(); ++i){
-        for (size_t j = 0; j < data.size(); ++j)
-            if(data[i][j])
-                std::cout << i << " " << j << std::endl;
+    for (size_t i = (data.size() - 1); i > 0; i-=1) {
+        for (size_t j = 0; j < data[i].size(); ++j) {
+                std::cout << data[i][j] << " "; 
+        }
+        std::cout << std::endl;
     }
 }
 

@@ -1,3 +1,6 @@
 [submodule "src/patterns"]
 	path = src/patterns
 	url = git@github.com:oangelo/ClusterPatterns.git
+[submodule "src/statistics"]
+	path = src/statistics
+	url = git@github.com:oangelo/PlusStatistics.git
