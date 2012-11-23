@@ -1,4 +1,4 @@
-#include "chaos.h"
+#include "attractor.h"
 
 
 Attractor::Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay) : dimension(dimension),delay(delay), n_vec(ts.size() - delay*(dimension-1)),data() {

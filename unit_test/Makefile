@@ -4,7 +4,7 @@
 CC=g++
 CFLAGS=-c -Wall -Weffc++ -pedantic -std=c++0x  
 LDFLAGS= -lgtest -lgsl -lgslcblas -lm -lpthread
-SOURCES=   ../src/rp.cpp ../src/rqa.cpp ../src/utils.cpp ../src/chaos.cpp tests.cpp ../src/time_series.cpp ../src/statistics.cpp            
+SOURCES=   ../src/rp.cpp ../src/rqa.cpp ../src/utils.cpp ../src/attractor.cpp tests.cpp ../src/time_series.cpp ../src/statistics.cpp  ../src/patterns/patterns.cpp          
  
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests

@@ -1,4 +1,4 @@
-#include "../src/chaos.h"
+#include "../src/attractor.h"
 
 class AttractorTest : public ::testing::Test {
     public:

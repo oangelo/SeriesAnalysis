@@ -4,7 +4,7 @@
 #include <set>
 #include <map>
 
-#include "chaos.h"
+#include "attractor.h"
 
 class RecurrencePlot{
     public:

@@ -5,7 +5,7 @@
 
 #include "statistics.h"
 #include "time_series.h"
-#include "chaos.h"
+#include "attractor.h"
 #include "rqa.h"
 #include "statistics/statistics.h"
 
