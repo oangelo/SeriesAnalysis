@@ -85,5 +85,48 @@ void RecurrencePlot::Allocate(size_t size){
     }
 }
 
+double RR(RecurrencePlot rp) {
+    double sum = 0, rr;
+    for(auto i: rp.get_data())
+        for(auto j: i)
+            sum += j;
+    rr = 100.0 * sum / (pow(rp.size(),2));
+    return rr;
+}
 
+double FindThreshold(Attractor& att, double percentage, double tolerance, double hint) {
+    if(hint == 0){
+        double mean, std;
+        MeanOrbitDistance(att, mean, std);
+        hint = 100 * mean;
+    }
+    double epsilon;
+    double rr = 0;
+    double init = 0, end = hint; 
+    unsigned count = 0, max = 1000;
+    while(fabs(RR(RecurrencePlot(att, epsilon)) - percentage) > tolerance && count < max) {
+        ++count;
+        double half_epsilon((end - init) / 2.0);
+        double left_weight(fabs(RR(RecurrencePlot(att, (init + half_epsilon * 0.5))) - percentage));
+        double right_weight(fabs(RR(RecurrencePlot(att, end -  half_epsilon * 0.5)) - percentage));
+        if(left_weight < right_weight) {
+            end -=  half_epsilon; 
+            epsilon = end;
+        }else {
+            init += half_epsilon;
+            epsilon = init;
+        }
+        if(init == end) {
+            std::cerr << "Bad hint to find the RP threshold" << std::endl;
+            return 0;
+        }
+
+    }
+    if(count == max) {
+       std::cerr << "Bad hint to find the RP threshold" << std::endl;
+       return 0;
+     }
+
+    return epsilon;
+}
 

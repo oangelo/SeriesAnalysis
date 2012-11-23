@@ -58,6 +58,17 @@ TEST(RecurrencePlot,ConstructorMatrix){
         }
     }
 }
+
+
+TEST(RecurrencePlot, findThreshold){
+    double data[8] = { 1.4, 2.6, 3.7, 4.9, 5.2, 6.8, 7.4, 8.1 };
+    TimeSeries teste(data, 8); 
+    Attractor at_teste(teste,1,1);
+    EXPECT_NEAR(FindThreshold(at_teste, 50, 5, 10), 2.5, 0.1);
+    EXPECT_NEAR(FindThreshold(at_teste, 50, 5, 100), 0, 0.1);
+    //EXPECT_NEAR(FindThreshold(at_teste, 50, 5), 2.5, 0.1);
+    
+}
 /*
 TEST(RecurrenceAnalyticsTests, RR){
 

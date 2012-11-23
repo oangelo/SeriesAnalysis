@@ -210,7 +210,12 @@ int main(int argc, char* argv[]) {
         if(std::string(argv[i]) == "-rp_from_att"){
             if(attractor){
                 std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
-                rp = new RecurrencePlot(*attractor, treshold);
+                if(treshold != 0){
+                    rp = new RecurrencePlot(*attractor, treshold);
+                }else{
+                    std::cerr << ">> Trying to gess the threshold" << std::endl;
+                    rp = new RecurrencePlot(*attractor, FindThreshold(*attractor, 2, 0.1));
+                }
                 if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
                     rp->PrintOnScreen();
             }
