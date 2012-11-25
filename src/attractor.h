@@ -130,5 +130,8 @@ std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
 void MeanOrbitDistance(Attractor & attractor,double &  mean, double &  std);
 
 
+double MeanPointsDistances(Attractor & attractor);
+
+
 
 #endif /*CHAOS_H*/

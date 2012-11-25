@@ -96,9 +96,7 @@ double RR(RecurrencePlot rp) {
 
 double FindThreshold(Attractor& att, double percentage, double tolerance, double hint) {
     if(hint == 0){
-        double mean, std;
-        MeanOrbitDistance(att, mean, std);
-        hint = 100 * mean;
+        hint = MeanPointsDistances(att);
     }
     double epsilon;
     double rr = 0;

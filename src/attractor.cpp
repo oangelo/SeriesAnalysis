@@ -368,3 +368,18 @@ void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
     }
     std = sqrt(std / (attractor.size() - 1));
 }
+
+
+double MeanPointsDistances(Attractor & attractor) {
+    double mean = 0, counter = 0;
+    for (size_t i = 0; i < attractor.size(); ++i)
+    {
+        for (size_t j = i + 1; j < attractor.size(); ++j) {
+            double distance = EuclideanDistance(attractor[i], attractor[j]);
+            mean += distance;
+            ++counter;
+        }
+    }
+    mean /= counter;
+    return mean;
+}
