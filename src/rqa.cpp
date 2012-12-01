@@ -6,17 +6,69 @@ unsigned NumberOfBlackDots(RecurrencePlot data){
         for(unsigned i = 0; i < data.size(); i++)
             if(data[i][j] == burn::BLACK_DOT )
                 count++;
-    return(count);
+    return(count - data.size());
 }
 
-
-
-
-
-RecurrenceAnalytics::RecurrenceAnalytics(const RecurrencePlot & data)
-:n_black_dots(NumberOfBlackDots(data)), size(data.size()), pattern(data, 2)
+RecurrenceAnalytics::RecurrenceAnalytics(RecurrencePlot data)
+:n_black_dots(NumberOfBlackDots(data)), size(data.size()), vertical(), diagonal()
 {
-    std::cerr << " >> Unknown features: " << pattern.unknown_cluster.size() << std::endl;
+    //remove the LOI
+    for (size_t i = 0; i < size; ++i)
+            data[i][i] = 0;
+
+    bool flag = false;
+    unsigned count = 0;
+    for (size_t i = 1; i < size; ++i) {
+        count = 0;
+        flag = false;
+        for (size_t j = 0; j < size - i; ++j) {
+            if(data[j][j + i] == 1) {
+                flag = true;
+            }else{
+                flag = false;
+            }
+            if(flag == true)
+                ++count;
+            if(flag == false and count >= 2) {
+                diagonal.push_back(count);
+                count = 0;
+            }
+            if(flag == false and count < 2) {
+                count = 0;
+            }
+            //end
+            if(count > 2 and j == (size - i - 1))
+                diagonal.push_back(count);
+        }
+    }
+
+    flag = false;
+    count = 0;
+    for (size_t i = 1; i < size; ++i) {
+        count = 0;
+        flag = false;
+        for (size_t j = 0; j < size; ++j) {
+            if(data[j][i] == 1) {
+                flag = true;
+            }else{
+                flag = false;
+            }
+            if(flag == true)
+                ++count;
+            if(flag == false and count >= 2) {
+                vertical.push_back(count);
+                count = 0;
+            }
+            if(flag == false and count < 2) {
+                count = 0;
+            }
+            //end
+            if(count > 2 and j == (size - 1))
+                vertical.push_back(count);
+        }
+    }
+//    for(auto i: vertical)
+//        std::cout << i << std::endl;
 }
 
 double RecurrenceAnalytics::RR(){
@@ -25,15 +77,15 @@ double RecurrenceAnalytics::RR(){
 
 double RecurrenceAnalytics::DET(){
     unsigned sum(0);
-    for(auto &iten: pattern.secondary_diagonal_cluster)
-        sum += iten.size();
-    return static_cast<double>(sum) / n_black_dots;
+    for(auto &iten: diagonal)
+        sum += iten;
+    return static_cast<double>(2 * sum) / n_black_dots;
 }
 
 double RecurrenceAnalytics::LAM(){
     unsigned sum(0);
-    for(auto &iten: pattern.vertical_cluster)
-        sum += iten.size();
+    for(auto &iten: vertical)
+        sum += iten;
     return static_cast<double>(sum) / n_black_dots;
 }
 
@@ -43,22 +95,43 @@ double RecurrenceAnalytics::RATIO(){
 
 double RecurrenceAnalytics::L(){
     unsigned sum(0);
-    for(auto &iten: pattern.secondary_diagonal_length)
+    for(auto &iten: diagonal)
         sum += iten;
-    return static_cast<double>(sum) / pattern.secondary_diagonal_length.size();
+    if(diagonal.size() > 0)
+        return static_cast<double>(sum) / diagonal.size();
+    else
+        return 0;
 }
 
 double RecurrenceAnalytics::TT(){
     unsigned sum(0);
-    for(auto &iten: pattern.vertical_length)
-        sum += iten;
-    return static_cast<double>(sum) / pattern.vertical_length.size();
+    if(vertical.size() > 0){
+        for(auto &iten: vertical)
+            sum += iten;
+        return static_cast<double>(sum) / vertical.size();
+    }else{
+        return 0; 
+    }
 }
 
-double RecurrenceAnalytics::LMax(){
+unsigned RecurrenceAnalytics::LMax(){
+    auto max(std::max_element(diagonal.begin(), diagonal.end()));
+    auto end(diagonal.end());
+    if(max != end)
+        return *max; 
+    else
+        return(0);
 }
-double RecurrenceAnalytics::VMax(){
+
+unsigned RecurrenceAnalytics::VMax(){
+    auto max(std::max_element(vertical.begin(), vertical.end()));
+    auto end(vertical.end());
+    if(max != end)
+        return *max; 
+    else
+        return(0);
 }
+
 double RecurrenceAnalytics::DIV(){
 }
 double RecurrenceAnalytics::ENTR(){
@@ -88,19 +161,23 @@ double RecurrenceAnalytics::TREND(){
 }
         */
 unsigned RecurrenceAnalytics::NumberOfDiagonals() {
-    return pattern.secondary_diagonal_length.size();
+    return diagonal.size();
 }
 
 unsigned RecurrenceAnalytics::NumberOfVerticals() {
-    return pattern.vertical_length.size();
+    return vertical.size();
 }
 
 unsigned RecurrenceAnalytics::NumberOfHorizontals() {
-    return pattern.horizontal_length.size();
+    return 0;
 }
 
 unsigned RecurrenceAnalytics::NumberOfUnknown(){
-    return pattern.unknown_cluster.size();
+    return 0;
+}
+
+unsigned RecurrenceAnalytics::NumberOfRecurrence(){
+    return n_black_dots;
 }
 
 double RecurrenceAnalytics::HitPercentage(){

@@ -31,7 +31,6 @@ class RecurrencePlot{
         rp_data data;
 };
 
-
 double FindThreshold(Attractor& att, double percentage, double tolerance, double hint = 0);
 
 #endif /*RECURRENCE_PLOT_H*/ 

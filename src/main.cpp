@@ -13,120 +13,7 @@
 #define FALSE 0
 
 using namespace std;
-void rp_files(std::string from_path,std::string to_path){
-    std::vector<std::string> file_name(ls(from_path));
-    mkdir(to_path);
-    for(unsigned i=0;i<file_name.size();i++){   
-        std::stringstream file_path;
-        file_path << from_path << file_name[i]; 
-        std::stringstream result_path;
-        result_path << to_path << file_name[i];
-        std::ofstream dados;
 
-        Attractor att_data(file_path.str());
-        double mean,std;
-        MeanOrbitDistance(att_data,mean,std);
-        std::cout << file_name[i] << ' ' << mean << ' ' << std <<  std::endl;
-        RecurrencePlot rp(att_data,2*(mean+std));	
-        std::string out=result_path.str();
-        dados.open(out.c_str());
-        //dados << "#RR= " << rp.RR() << std::endl; 
-        //dados << "#DET= " << rp.DET() << std::endl;
-        //dados << "#L= " << rp.L() << std::endl;
-        for (unsigned k = 0; k < rp.size(); k++)
-            for (unsigned j = 0; j < rp.size(); j++)
-                if(rp[k][j]==1)
-                    dados << k <<"  "<<  j << std::endl;
-
-        dados.close();
-
-    } 
-}
-
-/*
-   void rp_ts_files(std::string from_path,std::string to_path){
-   std::vector<std::string> file_name(ls(from_path));
-   mkdir(to_path);
-   for(unsigned i=0;i<file_name.size();i++){   
-   std::stringstream file_path;
-   file_path << from_path << file_name[i]; 
-   std::stringstream result_path;
-   result_path << to_path << file_name[i];
-   std::ofstream dados;
-
-   time_series ts(file_path.str());
-   Attractor att_data(ts,4,2);
-   recurrence_plot rp(att_data);	
-   std::string out=result_path.str();
-   dados.open(out.c_str());
-   for (unsigned k = 0; k < rp.size(); k++)
-   for (unsigned j = 0; j < rp.size(); j++)
-   if(rp.get(k,j)==1)
-   dados << k <<"  "<<  j << std::endl;
-
-   dados.close();
-   } 
-   }
-
-   void mutual_info(std::string from_path,std::string to_path){
-   std::vector<std::string> file_name(ls(from_path));
-   mkdir(to_path);
-   for(unsigned i=0;i<file_name.size();i++){   
-   std::stringstream file_path;
-   file_path << from_path << file_name[i]; 
-   std::stringstream result_path;
-   result_path << to_path << file_name[i];
-   std::ofstream dados;
-
-   time_series teste(file_path.str());
-   std::string out=result_path.str();
-   dados.open(out.c_str());
-   int TAU_MAX = 50;
-   double buffer;
-   for (int i = 0; i < TAU_MAX; i++) {
-   if(i==0)
-   {
-   buffer=mutual_information(teste, i);
-   dados << i << " " << 1 << endl;
-   }else{
-   dados << i << " " << mutual_information(teste, i)/buffer << endl;
-   }
-   }
-   dados.close();
-
-
-   }
-   }
-
-
-   void NN(std::string from_path,std::string to_path){
-   std::vector<std::string> file_name(ls(from_path));
-   mkdir(to_path);
-   for(unsigned i=0;i<file_name.size();i++){   
-   std::stringstream file_path;
-   file_path << from_path << file_name[i]; 
-   std::stringstream result_path;
-   result_path << to_path << file_name[i];
-   std::ofstream dados;
-
-   time_series teste(file_path.str());
-   std::string out=result_path.str();
-   dados.open(out.c_str());
-   int N = 7000;
-   int tau = 1;
-int dmax = 8;
-double R_t = 12.0;
-double fnn_list[dmax]; // number of false neigh for each dimension
-false_nearest_nei(teste,tau,dmax,R_t,fnn_list,TRUE);
-for (int i = 0; i < dmax; i++) {
-    dados << i <<"  "<<  fnn_list[i]/N << std::endl;
-}
-dados.close();
-
-
-}
-}
-*/
 int main(int argc, char* argv[]) {
     bool from_file = false;
     std::vector<std::vector<double>> data;
@@ -139,7 +26,13 @@ int main(int argc, char* argv[]) {
     std::string file_name;
     unsigned dimension = 0;
     unsigned delay = 0;
-    double treshold = 0;
+    unsigned window = 1;
+    double threshold = 0;
+    //time series statistics
+    Mean<double> ts_mean;
+    StDeviation<double> ts_std;
+    //use a multiplot of standard deviation as threshold
+    double th_std = 0;
     //###########################################################################################
     //                                        Setting Data Up
     //###########################################################################################
@@ -156,11 +49,27 @@ int main(int argc, char* argv[]) {
                 std::cerr << "Delay: " << delay << std::endl;
             }
 
-        if(std::string(argv[i]) == "--treshold" || std::string(argv[i]) == "-th")
+        if(std::string(argv[i]) == "--threshold" || std::string(argv[i]) == "-th")
             if(i + 1 < argc) {
-                treshold = atof(argv[i + 1]);
-                std::cerr << "Treshold: " << treshold << std::endl;
+                threshold = atof(argv[i + 1]);
+                std::cerr << "Threshold: " << threshold << std::endl;
             }
+
+        if(std::string(argv[i]) == "--window" || std::string(argv[i]) == "-w")
+            if(i + 1 < argc) {
+                window = atof(argv[i + 1]);
+                std::cerr << "Window: " << window << std::endl;
+            }
+
+        if(std::string(argv[i]) == "--threshold_std" || std::string(argv[i]) == "-th_std")
+            if(i + 1 < argc) {
+                th_std = atof(argv[i + 1]);
+                //setting a fake threshold
+                threshold = 1000;
+                std::cerr << "Th_std: " << th_std << std::endl;
+            }
+
+
 
         if(std::string(argv[i]) == "--column" || std::string(argv[i]) == "-c")
             if(i + 1 < argc) 
@@ -178,11 +87,12 @@ int main(int argc, char* argv[]) {
                 from_file = true; 
             }
         if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
-                file_name = std::string(argv[i+1]);
+            file_name = std::string(argv[i+1]);
 
     }
     if(!from_file)
         data = ReadStdin<double>();
+
 
     //Creating basics objects
     for (size_t i = 1; i < argc; ++i) {
@@ -191,6 +101,14 @@ int main(int argc, char* argv[]) {
         }
         if(std::string(argv[i]) == "-att" || std::string(argv[i]) == "--attractor"){
             attractor = new  Attractor(data);
+        }
+    }
+
+    if(time_series){
+        for (size_t i = 0; i < time_series->size(); ++i)
+        {
+            ts_mean((*time_series)[i]);
+            ts_std((*time_series)[i]);
         }
     }
 
@@ -205,22 +123,30 @@ int main(int argc, char* argv[]) {
         }
     }
     //Using attractor
+    if(threshold == 0){
+        if(attractor) {
+            std::cerr << ">> Trying to gess the threshold" << std::endl;
+            threshold = FindThreshold(*attractor, 2, 0.1);
+        }
+    }
+    if(th_std != 0){
+        if(time_series) {
+            threshold = ts_std * th_std;
+        }
+    }
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "-rp_from_att"){
             if(attractor){
                 std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
-                if(treshold != 0){
-                    rp = new RecurrencePlot(*attractor, treshold);
-                }else{
-                    std::cerr << ">> Trying to gess the threshold" << std::endl;
-                    rp = new RecurrencePlot(*attractor, FindThreshold(*attractor, 2, 0.1));
-                }
-                if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
-                    rp->PrintOnScreen();
+                rp = new RecurrencePlot(*attractor, threshold);
             }
+            
+            if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
+                rp->PrintOnScreen();
         }
-    } 
+    }
+
     //###########################################################################################
     //                                       Making Analysis 
     //###########################################################################################
@@ -240,47 +166,48 @@ int main(int argc, char* argv[]) {
         if((std::string(argv[i]) == "--FalseNearestNeighbors") || (std::string(argv[i]) == "-fnn")){
             std::cerr << ">> Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
             std::cerr << ">> Delay: " << delay  << std::endl; 
-            std::cerr << ">> Treshold: " << treshold << std::endl; 
-            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, treshold, false);
+            std::cerr << ">> Threshold: " << threshold << std::endl; 
+            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, threshold, false);
             for (size_t i = 0; i < nff.size(); ++i)
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
 
         if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm")) {
             if(rp){
-                burn::Paint(*rp,0,0,0);
+/*
+                for (size_t i = 0; i < rp->size(); ++i)
+                    for (size_t j = i; j < rp->size(); ++j)
+                        (*rp)[i][j] = 0;
+
+             //Treiler window
+             for (size_t i = window; i < rp->size(); ++i)
+                    for (size_t j = i; j > i - window - 1; --j)
+                        (*rp)[i][j] = 0;
+             for (size_t i = 0; i < window; ++i)
+                    for (size_t j = i; j != -1 ; --j)
+                        (*rp)[i][j] = 0;
+              
+*/
                 RecurrenceAnalytics analytics(*rp);
                 std::cout << file_name  << " "; 
                 std::cout << analytics.RR()  << " "; 
                 std::cout << analytics.DET()  << " "; 
-                std::cout << analytics.LAM()  << " "; 
-                std::cout << analytics.RATIO()  << " "; 
                 std::cout << analytics.L()  << " "; 
+                std::cout << analytics.LMax()  << " "; 
+                std::cout << " "; 
+                std::cout << analytics.LAM()  << " "; 
                 std::cout << analytics.TT()  << " "; 
-                //std::cout << analytics.LMax()  << " "; 
-                //std::cout << analytics.VMax()  << " "; 
-                //std::cout << analytics.DIV()  << " "; 
-                //std::cout << analytics.ENTR()  << " "; 
-                //std::cout << analytics.TREND()  << " "; 
+                std::cout << analytics.VMax()  << " "; 
+                std::cout << " "; 
+                std::cout << analytics.RATIO()  << " "; 
                 std::cout << analytics.NumberOfDiagonals()  << " "; 
-                std::cout << analytics.NumberOfVerticals()  << " "; 
-                std::cout << analytics.HitPercentage()  << " "; 
-                std::cout << analytics.NumberOfUnknown()  << " "; 
-                std::cout << analytics.NumberOfHorizontals()  << " "; 
-                if(time_series){
-                    Mean<double> mean;
-                    StDeviation<double> std;
-                    for (size_t i = 0; i < time_series->size(); ++i)
-                    {
-                        mean((*time_series)[i]);
-                        std((*time_series)[i]);
-                    }
-                    std::cout << mean  << " "; 
-                    std::cout << std << " "; 
-                }
+                std::cout << analytics.NumberOfRecurrence()  << " "; 
+                //std::cout << ts_mean  << " "; 
+                //std::cout << ts_std << " "; 
+
                 std::cout << std::endl; 
             }
-            
+
         }
         /*
            if((std::string(argv[i]) == "--cross_correlation") && (i+2 < argc)){
