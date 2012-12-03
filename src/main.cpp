@@ -14,7 +14,34 @@
 
 using namespace std;
 
+void PrintMan(){
+    std::cout << "Usage:" << std::endl;
+    std::cout << "  ./time_series [options]" << std::endl;
+    std::cout << "Options:" << std::endl;
+    std::cout << "  -                                 Read data from the standard input " << std::endl;
+    std::cout << "  --dimension, -d <integer>         Dimension of embending " << std::endl;
+    std::cout << "  --delay, -tau <integer>           Time delay for embending " << std::endl;
+    std::cout << "  --threshold, -th <real>           Threshold value for RPs " << std::endl;
+    std::cout << "  --threshold_std, -th_std <real>   Use as threshold a <real> * st. deviation of the time series" << std::endl;
+    std::cout << "  --file, -f <string>               Read data from file" << std::endl;
+    std::cout << "  --file_name, -name <string>       Name of file to save" << std::endl;
+    std::cout << "Objects:" << std::endl;
+    std::cout << "  --attractor, -att                 Creates an attractor " << std::endl;
+    std::cout << "  --time_series, -ts                Create a time series " << std::endl;
+    std::cout << "  --recurrence_plot, -rp            Create a Recurrence Plot (--print or -p to print on screen)" << std::endl;
+    std::cout << "  -ts_to_att                        Create a time series from a attractor" << std::endl;
+    std::cout << "Analysis:" << std::endl;
+    std::cout << "  --recurrence_analysis, -rqa       Print the recurence quatification analysis of the RP" << std::endl;
+    std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
+    std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
+    std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
+}
+
 int main(int argc, char* argv[]) {
+    if( argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
+        PrintMan(); 
+        return 0;
+    }
     bool from_file = false;
     std::vector<std::vector<double>> data;
 
@@ -69,8 +96,6 @@ int main(int argc, char* argv[]) {
                 std::cerr << "Th_std: " << th_std << std::endl;
             }
 
-
-
         if(std::string(argv[i]) == "--column" || std::string(argv[i]) == "-c")
             if(i + 1 < argc) 
                 column = atoi(argv[i + 1]);
@@ -88,11 +113,10 @@ int main(int argc, char* argv[]) {
             }
         if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
             file_name = std::string(argv[i+1]);
+        if(std::string(argv[i]) == "-")
+            data = ReadStdin<double>();
 
     }
-    if(!from_file)
-        data = ReadStdin<double>();
-
 
     //Creating basics objects
     for (size_t i = 1; i < argc; ++i) {
@@ -115,18 +139,20 @@ int main(int argc, char* argv[]) {
     //Using time series
     for (size_t i = 1; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "-att_from_ts"){
+        if(std::string(argv[i]) == "-ts_to_att"){
             if(time_series) {
                 attractor = new Attractor(*time_series, dimension, delay);
                 std::cerr << ">> Conjurating Attractor From Time Series" << std::endl;
             }
         }
     }
+
     //Using attractor
     if(threshold == 0){
         if(attractor) {
             std::cerr << ">> Trying to gess the threshold" << std::endl;
             threshold = FindThreshold(*attractor, 2, 0.1);
+            std::cerr << ">> threshold: " << threshold << std::endl;
         }
     }
     if(th_std != 0){
@@ -136,7 +162,7 @@ int main(int argc, char* argv[]) {
     }
     for (size_t i = 1; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "-rp_from_att"){
+        if(std::string(argv[i]) == "-recurrence_plot" or std::string(argv[i]) == "-rp"){
             if(attractor){
                 std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
                 rp = new RecurrencePlot(*attractor, threshold);
@@ -163,7 +189,7 @@ int main(int argc, char* argv[]) {
                 std::cout << i << " " << MutualInformation(*time_series, i, bins) / normalize << std::endl; 
         } 
 
-        if((std::string(argv[i]) == "--FalseNearestNeighbors") || (std::string(argv[i]) == "-fnn")){
+        if((std::string(argv[i]) == "--false_nearest_neighbors") || (std::string(argv[i]) == "-fnn")){
             std::cerr << ">> Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
             std::cerr << ">> Delay: " << delay  << std::endl; 
             std::cerr << ">> Threshold: " << threshold << std::endl; 
@@ -172,7 +198,7 @@ int main(int argc, char* argv[]) {
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
 
-        if((std::string(argv[i]) == "--patterns_measures") || (std::string(argv[i]) == "-pm")) {
+        if((std::string(argv[i]) == "--recurrence_analysis") || (std::string(argv[i]) == "-rqa")) {
             if(rp){
 /*
                 for (size_t i = 0; i < rp->size(); ++i)
@@ -223,8 +249,11 @@ int main(int argc, char* argv[]) {
            } 
            */
     }
+    
+
     delete time_series;
     delete attractor;
+    delete rp;
     return 0; 
 }
 
