@@ -109,12 +109,16 @@ int main(int argc, char* argv[]) {
                 data =  ReadFile<double>(std::string(argv[i+1]));
                 file_name = std::string(argv[i+1]);
                 std::cerr << "Reading file:" << file_name  << std::endl;
+                std::cerr << "Data size: " << data.size() << ", columns: " << data[0].size()  << std::endl;
                 from_file = true; 
             }
         if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
             file_name = std::string(argv[i+1]);
-        if(std::string(argv[i]) == "-")
+        if(std::string(argv[i]) == "-"){
             data = ReadStdin<double>();
+            std::cerr << "Data size: " << data.size() << ", columns: " << data[0].size()  << std::endl;
+
+        }
 
     }
 
