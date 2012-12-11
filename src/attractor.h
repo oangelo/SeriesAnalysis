@@ -9,6 +9,7 @@
 
 #include "time_series.h"
 #include "utils.h"
+#include "statistics/statistics.h"
 //TODO: 
 //strip the correlation integrals and box count from the class
 
@@ -129,8 +130,8 @@ std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
 //and assures that the distance on the array is bigger than this value
 void MeanOrbitDistance(Attractor & attractor,double &  mean, double &  std);
 
-
 double MeanPointsDistances(Attractor & attractor);
+double StdPointsDistances(Attractor & attractor);
 
 
 

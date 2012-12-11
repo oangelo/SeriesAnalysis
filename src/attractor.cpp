@@ -371,15 +371,25 @@ void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
 
 
 double MeanPointsDistances(Attractor & attractor) {
-    double mean = 0, counter = 0;
+    Mean<double> mean;
     for (size_t i = 0; i < attractor.size(); ++i)
     {
         for (size_t j = i + 1; j < attractor.size(); ++j) {
             double distance = EuclideanDistance(attractor[i], attractor[j]);
-            mean += distance;
-            ++counter;
+            mean(distance);
         }
     }
-    mean /= counter;
     return mean;
+}
+
+double StdPointsDistances(Attractor & attractor) {
+    StDeviation<double> std;
+    for (size_t i = 0; i < attractor.size(); ++i)
+    {
+        for (size_t j = i + 1; j < attractor.size(); ++j) {
+            double distance = EuclideanDistance(attractor[i], attractor[j]);
+            std(distance);
+        }
+    }
+    return std;
 }
