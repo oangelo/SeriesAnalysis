@@ -27,27 +27,20 @@ class Attractor{
     // organized as data[vector number][vector element]
     Attractor(const double** p_data,const  unsigned int dimension,const unsigned int n_vec);
     Attractor(const std::vector< std::vector<double> > & vec_data);
-    Attractor(const std::string file_name);
-    Attractor(const  Attractor & att);
-    ~Attractor();
-    Attractor& operator = (const Attractor &rhs);
 
-    const double get_data(const unsigned vec,const unsigned dim) const;
-    const void get_vec(const unsigned vec,double *p_vec) const;
+    double get_data(const unsigned vec,const unsigned dim) const;
     const std::vector<double>  get_vec(const unsigned vec) const;
-    const unsigned get_dimension() const;
-    const unsigned get_delay() const;
+    unsigned get_dimension() const;
+    unsigned get_delay() const;
 
-    const unsigned size() const;
+    unsigned size() const;
     
     const std::vector<double>  operator[](const unsigned &vec) const;
 
     private:
 
-    void Allocate(unsigned n_lines,unsigned n_columns);
-    void Dealocate(unsigned n_lines,unsigned n_columns);
     unsigned dimension,delay,n_vec;
-    double **data; // organized as data[array_index][array_coord]
+    std::vector<std::vector<double>> data; // organized as data[array_index][array_coord]
 };
 /*
     double CorrelationIntegral(double length_fraction);
@@ -107,10 +100,9 @@ unsigned int false_nearest_nei(TimeSeries& ts,
  * tau: time delay, normally obtained by the first minimum mutual information
  * dim: dimension
  */
-void create_lagged_array(const TimeSeries &ts,
+void CreateLaggedArray(const TimeSeries &ts,
         const unsigned int tau,
-        const unsigned int dim,
-        double** data);
+        std::vector<std::vector<double>>& data);
 
 /*
  * returns the index k of the nearest data[k] from data[index]. If we have a tie,

@@ -22,7 +22,7 @@ TEST_F(AttractorTest,values) {
     EXPECT_EQ((*att).size(),9);
     EXPECT_EQ((*att).get_dimension(),2);
     EXPECT_EQ((*att).get_delay(),1);
-    for (unsigned i = 0; i < att->size(); i++)
+    for (unsigned i = 0; i < att->size(); ++i)
     {
         ASSERT_DOUBLE_EQ(att->get_data(i,0),i+1);
     }
@@ -37,8 +37,7 @@ TEST_F(AttractorTest,vec){
     TimeSeries teste(data, 10);
     Attractor att_test(teste,2,1);
     for(unsigned i=0;i<9;i++){
-        double vec1[2];
-        att_test.get_vec(i,vec1);
+        std::vector<double> vec1(att_test[i]);
         EXPECT_EQ(vec1[0],data[i]);
         EXPECT_EQ(vec1[1],data[i+1]);
     }
@@ -73,22 +72,7 @@ TEST_F(AttractorTest,MeanOrbitDistanceTest){
     ASSERT_DOUBLE_EQ(mean,1.0);
     ASSERT_DOUBLE_EQ(std,0.0);
 }
-TEST_F(AttractorTest,AttractorFromFile){
-    std::ofstream test_file;
-    test_file.open("test.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-       test_file << i << " " << i + 1 << std::endl; 
-    }
-    test_file.close();
-    Attractor attractor_file("test.txt");
-    for (size_t i = 0; i < 10; ++i)
-    {
-      ASSERT_DOUBLE_EQ(attractor_file[i][0],i); 
-      ASSERT_DOUBLE_EQ(attractor_file[i][1],i + 1); 
-    }
-    rm("test.txt");
-}
+
 /*
 
     TEST(Test_attractor_from_file)

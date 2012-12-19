@@ -63,12 +63,12 @@ void RecurrencePlot::Generate(double limit, const TimeSeries & time_series){
 }
 
 void RecurrencePlot::Generate(double limit, const Attractor & attractor){
-    double vec_i[attractor.get_dimension()],vec_j[attractor.get_dimension()];
+    std::vector<double> vec_i(attractor.get_dimension()),vec_j(attractor.get_dimension());
     for(unsigned j = 0; j < attractor.size(); j++)
         for(unsigned i = 0; i < attractor.size(); i++){
-            attractor.get_vec(i,vec_i);
-            attractor.get_vec(j,vec_j);
-            double dist = EuclideanDistance(vec_i,vec_j,attractor.get_dimension());
+            vec_i = attractor[i];
+            vec_j = attractor[j];
+            double dist = EuclideanDistance(&vec_i[0],&vec_j[0],attractor.get_dimension());
             if(dist < limit){
                 data[i][j]= BLACK_DOT;
             }else{

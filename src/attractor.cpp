@@ -1,89 +1,37 @@
 #include "attractor.h"
 
 
-Attractor::Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay) : dimension(dimension),delay(delay), n_vec(ts.size() - delay*(dimension-1)),data() {
-    Allocate(n_vec,dimension);
-    create_lagged_array(ts, delay, dimension,data);
+Attractor::Attractor(const TimeSeries &ts,const unsigned int dimension,const unsigned int delay) : 
+dimension(dimension),delay(delay), n_vec(ts.size() - delay*(dimension-1)), data(n_vec, std::vector<double>(dimension)) 
+{
+    CreateLaggedArray(ts, delay, data);
     //LengthSide();
 }
 
-Attractor::Attractor(const double** p_data,const  unsigned int dimension,const  unsigned int n_vec):dimension(dimension),delay(0), n_vec(n_vec),data()  {
-    Allocate(n_vec,dimension);
-    for(unsigned int v=0;v<n_vec;v++){
-        for(unsigned int d=0;d<dimension;d++){
-            this->data[v][d] = data[v][d];
+Attractor::Attractor(const double** p_data,const  unsigned int dimension,const  unsigned int n_vec):
+dimension(dimension),delay(0), n_vec(n_vec), data(n_vec, std::vector<double>(dimension))  
+{
+    for(unsigned int v = 0; v < n_vec; v++){
+        for(unsigned int d = 0; d < dimension; d++){
+            this->data[v][d] = p_data[v][d];
         }
     }
     //LengthSide();
 }
 
-Attractor::Attractor(const std::vector< std::vector<double> > & vec_data):dimension(vec_data[0].size()),delay(0),n_vec(vec_data.size()),data(){
-    Allocate(n_vec,dimension);
-    for(unsigned int v=0;v<n_vec;v++){
-        for(unsigned int d=0;d<dimension;d++){
+Attractor::Attractor(const std::vector< std::vector<double> > & vec_data):
+dimension(vec_data[0].size()), delay(0), n_vec(vec_data.size()), data(n_vec, std::vector<double>(dimension))
+{
+    for(size_t v = 0; v < n_vec; v++) {
+        for(size_t d = 0; d < dimension; d++) {
             this->data[v][d] = vec_data[v][d];
         }
     }
- 
-}
-Attractor::Attractor(const std::string file_name):dimension(),delay(),n_vec(),data(){
-    unsigned lines;
-    unsigned columns;
-    file_counter(file_name,lines,columns);
-    dimension=columns;
-    n_vec=lines;
-    delay=0;
-
-    Allocate(n_vec,dimension);
-
-    std::ifstream indata;
-    indata.open(file_name.c_str()); // opens the file
-    if(!indata) { // file couldn't be opened
-        std::cerr << "Error: file could not be opened. file:" << file_name << std::endl;
-        exit(1);
-    }
-    for(unsigned j=0;j<n_vec;j++) { // keep reading until end-of-file
-        for(unsigned i=0;i<dimension;i++)
-            indata >> data[j][i];      
-    }
-    indata.close();
 }
 
-Attractor::Attractor(const  Attractor & att):dimension(att.get_dimension()),delay(att.get_delay()),n_vec(att.size()),data()
-{
-    
-    Allocate(n_vec,dimension);
-    unsigned cont=0;
-    for(unsigned j=0;j<n_vec;j++) { 
-        for(unsigned i=0;i<dimension;i++)
-            data[cont][i]=att.get_data(j,i);      
-        cont++;
-    }
-}
 
-Attractor::~Attractor() {
-    Dealocate(n_vec, dimension);
-}
-
-Attractor& Attractor::operator=(const Attractor &rhs) {
-
-    // Only do assignment if RHS is a different object from this.
-    if (this != &rhs) {
-        Dealocate(n_vec, dimension);
-        delay = rhs.get_delay();
-        dimension = rhs.get_dimension();
-        n_vec = rhs.size();
-    }
-
-    return *this;
-}
-
-const double Attractor::get_data(unsigned vec, unsigned dim) const{
+double Attractor::get_data(unsigned vec, unsigned dim) const{
     return (data[vec][dim]);
-}
-const void Attractor::get_vec(unsigned vec,double *p_vec) const{
-    for (unsigned i=0; i < dimension; i++)
-        p_vec[i]=data[vec][i];
 }
 
 inline
@@ -95,40 +43,23 @@ const std::vector<double>  Attractor::get_vec(const unsigned vec) const{
     }
     return out;
 }
-const unsigned Attractor::get_dimension() const{return(dimension);};
-const unsigned Attractor::get_delay() const{return(delay);};
-
-const unsigned Attractor::size() const{return(n_vec);};
+unsigned Attractor::get_dimension() const{return(dimension);}
+unsigned Attractor::get_delay() const{return(delay);}
+unsigned Attractor::size() const{return(data.size());}
 
 
 const std::vector<double> Attractor::operator[](const unsigned &vec) const{
     return(this->get_vec(vec));
 }
 inline
-void Attractor::Allocate(unsigned n_lines,unsigned n_columns){
-    this->data = new double* [n_lines];
-    for(unsigned i=0;i<n_lines;i++) this->data[i] = NULL;
-    for(unsigned i=0;i<n_lines;i++) this->data[i] = new double[n_columns];
-}
-inline
-void Attractor::Dealocate(unsigned n_lines,unsigned n_columns){
-     for(unsigned i=0;i<n_lines;i++){
-        delete [] this->data[i];
-    }
-    delete [] this->data;   
-}
 
-
-void create_lagged_array(const TimeSeries &ts,
+void CreateLaggedArray(const TimeSeries &ts,
         const unsigned int delay,
-        const unsigned int dim,
-        double** data)
+        std::vector<std::vector<double>>& data)
 {
-    unsigned int n_vec=ts.size()-delay*(dim-1);
-    unsigned int i,j;
-        for(i=0;i<n_vec;i++){
-        for(j=0;j<dim;j++){
-            data[i][j]=ts[i+j*delay];
+    for(size_t i = 0; i < data.size(); i++){
+        for(size_t j = 0; j < data[i].size(); j++){
+            data[i][j] = ts[ i + j * delay];
         }
     }
 }
