@@ -22,11 +22,8 @@
  *  fractal analysis.
  *  The class is all costant, since the data should not change.
  */
-class TimeSeries
-{
-
+class TimeSeries {
 public:
-
 	/*the memory pointed by data is copied to an vector named data.*/
     TimeSeries(double const * const data, size_t size);
     TimeSeries(const std::vector<double> & data);
@@ -50,8 +47,8 @@ private:
 };
 
 double Entropy(TimeSeries& ts);
-double AutoCorrelation(TimeSeries& ts,unsigned tau);
-double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2);
-double MutualInformation(TimeSeries& ts,unsigned  tau, unsigned bins);
+double AutoCorrelation(TimeSeries& ts, unsigned tau);
+double CrossCorrelation(TimeSeries& ts1, TimeSeries& ts2);
+double MutualInformation(TimeSeries& ts, unsigned  tau, unsigned bins);
 
 #endif	/* _TIME_SERIES_H */

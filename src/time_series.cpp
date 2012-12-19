@@ -103,7 +103,7 @@ double Entropy(TimeSeries& ts){
 	return (sum);
 }
 
-double AutoCorrelation(TimeSeries& ts,unsigned tau)
+double AutoCorrelation(TimeSeries& ts, unsigned tau)
 {
 	double correlation = 0, mean;
 	mean = ts.Mean();
@@ -112,7 +112,7 @@ double AutoCorrelation(TimeSeries& ts,unsigned tau)
 	}
     correlation /= ts.size()-tau;
 	correlation /=  pow(ts.Std(),2);
-	return(correlation);
+	return correlation;
 }
 
 double CrossCorrelation(TimeSeries& ts1,TimeSeries& ts2)

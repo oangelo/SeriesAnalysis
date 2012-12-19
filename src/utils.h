@@ -58,11 +58,10 @@ std::vector< std::vector<type> >  ReadFile(std::string file_name){
     }
     else std::cout << "Unable to open file" << std::endl; 
     return data;
-
 }
 
 template<class type>
-std::vector< std::vector<type> >  ReadStdin(){
+    std::vector< std::vector<type> >  ReadStdin(){
     std::vector< std::vector<type> > data;
     std::string line;
         while (std::cin)

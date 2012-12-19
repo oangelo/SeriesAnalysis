@@ -35,6 +35,7 @@ void PrintMan(){
     std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
     std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
     std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
+    std::cout << "  --autocorrelation, -ac            Autocorrelation, another method to find the embending delay" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -42,20 +43,22 @@ int main(int argc, char* argv[]) {
         PrintMan(); 
         return 0;
     }
-    bool from_file = false;
     std::vector<std::vector<double>> data;
 
     TimeSeries *time_series = NULL;
-    double rows = 0,column = 0;
-    unsigned bins = 0;
     Attractor *attractor = NULL;
-    RecurrencePlot *rp;
-    std::string file_name;
+    RecurrencePlot *rp = NULL;
+
+    unsigned rows = 0,column = 0;
+    unsigned bins = 0;
     unsigned dimension = 0;
     unsigned delay = 0;
     unsigned window = 1;
     double threshold = 0;
-    //time series statistics
+
+    bool from_file = false;
+    std::string file_name;
+        //time series statistics
     Mean<double> ts_mean;
     StDeviation<double> ts_std;
     //use a multiplot of standard deviation as threshold
@@ -64,6 +67,8 @@ int main(int argc, char* argv[]) {
     //                                        Setting Data Up
     //###########################################################################################
     for (size_t i = 1; i < argc; ++i) {
+
+
         if(std::string(argv[i]) == "--dimension" || std::string(argv[i]) == "-d")
             if(i + 1 < argc) { 
                 dimension = atoi(argv[i + 1]);
@@ -103,7 +108,6 @@ int main(int argc, char* argv[]) {
         if( std::string(argv[i]) == "--bins")
             if(i + 1 < argc) 
                 bins = atoi(argv[i + 1]);
-
         if(std::string(argv[i]) == "--file" || std::string(argv[i]) == "-f")
             if(i + 1 < argc){ 
                 data =  ReadFile<double>(std::string(argv[i+1]));
@@ -112,15 +116,18 @@ int main(int argc, char* argv[]) {
                 std::cerr << "Data size: " << data.size() << ", columns: " << data[0].size()  << std::endl;
                 from_file = true; 
             }
-        if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
-            file_name = std::string(argv[i+1]);
+
         if(std::string(argv[i]) == "-"){
             data = ReadStdin<double>();
             std::cerr << "Data size: " << data.size() << ", columns: " << data[0].size()  << std::endl;
-
         }
 
+        if(std::string(argv[i]) == "--file_name" || std::string(argv[i]) == "-name")
+            file_name = std::string(argv[i+1]);
+
+
     }
+
 
     //Creating basics objects
     for (size_t i = 1; i < argc; ++i) {
@@ -139,7 +146,6 @@ int main(int argc, char* argv[]) {
             ts_std((*time_series)[i]);
         }
     }
-
     //Using time series
     for (size_t i = 1; i < argc; ++i)
     {
@@ -155,13 +161,14 @@ int main(int argc, char* argv[]) {
     if(threshold == 0){
         if(attractor) {
             std::cerr << ">> Trying to gess the threshold" << std::endl;
-            threshold = FindThreshold(*attractor, 2, 0.1);
+            threshold = FindThreshold(*attractor, 3, 0.1);
             std::cerr << ">> threshold: " << threshold << std::endl;
         }
     }
     if(th_std != 0){
-        if(time_series) {
-            threshold = ts_std * th_std;
+        if(attractor) {
+            threshold = th_std * StdPointsDistances(*attractor);
+            std::cerr << ">> threshold: " << threshold << std::endl;
         }
     }
     for (size_t i = 1; i < argc; ++i)
@@ -171,6 +178,12 @@ int main(int argc, char* argv[]) {
                 std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
                 rp = new RecurrencePlot(*attractor, threshold);
             }
+            for (size_t j = 0; j < window; ++j)
+                for (size_t i = 0; i < rp->size()-j; ++i)
+                    (*rp)[i][i+j]=0;
+            for (size_t j = 0; j < window; ++j)
+                for (size_t i = j; i < rp->size(); ++i)
+                    (*rp)[i][i-j]=0;
             
             if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
                 rp->PrintOnScreen();
@@ -202,22 +215,14 @@ int main(int argc, char* argv[]) {
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
 
+        if((std::string(argv[i]) == "--autocorrelation") || (std::string(argv[i]) == "-ac")){
+            std::cout << "# delay x auto_correlation" << std::endl;
+            for (size_t i = 1; i < time_series->size() / 10.0; ++i)
+                std::cout << i << " " << AutoCorrelation(*time_series, i) << std::endl; 
+        }
+
         if((std::string(argv[i]) == "--recurrence_analysis") || (std::string(argv[i]) == "-rqa")) {
             if(rp){
-/*
-                for (size_t i = 0; i < rp->size(); ++i)
-                    for (size_t j = i; j < rp->size(); ++j)
-                        (*rp)[i][j] = 0;
-
-             //Treiler window
-             for (size_t i = window; i < rp->size(); ++i)
-                    for (size_t j = i; j > i - window - 1; --j)
-                        (*rp)[i][j] = 0;
-             for (size_t i = 0; i < window; ++i)
-                    for (size_t j = i; j != -1 ; --j)
-                        (*rp)[i][j] = 0;
-              
-*/
                 RecurrenceAnalytics analytics(*rp);
                 std::cout << file_name  << " "; 
                 std::cout << analytics.RR()  << " "; 
@@ -237,27 +242,15 @@ int main(int argc, char* argv[]) {
 
                 std::cout << std::endl; 
             }
-
         }
-        /*
-           if((std::string(argv[i]) == "--cross_correlation") && (i+2 < argc)){
-           TimeSeries ts1(std::string(argv[i+1]));
-           if(i + 2 < argc && std::string(argv[i+2]) == "--normalize" )
-           normalize = MutualInformation(ts,0); 
-           std::cout << "#delay mutual_info" << std::endl;
-           for (size_t i = 0; i < 0.01*ts.Size(); ++i)
-           {
-           std::cout << i << " " << MutualInformation(ts,i) / normalize << std::endl; 
-           }
-
-           } 
-           */
     }
-    
 
-    delete time_series;
-    delete attractor;
-    delete rp;
+    if(time_series)
+        delete time_series;
+    if(attractor)
+        delete attractor;
+    if(rp)
+        delete rp;
     return 0; 
 }
 
