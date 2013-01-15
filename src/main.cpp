@@ -33,7 +33,6 @@ void PrintMan(){
     std::cout << "Analysis:" << std::endl;
     std::cout << "  --recurrence_analysis, -rqa       Print the recurence quatification analysis of the RP" << std::endl;
     std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
-    std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
     std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
     std::cout << "  --autocorrelation, -ac            Autocorrelation, another method to find the embending delay" << std::endl;
 }
@@ -161,8 +160,10 @@ int main(int argc, char* argv[]) {
     if(threshold == 0){
         if(attractor) {
             std::cerr << ">> Trying to gess the threshold" << std::endl;
-            threshold = FindThreshold(*attractor, 3, 0.1);
+            threshold = FindThreshold(*attractor, 5, 0.1);
             std::cerr << ">> threshold: " << threshold << std::endl;
+            if(threshold == 0.0)
+                return 1;
         }
     }
     if(th_std != 0){

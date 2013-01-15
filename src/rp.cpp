@@ -95,13 +95,13 @@ double RR(RecurrencePlot rp) {
 }
 
 double FindThreshold(Attractor& att, double percentage, double tolerance, double hint) {
-    if(hint == 0){
+    if(hint < 0.000000001){
         hint = MeanPointsDistances(att);
     }
     double epsilon;
     double rr = 0;
     double init = 0, end = hint; 
-    unsigned count = 0, max = 1000;
+    unsigned count = 0, max = 20;
     while(fabs(RR(RecurrencePlot(att, epsilon)) - percentage) > tolerance && count < max) {
         ++count;
         double half_epsilon((end - init) / 2.0);
