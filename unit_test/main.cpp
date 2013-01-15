@@ -7,6 +7,8 @@
 
 #include "../src/statistics.h"
 #include "../src/time_series.h"
+#include "../src/attractor.h"
+#include "../src/chaos.h"
 
 #define TRUE 1
 #define FALSE 0
