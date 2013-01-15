@@ -1,5 +1,5 @@
-#ifndef CHAOS_H
-#define CHAOS_H
+#ifndef ATTRACTOR_H 
+#define ATTRACTOR_H
 
 #include "float.h"
 
@@ -10,9 +10,6 @@
 #include "time_series.h"
 #include "utils.h"
 #include "statistics/statistics.h"
-//TODO: 
-//strip the correlation integrals and box count from the class
-
 /*
  * Describe a n-dimensional attractor.
  */
@@ -42,31 +39,6 @@ class Attractor{
     unsigned dimension,delay,n_vec;
     std::vector<std::vector<double>> data; // organized as data[array_index][array_coord]
 };
-/*
-    double CorrelationIntegral(double length_fraction);
-    std::vector<unsigned int> BoxCountingDimension(double epsilon);
-    double epsilon;
-    double length;
-    std::vector<unsigned int> n_box;
-    //check if a point is inside a box between [coord-epsilon/2,coord+epsilon/2]
-    int PointsInBox(double *coord,double epsilon);
-    
-    //  min(max) is an output array of size D (attractor dimension).
-    //  Each array element is associated to a coordinate minimum(maximum).
-    //  Useful to boxcounting.
-     
-    void Find(double *min,double *max);
-    void LengthSide();
-    //do n, dynamic, loops by recursion
-    void RecursiveFor(unsigned dimension,
-            unsigned cont,
-            unsigned* cont_loop,
-            unsigned *walker,
-            unsigned* max_loop,
-            double *min);
- */
-
-
 
 /*
  * Before reconstruct an attractor we use this functions to find
@@ -121,10 +93,9 @@ std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
 //This can be done by dividing the distance betwen points by the mean,
 //and assures that the distance on the array is bigger than this value
 void MeanOrbitDistance(Attractor & attractor,double &  mean, double &  std);
-
 double MeanPointsDistances(Attractor & attractor);
 double StdPointsDistances(Attractor & attractor);
 
 
 
-#endif /*CHAOS_H*/
+#endif /*ATTRACTOR_H*/
