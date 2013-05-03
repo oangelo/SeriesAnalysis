@@ -25,6 +25,7 @@ void PrintMan(){
     std::cout << "  --threshold_std, -th_std <real>   Use as threshold a <real> * st. deviation of the time series" << std::endl;
     std::cout << "  --file, -f <string>               Read data from file" << std::endl;
     std::cout << "  --file_name, -name <string>       Name of file to save" << std::endl;
+    std::cout << "  --window <int>                    Thrailer window / moving average " << std::endl;
     std::cout << "Objects:" << std::endl;
     std::cout << "  --attractor, -att                 Creates an attractor " << std::endl;
     std::cout << "  --time_series, -ts                Create a time series " << std::endl;
@@ -35,6 +36,7 @@ void PrintMan(){
     std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
     std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
     std::cout << "  --autocorrelation, -ac            Autocorrelation, another method to find the embending delay" << std::endl;
+    std::cout << "  --moving_average, -ma <int>       Autocorrelation, another method to find the embending delay" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -221,6 +223,12 @@ int main(int argc, char* argv[]) {
             for (size_t i = 1; i < time_series->size() / 10.0; ++i)
                 std::cout << i << " " << AutoCorrelation(*time_series, i) << std::endl; 
         }
+
+        if((std::string(argv[i]) == "--moving_average") || (std::string(argv[i]) == "-ma")){
+            std::cerr << ">> Moving Average" << std::endl;
+            MovingAverage(*time_series, window);
+        }
+
 
         if((std::string(argv[i]) == "--recurrence_analysis") || (std::string(argv[i]) == "-rqa")) {
             if(rp){

@@ -176,3 +176,22 @@ double MutualInformation(TimeSeries& ts, unsigned tau, unsigned bins)
 	return(sum);
 }
 
+void MovingAverage(TimeSeries& ts, unsigned window){
+    Mean<double> mean;
+    for (size_t i = 0; i < window / 2; ++i)
+    {
+        mean(ts[i]);
+        std::cout << mean << std::endl;
+    }
+    for (size_t i = window / 2; i < ts.size() - window / 2; ++i){
+        Mean<double> moving_average;
+        for (size_t j = i; j < i+window; ++j) {
+            moving_average(ts[j]);
+        }
+        std::cout << moving_average << std::endl;
+    }
+    Mean<double> mean_end;
+    for (size_t i = ts.size() - window / 2; i < ts.size(); ++i){
+
+    }
+}

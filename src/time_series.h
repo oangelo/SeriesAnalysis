@@ -12,6 +12,7 @@
 #include <cassert>
 #include <exception>
 
+#include "statistics/statistics.h"
 #include "statistics.h"
 #include "utils.h"
 
@@ -50,5 +51,6 @@ double Entropy(TimeSeries& ts);
 double AutoCorrelation(TimeSeries& ts, unsigned tau);
 double CrossCorrelation(TimeSeries& ts1, TimeSeries& ts2);
 double MutualInformation(TimeSeries& ts, unsigned  tau, unsigned bins);
+void MovingAverage(TimeSeries& ts, unsigned window);
 
 #endif	/* _TIME_SERIES_H */
