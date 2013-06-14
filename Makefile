@@ -21,5 +21,5 @@ $(EXECUTABLE): $(OBJECTS)
 install:
 	sudo cp $(EXECUTABLE) /usr/local/bin
 
-install:
+uninstall:
 	sudo rm /usr/local/bin/$(EXECUTABLE)
