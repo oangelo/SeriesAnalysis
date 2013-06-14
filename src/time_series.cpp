@@ -88,9 +88,9 @@ void TimeSeries::Print(std::string file_name) const
 
 
 
-double Entropy(TimeSeries& ts){
-	Histogram1D hist(ts.Min(),ts.Max()+EPSILON,sqrt(ts.size()));
-	for (unsigned i = 0; i < ts.size();i++){
+double Entropy(TimeSeries& ts, unsigned bins, double min, double max){
+//	histogram hist(bins, min, max);
+/*	for (unsigned i = 0; i < ts.size();i++){
 		hist(ts[i]);
 	}
 	double sum = 0;
@@ -101,6 +101,7 @@ double Entropy(TimeSeries& ts){
         }
 	}
 	return (sum);
+    */
 }
 
 double AutoCorrelation(TimeSeries& ts, unsigned tau)
@@ -177,20 +178,20 @@ double MutualInformation(TimeSeries& ts, unsigned tau, unsigned bins)
 }
 
 void MovingAverage(TimeSeries& ts, unsigned window){
-    Mean<double> mean;
+    pstatistics::Mean mean;
     for (size_t i = 0; i < window / 2; ++i)
     {
         mean(ts[i]);
         std::cout << mean << std::endl;
     }
     for (size_t i = window / 2; i < ts.size() - window / 2; ++i){
-        Mean<double> moving_average;
+        pstatistics::Mean moving_average;
         for (size_t j = i; j < i+window; ++j) {
             moving_average(ts[j]);
         }
         std::cout << moving_average << std::endl;
     }
-    Mean<double> mean_end;
+    pstatistics::Mean mean_end;
     for (size_t i = ts.size() - window / 2; i < ts.size(); ++i){
 
     }

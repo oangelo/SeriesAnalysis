@@ -302,7 +302,7 @@ void MeanOrbitDistance(Attractor & attractor,double & mean, double & std){
 
 
 double MeanPointsDistances(Attractor & attractor) {
-    Mean<double> mean;
+    pstatistics::Mean mean;
     for (size_t i = 0; i < attractor.size(); ++i)
     {
         for (size_t j = i + 1; j < attractor.size(); ++j) {
@@ -314,7 +314,7 @@ double MeanPointsDistances(Attractor & attractor) {
 }
 
 double StdPointsDistances(Attractor & attractor) {
-    StDeviation<double> std;
+    pstatistics::StandardDeviation std;
     for (size_t i = 0; i < attractor.size(); ++i)
     {
         for (size_t j = i + 1; j < attractor.size(); ++j) {

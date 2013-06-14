@@ -9,7 +9,7 @@
 
 #include "time_series.h"
 #include "utils.h"
-#include "statistics/statistics.h"
+#include "statistics/src/statistics.h"
 /*
  * Describe a n-dimensional attractor.
  */

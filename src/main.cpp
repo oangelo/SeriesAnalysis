@@ -3,11 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-#include "statistics.h"
 #include "time_series.h"
 #include "attractor.h"
 #include "rqa.h"
-#include "statistics/statistics.h"
+#include "statistics/src/statistics.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -60,8 +59,8 @@ int main(int argc, char* argv[]) {
     bool from_file = false;
     std::string file_name;
         //time series statistics
-    Mean<double> ts_mean;
-    StDeviation<double> ts_std;
+    pstatistics::Mean ts_mean;
+    pstatistics::StandardDeviation ts_std;
     //use a multiplot of standard deviation as threshold
     double th_std = 0;
     //###########################################################################################
