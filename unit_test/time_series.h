@@ -44,7 +44,14 @@ TEST(TimeSeries,Test_binary_entropy)
 {
     double data[10] = { 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0 };
     TimeSeries teste(data, 10);
-    EXPECT_EQ(Entropy(teste),1);
+    EXPECT_EQ(Entropy(teste, 2, 0, 1.1),1);
+}
+
+TEST(TimeSeries,Test_zero_entropy)
+{
+    double data[10] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+    TimeSeries teste(data, 10);
+    EXPECT_EQ(Entropy(teste, 2, 0, 1.1),0);
 }
 
 

@@ -89,19 +89,18 @@ void TimeSeries::Print(std::string file_name) const
 
 
 double Entropy(TimeSeries& ts, unsigned bins, double min, double max){
-//	histogram hist(bins, min, max);
-/*	for (unsigned i = 0; i < ts.size();i++){
-		hist(ts[i]);
+    pstatistics::Histogram histogram(bins, min, max);
+	for (unsigned i = 0; i < ts.size();i++){
+		histogram(ts[i]);
 	}
 	double sum = 0;
-	for (size_t i = 0 ; i < hist.size(); i++){
-		if(hist[i] > 0){ 
-            double probability = static_cast<double>(hist[i])/hist.Sum();
+	for (size_t i = 0 ; i < histogram.get_bins_amount(); i++){
+		if(histogram[i] > 0){ 
+            double probability = static_cast<double>(histogram[i])/histogram.SumBins();
             sum -= probability*(log(probability)/log(2));
         }
 	}
 	return (sum);
-    */
 }
 
 double AutoCorrelation(TimeSeries& ts, unsigned tau)

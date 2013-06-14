@@ -36,6 +36,7 @@ void PrintMan(){
     std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
     std::cout << "  --autocorrelation, -ac            Autocorrelation, another method to find the embending delay" << std::endl;
     std::cout << "  --moving_average, -ma <int>       Autocorrelation, another method to find the embending delay" << std::endl;
+    std::cout << "  --entropy <real> <real>           Entropy of the time series, set the histogram min and max" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -222,6 +223,12 @@ int main(int argc, char* argv[]) {
             for (size_t i = 1; i < time_series->size() / 10.0; ++i)
                 std::cout << i << " " << AutoCorrelation(*time_series, i) << std::endl; 
         }
+
+        if((std::string(argv[i]) == "--entropy") || (std::string(argv[i]) == "-ac")){
+            std::cerr << "# Shannon Entropy" << std::endl;
+                std::cout << Entropy(*time_series, bins, atoi(argv[i + 1]), atoi(argv[i + 2])) << std::endl; 
+        }
+
 
         if((std::string(argv[i]) == "--moving_average") || (std::string(argv[i]) == "-ma")){
             std::cerr << ">> Moving Average" << std::endl;
