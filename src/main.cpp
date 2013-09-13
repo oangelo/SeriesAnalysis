@@ -31,6 +31,7 @@ void PrintMan(){
     std::cout << "  --recurrence_plot, -rp            Create a Recurrence Plot (--print or -p to print on screen)" << std::endl;
     std::cout << "  -ts_to_att                        Create a time series from a attractor" << std::endl;
     std::cout << "Analysis:" << std::endl;
+    std::cout << "  --gess_thresshold, -gess_th       Gesses for the Recurrece Plot threshold, mean, std, %5 recurrence" << std::endl;
     std::cout << "  --recurrence_analysis, -rqa       Print the recurence quatification analysis of the RP" << std::endl;
     std::cout << "  --false_nearest_neighbors, -fnn   False nearest Neighbors, a method to find embending dimension" << std::endl;
     std::cout << "  --mutual_information, -mi         Mutual information, a method to find the embending delay" << std::endl;
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
     unsigned dimension = 0;
     unsigned delay = 0;
     unsigned window = 1;
+    bool gess_threshold = false;
     double threshold = 0;
 
     bool from_file = false;
@@ -86,6 +88,11 @@ int main(int argc, char* argv[]) {
             if(i + 1 < argc) {
                 threshold = atof(argv[i + 1]);
                 std::cerr << "Threshold: " << threshold << std::endl;
+            }
+
+        if(std::string(argv[i]) == "--gess_threshold" || std::string(argv[i]) == "-gess_th") {
+                gess_threshold = true;
+                std::cerr << "Gess Threshold Active!" <<  std::endl;
             }
 
         if(std::string(argv[i]) == "--window" || std::string(argv[i]) == "-w")
@@ -160,7 +167,16 @@ int main(int argc, char* argv[]) {
 
     for (size_t i = 1; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "-recurrence_plot" or std::string(argv[i]) == "-rp"){
+        if(std::string(argv[i]) == "--gess_threshold" or std::string(argv[i]) == "-gess_th"){
+            std::cerr << "Gess for the Recurrence Plot threshold:" << std::endl;
+            if(from_file)
+                std::cout << file_name << ",";
+            std::cout <<  MeanPointsDistances(*attractor) << ","  << 
+                          StdPointsDistances(*attractor) << "," << 
+                          FindThreshold(*attractor, 5, 0.1) << std::endl;
+
+        }
+        if(std::string(argv[i]) == "--recurrence_plot" or std::string(argv[i]) == "-rp"){
             if(th_std != 0){
                 if(attractor) {
                     threshold = th_std * StdPointsDistances(*attractor);
