@@ -95,18 +95,23 @@ double RR(RecurrencePlot rp) {
 }
 
 double FindThreshold(Attractor& att, double percentage, double tolerance, double hint) {
+    double mean_points_distance, std_poinsts_distance;
     if(hint < 0.000000001){
-        hint = MeanPointsDistances(att);
+        mean_points_distance = MeanPointsDistances(att);
+        std_poinsts_distance = StdPointsDistances(att);
+        hint = mean_points_distance + 2 * std_poinsts_distance;
     }
     double epsilon;
-    double rr = 0;
     double init = 0, end = hint; 
-    unsigned count = 0, max = 20;
-    while(fabs(RR(RecurrencePlot(att, epsilon)) - percentage) > tolerance && count < max) {
-        ++count;
+    unsigned count = 0, max = 40;
+    double half_epsilon = 0;
+    double rr = 0, old_rr;
+    while(fabs(rr - percentage) > tolerance && count < max) {
+
+        double right_weight(fabs(RR(RecurrencePlot(att, end - half_epsilon)) - percentage));
+        double left_weight(fabs(RR(RecurrencePlot(att, init + half_epsilon)) - percentage));
         double half_epsilon((end - init) / 2.0);
-        double left_weight(fabs(RR(RecurrencePlot(att, (init + half_epsilon * 0.5))) - percentage));
-        double right_weight(fabs(RR(RecurrencePlot(att, end -  half_epsilon * 0.5)) - percentage));
+
         if(left_weight < right_weight) {
             end -=  half_epsilon; 
             epsilon = end;
@@ -114,16 +119,26 @@ double FindThreshold(Attractor& att, double percentage, double tolerance, double
             init += half_epsilon;
             epsilon = init;
         }
-        if(init == end) {
-            std::cerr << "Bad hint to find the RP threshold" << std::endl;
-            return 0;
-        }
 
+        old_rr = rr;
+        rr = RR(RecurrencePlot(att, epsilon));
+
+        if(fabs(old_rr - rr) < 0.0000001){
+            if(rr < percentage){
+                end = init + half_epsilon;
+                init = init + half_epsilon + 2 * std_poinsts_distance;
+            }else{
+                end = 0;
+                init = init + half_epsilon;
+            }
+            half_epsilon = 0;
+        }
+        ++count;
     }
     if(count == max) {
-       std::cerr << "Bad hint to find the RP threshold" << std::endl;
-       return 0;
-     }
+       std::cerr << "RP threshold not converged (max iterantions reached) " << epsilon << std::endl;
+       return std::numeric_limits<double>::quiet_NaN();
+    }
 
     return epsilon;
 }
