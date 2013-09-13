@@ -158,25 +158,26 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //Using attractor
-    if(threshold == 0){
-        if(attractor) {
-            std::cerr << ">> Trying to gess the threshold" << std::endl;
-            threshold = FindThreshold(*attractor, 5, 0.1);
-            std::cerr << ">> threshold: " << threshold << std::endl;
-            if(threshold == 0.0)
-                return 1;
-        }
-    }
-    if(th_std != 0){
-        if(attractor) {
-            threshold = th_std * StdPointsDistances(*attractor);
-            std::cerr << ">> threshold: " << threshold << std::endl;
-        }
-    }
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "-recurrence_plot" or std::string(argv[i]) == "-rp"){
+            if(th_std != 0){
+                if(attractor) {
+                    threshold = th_std * StdPointsDistances(*attractor);
+                    std::cerr << ">> threshold: " << threshold << std::endl;
+                }
+            }
+            //Using attractor
+            if(threshold == 0){
+                if(attractor) {
+                    std::cerr << ">> Trying to gess the threshold" << std::endl;
+                    threshold = FindThreshold(*attractor, 5, 0.1);
+                    std::cerr << ">> threshold: " << threshold << std::endl;
+                    if(threshold == 0.0)
+                        return 1;
+                }
+            }
+
             if(attractor){
                 std::cerr << ">> Conjurating Recurrence Plot From Attractor" << std::endl;
                 rp = new RecurrencePlot(*attractor, threshold);
@@ -187,7 +188,7 @@ int main(int argc, char* argv[]) {
             for (size_t j = 0; j < window; ++j)
                 for (size_t i = j; i < rp->size(); ++i)
                     (*rp)[i][i-j]=0;
-            
+
             if( (i + 1) <= argc && (std::string(argv[i + 1]) == "--print" || std::string(argv[i + 1]) == "-p"))
                 rp->PrintOnScreen();
         }
@@ -213,18 +214,18 @@ int main(int argc, char* argv[]) {
             std::cerr << ">> Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
             std::cerr << ">> Delay: " << delay  << std::endl; 
             std::cerr << ">> Threshold: " << threshold << std::endl; 
-            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, threshold, false);
+            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, threshold, true);
             for (size_t i = 0; i < nff.size(); ++i)
                 std::cout << i + 1 << " " << nff[i] << std::endl; 
         } 
 
         if((std::string(argv[i]) == "--autocorrelation") || (std::string(argv[i]) == "-ac")){
             std::cout << "# delay x auto_correlation" << std::endl;
-            for (size_t i = 1; i < time_series->size() / 10.0; ++i)
+            for (size_t i = 1; i < time_series->size() / 2.0; ++i)
                 std::cout << i << " " << AutoCorrelation(*time_series, i) << std::endl; 
         }
 
-        if((std::string(argv[i]) == "--entropy") || (std::string(argv[i]) == "-ac")){
+        if((std::string(argv[i]) == "--entropy") ){
             std::cerr << "# Shannon Entropy" << std::endl;
                 std::cout << Entropy(*time_series, bins, atoi(argv[i + 1]), atoi(argv[i + 2])) << std::endl; 
         }
