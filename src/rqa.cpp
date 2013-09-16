@@ -4,50 +4,33 @@ unsigned NumberOfBlackDots(RecurrencePlot data){
     unsigned count = 0;
     for(unsigned j = 0; j < data.size(); j++)
         for(unsigned i = 0; i < data.size(); i++)
-            if(data[i][j] == burn::BLACK_DOT )
+            if(data[i][j] == RecurrencePlot::BLACK_DOT )
                 count++;
-    return(count - data.size());
+    return(count);
+}
+
+void RecurrenceAnalytics::RemoveLOI(RecurrencePlot& data){
+    for (size_t i = 0; i < data.size(); ++i)
+            data[i][i] = RecurrencePlot::WHITE_DOT;
 }
 
 RecurrenceAnalytics::RecurrenceAnalytics(RecurrencePlot data)
 :n_black_dots(NumberOfBlackDots(data)), size(data.size()), vertical(), diagonal()
 {
-    //remove the LOI
-    for (size_t i = 0; i < size; ++i)
-            data[i][i] = 0;
+    RemoveLOI(data);
+    vertical = FindVerticalLines(data); 
+    diagonal = FindDiagonalLines(data);
+}
 
+
+std::vector<unsigned> FindVerticalLines(RecurrencePlot& data){
+    std::vector<unsigned> vertical;
     bool flag = false;
     unsigned count = 0;
-    for (size_t i = 1; i < size; ++i) {
+    for (size_t i = 1; i < data.size(); ++i) {
         count = 0;
         flag = false;
-        for (size_t j = 0; j < size - i; ++j) {
-            if(data[j][j + i] == 1) {
-                flag = true;
-            }else{
-                flag = false;
-            }
-            if(flag == true)
-                ++count;
-            if(flag == false and count >= 2) {
-                diagonal.push_back(count);
-                count = 0;
-            }
-            if(flag == false and count < 2) {
-                count = 0;
-            }
-            //end
-            if(count > 2 and j == (size - i - 1))
-                diagonal.push_back(count);
-        }
-    }
-
-    flag = false;
-    count = 0;
-    for (size_t i = 1; i < size; ++i) {
-        count = 0;
-        flag = false;
-        for (size_t j = 0; j < size; ++j) {
+        for (size_t j = 0; j < data.size(); ++j) {
             if(data[j][i] == 1) {
                 flag = true;
             }else{
@@ -63,12 +46,43 @@ RecurrenceAnalytics::RecurrenceAnalytics(RecurrencePlot data)
                 count = 0;
             }
             //end
-            if(count > 2 and j == (size - 1))
-                vertical.push_back(count);
         }
+        if(count > 2)
+            vertical.push_back(count);
+
     }
-//    for(auto i: vertical)
-//        std::cout << i << std::endl;
+    return vertical;
+}
+
+std::vector<unsigned> FindDiagonalLines(RecurrencePlot& data){
+    std::vector<unsigned> diagonal;
+    bool flag = false;
+    unsigned count = 0;
+    for (size_t i = 1; i < data.size(); ++i) {
+        count = 0;
+        flag = false;
+        for (size_t j = 0; j < data.size() - i; ++j) {
+            if(data[j][j + i] == 1) {
+                flag = true;
+            }else{
+                flag = false;
+            }
+            if(flag == true)
+                ++count;
+            if(flag == false) {
+                if(count >= 2){
+                    diagonal.push_back(count);
+                    count = 0;
+                }else{
+                    count = 0;
+                }
+            }
+        }
+        //end of the loop
+        if(count > 2)
+            diagonal.push_back(count);
+    }
+    return diagonal;
 }
 
 double RecurrenceAnalytics::RR(){

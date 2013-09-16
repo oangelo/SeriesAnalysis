@@ -87,9 +87,10 @@ void RecurrencePlot::Allocate(size_t size){
 
 double RR(RecurrencePlot rp) {
     double sum = 0, rr;
-    for(auto i: rp.get_data())
-        for(auto j: i)
-            sum += j;
+    for(size_t i = 0; i < rp.size(); ++i)
+        for(size_t j = 0; j < rp.size(); ++j)
+            if(rp[i][j] == rp.BLACK_DOT)
+                sum += 1;
     rr = 100.0 * sum / (pow(rp.size(),2));
     return rr;
 }

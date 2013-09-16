@@ -30,10 +30,15 @@ class RecurrenceAnalytics{
         unsigned NumberOfRecurrence();
         double HitPercentage();
     private:
+
+        void RemoveLOI(RecurrencePlot& data);
         unsigned n_black_dots;
         unsigned size;
         std::vector<unsigned> vertical;
         std::vector<unsigned> diagonal;
 };
+
+std::vector<unsigned>  FindVerticalLines(RecurrencePlot& data);
+std::vector<unsigned>  FindDiagonalLines(RecurrencePlot& data);
 
 #endif /* RECURRENCE_ANALYTICS_H */
