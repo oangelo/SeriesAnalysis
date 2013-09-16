@@ -103,7 +103,7 @@ double FindThreshold(Attractor& att, double percentage, double tolerance, double
     }
     double epsilon;
     double init = 0, end = hint; 
-    unsigned count = 0, max = 40;
+    unsigned count = 0, max = 60;
     double half_epsilon = 0;
     double rr = 0, old_rr;
     while(fabs(rr - percentage) > tolerance && count < max) {
@@ -122,6 +122,7 @@ double FindThreshold(Attractor& att, double percentage, double tolerance, double
 
         old_rr = rr;
         rr = RR(RecurrencePlot(att, epsilon));
+        //std::cerr << "rr = " << rr << " old =" << old_rr << " count " << count << std::endl;
 
         if(fabs(old_rr - rr) < 0.0000001){
             if(rr < percentage){
