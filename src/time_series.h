@@ -45,7 +45,6 @@ public:
 
 private:
     std::vector<double> data;
-
 };
 
 double Entropy(TimeSeries& ts, unsigned bins, double min, double max);
@@ -53,5 +52,6 @@ double AutoCorrelation(TimeSeries& ts, unsigned tau);
 double CrossCorrelation(TimeSeries& ts1, TimeSeries& ts2);
 double MutualInformation(TimeSeries& ts, unsigned  tau, unsigned bins);
 void MovingAverage(TimeSeries& ts, unsigned window);
+TimeSeries Surrogate(const TimeSeries& ts);
 
 #endif	/* _TIME_SERIES_H */

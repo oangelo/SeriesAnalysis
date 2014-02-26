@@ -195,3 +195,21 @@ void MovingAverage(TimeSeries& ts, unsigned window){
 
     }
 }
+
+
+TimeSeries Surrogate(const TimeSeries& ts){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, ts.size() - 1);
+    std::vector<double> aux;
+    for(size_t i(0); i < ts.size(); ++i)
+        aux.push_back(ts[i]);
+    for(size_t i(0); i < ts.size(); ++i){
+        int from(dis(gen));
+        int to(dis(gen));
+        double aux_value(aux[to]);
+        aux[to] = aux[from];
+        aux[from] = aux_value;
+    }
+    return TimeSeries(aux);
+}

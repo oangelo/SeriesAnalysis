@@ -26,6 +26,7 @@ void PrintMan(){
     std::cout << "  --file_name, -name <string>       Name of file to save" << std::endl;
     std::cout << "  --window <int>                    Thrailer window / moving average " << std::endl;
     std::cout << "  --column <int>                    The columns to use as time series" << std::endl;
+    std::cout << "  --surrogate                       Shuffle the time series" << std::endl;
     std::cout << "Objects:" << std::endl;
     std::cout << "  --attractor, -att                 Creates an attractor " << std::endl;
     std::cout << "  --time_series, -ts                Create a time series " << std::endl;
@@ -160,6 +161,12 @@ int main(int argc, char* argv[]) {
     //Using time series
     for (size_t i = 1; i < argc; ++i)
     {
+        if(std::string(argv[i]) == "--surrogate"){
+            TimeSeries aux(Surrogate(*time_series));
+            delete time_series;
+            time_series = new TimeSeries(aux);
+            std::cerr << ">> Shuffling time series" << std::endl;
+        }
         if(std::string(argv[i]) == "-ts_to_att"){
             if(time_series) {
                 attractor = new Attractor(*time_series, dimension, delay);
