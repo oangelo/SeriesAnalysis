@@ -25,6 +25,7 @@ void PrintMan(){
     std::cout << "  --file, -f <string>               Read data from file" << std::endl;
     std::cout << "  --file_name, -name <string>       Name of file to save" << std::endl;
     std::cout << "  --window <int>                    Thrailer window / moving average " << std::endl;
+    std::cout << "  --column <int>                    The columns to use as time series" << std::endl;
     std::cout << "Objects:" << std::endl;
     std::cout << "  --attractor, -att                 Creates an attractor " << std::endl;
     std::cout << "  --time_series, -ts                Create a time series " << std::endl;
@@ -110,8 +111,10 @@ int main(int argc, char* argv[]) {
             }
 
         if(std::string(argv[i]) == "--column" || std::string(argv[i]) == "-c")
-            if(i + 1 < argc) 
+            if(i + 1 < argc){ 
                 column = atoi(argv[i + 1]);
+                std::cerr << "Column:" << column << std::endl;
+            }
 
         if( std::string(argv[i]) == "--bins")
             if(i + 1 < argc) 
@@ -269,7 +272,7 @@ int main(int argc, char* argv[]) {
                 std::cout << analytics.RATIO()  << " "; 
                 std::cout << analytics.NumberOfDiagonals()  << " "; 
                 std::cout << analytics.NumberOfRecurrence()  << " "; 
-                //std::cout << ts_mean  << " "; 
+                
                 //std::cout << ts_std << " "; 
 
                 std::cout << std::endl; 
