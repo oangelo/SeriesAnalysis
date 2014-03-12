@@ -1,7 +1,7 @@
 #ifndef ATTRACTOR_TEST_H
 #define ATTRACTOR_TEST_H 
 
-#include <proxime/numerical_integration/adams_bashforth.h>
+#include <proxime/numerical_methods/adams_bashforth.h>
 #include <proxime/functions/lorenz.h>
 
 TEST(Attractor, FalseNearestNeighbors_WhiteNoise) {
