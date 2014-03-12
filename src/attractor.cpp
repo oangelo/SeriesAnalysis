@@ -216,16 +216,13 @@ double Attractor::correlation_integral(double length_fraction){
 
 */
 
-unsigned int FindNearest(const Attractor & data, unsigned index)
+unsigned int FindNearest(const Attractor & data, const size_t index)
 {
-    double dist = FLT_MAX;
-    unsigned nn = 0;
-    std::vector<double> vec1(data.get_dimension()), vec2(data.get_dimension());
-    vec2 = data[index];
-    for(unsigned i = 0; i < data.size() - data.get_delay(); i++){
-        vec1 = data[i];
-        double aux = EuclideanDistance(vec1, vec2);
-        if((dist >= aux) && (i!=index)){
+    double dist(FLT_MAX);
+    size_t nn(0);
+    for(size_t i(0); i < data.size(); i++){
+        double aux(EuclideanDistance(data[i], data[index]));
+        if(i != index && dist > aux){
             dist = aux;
             nn = i;
         }
@@ -233,31 +230,23 @@ unsigned int FindNearest(const Attractor & data, unsigned index)
     return(nn);
 }
 
-std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
-        unsigned delay,
-        unsigned dimension_max,
-        double Rt,
-        bool SECOND_COND)
+std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts, unsigned delay,
+        unsigned max_dimension, double threshold)
 {
-
-    unsigned int dimension = 1,count_NN=1,i,j;
-    double std;
-    std = ts.Std();
+    unsigned int dimension(1), false_neighbors(1);
+    double std(ts.Std());
     std::vector<unsigned> fnn_list;
-    while(dimension <= dimension_max && (count_NN !=0) ){
-        Attractor att(ts, dimension, delay);
-        std::vector<double> vec_i, vec_j;
-        count_NN=0;
-        for(i  = 0; i < ts.size() - delay * dimension; i++){
-            j = FindNearest(att,i);
-            vec_i = att[i];
-            vec_j = att[j];
-            double dist = EuclideanDistance(vec_i, vec_j);
-            double check = fabs(ts[i + delay * dimension] - ts[j + delay * dimension]) / dist;
-            //std::cout << "check: " << check << " dist: " << dist << " fabs: " <<  fabs(ts[i + delay * dimension] - ts[j + delay * dimension]) << std::endl;
-            if(check > Rt || (SECOND_COND && check >= 4 * std)) count_NN++;
+    while(dimension <= max_dimension && false_neighbors !=0){
+        Attractor attractor(ts, dimension, delay);
+        false_neighbors = 0;
+        for(size_t i(0); i < attractor.size(); i++){
+            size_t j(FindNearest(attractor, i));
+            double dist(EuclideanDistance(attractor[i], attractor[j]));
+            double check(fabs(ts[i + delay * dimension] - ts[j + delay * dimension]));
+            if((check / dist) > threshold || (sqrt(dist * dist + check*check)) / std >= 2 ) 
+                false_neighbors++;
         }
-        fnn_list.push_back(count_NN);
+        fnn_list.push_back(false_neighbors);
         dimension++;
     }
     return(fnn_list);

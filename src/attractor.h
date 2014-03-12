@@ -80,11 +80,8 @@ void CreateLaggedArray(const TimeSeries &ts,
  * returns the index k of the nearest data[k] from data[index]. If we have a tie,
  *returns returns the vector with the higher index.
  */
-std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts,
-        unsigned delay,
-        unsigned dimension_max,
-        double Rt,
-        bool SECOND_COND);
+std::vector<unsigned> FalseNearestNeighbors(const TimeSeries& ts, unsigned delay,
+        unsigned max_dimension, double threshold = 40);
 
 //A function that calculates the mean distance of orbits on the attractor.
 //fist, find the mean distance betewn sequential points.

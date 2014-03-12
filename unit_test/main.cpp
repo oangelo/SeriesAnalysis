@@ -16,6 +16,7 @@
 using namespace std;
 
 
+#include "attractor.h"
 #include "statistics.h"
 #include "time_series.h"
 #include "chaos.h"
