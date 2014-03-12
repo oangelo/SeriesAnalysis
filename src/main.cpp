@@ -239,10 +239,11 @@ int main(int argc, char* argv[]) {
         if((std::string(argv[i]) == "--false_nearest_neighbors") || (std::string(argv[i]) == "-fnn")){
             std::cerr << ">> Nearest Neighbors Max Dimension: " << dimension  << std::endl; 
             std::cerr << ">> Delay: " << delay  << std::endl; 
-            std::cerr << ">> Threshold: " << threshold << std::endl; 
-            std::vector<unsigned> nff =  FalseNearestNeighbors(*time_series, delay, dimension, threshold, true);
+            std::vector<unsigned> nff(FalseNearestNeighbors(*time_series, delay, dimension));
+
+            std::cout << "# dimension x %FNN" << std::endl; 
             for (size_t i = 0; i < nff.size(); ++i)
-                std::cout << i + 1 << " " << nff[i] << std::endl; 
+                std::cout << i + 1 << " " << nff[i] * 100 / nff[0] << std::endl; 
         } 
 
         if((std::string(argv[i]) == "--autocorrelation") || (std::string(argv[i]) == "-ac")){
