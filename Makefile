@@ -1,25 +1,31 @@
-# neste template de Makefile so muda a lista
-# dos SOURCES e o nome do EXECUTABLE.
+# Generic Makefile for compiling a simple executable.
 
-CC=g++
-CFLAGS=-c -Wall -Weffc++ -Wextra -pedantic -std=c++0x   
-LDFLAGS= -lgsl -lgslcblas -lm -lpthread
-SOURCES= src/utils.cpp src/attractor.cpp src/main.cpp src/rp.cpp src/rqa.cpp src/time_series.cpp src/statistics.cpp src/patterns/patterns.cpp src/statistics/src/statistics.cpp src/statistics/src/histogram.cpp
- 
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=time_series
+CC := g++ 
+SRCDIR := src
+BUILDDIR := build
+CFLAGS := -g -Wall -std=c++0x  -Weffc++ -Wextra -pedantic
+LDFLAGS= -lstdc++ -lm -lpstatistics  -lboost_program_options 
+TARGET := time_series 
+SRCEXT := cpp
+BINDIR := /usr/bin
+
+SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+DIRS = $(shell find $(SRCDIR) -type d)
+
+HEADERS := $(shell find $(SRCDIR) -type f -name *.h)
 
 
-all: $(SOURCES) $(EXECUTABLE)
+.PHONY: bin 
+bin:$(TARGET)
+$(TARGET):$(OBJECTS)
+	$(CC) -o $(TARGET) $? $(LDFLAGS)   
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC)  $(OBJECTS) -o $@ $(LDFLAGS)
+vpath %.$(SRCEXT) $(DIRS)
+$(BUILDDIR)/%.o: %.$(SRCEXT) 
+	@mkdir -p  $(shell dirname $@)
+	$(CC) $(CFLAGS) $< -o $@  -c 
 
-.cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
-
-install:
-	sudo cp $(EXECUTABLE) /usr/local/bin
-
-uninstall:
-	sudo rm /usr/local/bin/$(EXECUTABLE)
+.PHONY: clean
+clean:
+	@echo " Cleaning..."; $(RM) -r $(BUILDDIR) $(TARGET)

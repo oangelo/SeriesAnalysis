@@ -204,7 +204,7 @@ TimeSeries Surrogate(const TimeSeries& ts){
     std::vector<double> aux;
     for(size_t i(0); i < ts.size(); ++i)
         aux.push_back(ts[i]);
-    for(size_t i(0); i < ts.size(); ++i){
+    for(size_t i(0); i < 2*ts.size(); ++i){
         int from(dis(gen));
         int to(dis(gen));
         double aux_value(aux[to]);

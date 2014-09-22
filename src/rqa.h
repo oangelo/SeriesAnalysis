@@ -3,7 +3,6 @@
 
 #include "rp.h"
 #include "statistics.h"
-#include "patterns/patterns.h"
 
 
 unsigned NumberOfBlackDots(RecurrencePlot data);

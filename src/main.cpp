@@ -6,7 +6,7 @@
 #include "time_series.h"
 #include "attractor.h"
 #include "rqa.h"
-#include "statistics/src/statistics.h"
+#include "pstatistics/statistics.h"
 
 #define TRUE 1
 #define FALSE 0

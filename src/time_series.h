@@ -12,8 +12,8 @@
 #include <cassert>
 #include <exception>
 
-#include "statistics/src/statistics.h"
-#include "statistics/src/histogram.h"
+#include "pstatistics/statistics.h"
+#include "pstatistics/histogram.h"
 #include "statistics.h"
 #include "utils.h"
 
