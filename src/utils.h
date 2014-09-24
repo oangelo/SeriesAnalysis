@@ -60,6 +60,7 @@ std::vector< std::vector<type> >  ReadFile(std::string file_name){
     return data;
 }
 
+//data[line][column]
 template<class type>
     std::vector< std::vector<type> >  ReadStdin(){
     std::vector< std::vector<type> > data;
