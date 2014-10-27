@@ -94,9 +94,9 @@ double Entropy(TimeSeries& ts, unsigned bins, double min, double max){
 		histogram(ts[i]);
 	}
 	double sum = 0;
-	for (size_t i = 0 ; i < histogram.get_bins_amount(); i++){
-		if(histogram[i] > 0){ 
-            double probability = static_cast<double>(histogram[i])/histogram.SumBins();
+	for (size_t i = 0 ; i < histogram.BinsAmount(); i++){
+		if(histogram[i].second > 0){ 
+            double probability = static_cast<double>(histogram[i].second)/histogram.SamplesAmount();
             sum -= probability*(log(probability)/log(2));
         }
 	}
