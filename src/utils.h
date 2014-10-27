@@ -33,6 +33,8 @@ bool mkdir(std::string path);
 
 bool rm(std::string file);
 
+void Trim(std::string& s);
+
 template<class type>
 std::vector< std::vector<type> >  ReadFile(std::string file_name){
     std::vector< std::vector<type> > data;
@@ -44,6 +46,7 @@ std::vector< std::vector<type> >  ReadFile(std::string file_name){
         {
             std::vector<type> values;
             getline(myfile, line);
+            Trim(line);
             if((line.front() != '#') && !line.empty() ){
                 std::stringstream line_stream(line);
                 type value;
@@ -69,6 +72,7 @@ template<class type>
         {
             std::vector<type> values;
             getline(std::cin, line);
+            Trim(line);
             if((line.front() != '#') && !line.empty() ){
                 std::stringstream line_stream(line);
                 type value;
@@ -80,4 +84,6 @@ template<class type>
         }
     return data;
 }
+
+
 #endif /* UTILS_H_ */
