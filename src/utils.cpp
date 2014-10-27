@@ -97,10 +97,10 @@ bool rm(std::string file){
 
 void Trim(std::string& s)
 {
-  size_t p = s.find_first_not_of(" \t");
+  size_t p = s.find_first_not_of(" \t\r");
   s.erase(0, p);
 
-  p = s.find_last_not_of(" \t");
+  p = s.find_last_not_of(" \t\r");
   if (std::string::npos != p)
     s.erase(p+1);
 }
