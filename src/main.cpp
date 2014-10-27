@@ -171,7 +171,7 @@ to create an attractor from a time series!");
       }else{
         rp->PrintOnScreen();
       }
-    } else if ("mi"){
+    } else if (vm.count("mi")){
       //if bins are not set, use a simple rule
       if(!vm.count("bins"))
         bins = sqrt(time_series->size());
