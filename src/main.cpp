@@ -137,12 +137,12 @@ to create an attractor from a time series!");
     if (vm.count("rp") or vm.count("rqa")){
       if(!attractor)
         throw std::invalid_argument("No attractor to build a Recurrence Plot.");
-      if (!vm.count("threshold")){ 
-          std::cerr << "Trying to find a threshold for RP where recurrence has 5% level." << std::endl;
-          threshold = FindThreshold(*attractor, 5, 0.1);
-      } else if (vm.count("rp_std")) {
+      if (vm.count("rp_std") && !vm.count("threshold")) {
         std::cerr << "Using <threshold>*std as threshold for RP." << std::endl;
         threshold = threshold * StdPointsDistances(*attractor);
+      } else if (!vm.count("threshold")){ 
+          std::cerr << "Trying to find a threshold for RP where recurrence has 5% level." << std::endl;
+          threshold = FindThreshold(*attractor, 5, 0.1);
       }
       rp = new RecurrencePlot(*attractor, threshold);
       if(vm.count("window")){
