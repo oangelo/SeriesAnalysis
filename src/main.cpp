@@ -109,8 +109,9 @@ series when both the specified dimension and delay are set.")
             time_series = new TimeSeries(aux);
             std::cerr << "Shuffling time series" << std::endl;
         }
+      }
 
-      }else if (vm.count("attractor") &&  !vm.count("dim") && !vm.count("delay")){
+      if (vm.count("attractor") &&  !vm.count("dim") && !vm.count("delay")){
         std::cerr << "Creating attractor from file data" << std::endl;
         attractor = new Attractor(data);
       }else if (vm.count("attractor") &&  vm.count("dim") && vm.count("delay")){
