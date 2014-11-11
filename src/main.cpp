@@ -49,7 +49,7 @@ series when both the specified dimension and delay are set.")
     opt.add_options()
       ("threshold", po::value<double>(&threshold),"Threshold value for RPs.")
       ("bins", po::value<unsigned>(&bins),"Number of bins for mutual informations.")
-      ("rp_std","Use as threshold a <real> * st. deviation of the time series.")
+      ("rp_std", po::value<double>(&threshold),"Use as threshold a <real> * st. deviation of the time series.")
       ("window", po::value<unsigned>(&window),"Thrailer window / moving average.")
       ("surrogate","Shuffle the time series.");
 

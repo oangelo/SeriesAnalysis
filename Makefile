@@ -29,3 +29,7 @@ $(BUILDDIR)/%.o: %.$(SRCEXT)
 .PHONY: clean
 clean:
 	@echo " Cleaning..."; $(RM) -r $(BUILDDIR) $(TARGET)
+
+.PHONY: install 
+install:
+	@echo " Installing..."; cp $(TARGET) /usr/bin
